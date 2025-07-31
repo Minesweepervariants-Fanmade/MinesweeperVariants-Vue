@@ -1,0 +1,14 @@
+// 使用Vite的asset处理，让Vite自动内联小文件
+@font-face {
+  font-family: 'CopperplateCC-Bold';
+  src: url('@/assets/fonts/copperplate-cc.bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Source Han Sans Heavy';
+  src: url('@/assets/fonts/SourceHanSansCN-Heavy.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
