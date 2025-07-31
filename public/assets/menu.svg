@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="menu" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1080">
+  <defs>
+    <style>
+      .inner {
+        fill: #fff;
+      }
+    </style>
+  </defs>
+  <rect class="inner" x="281.6" y="660.13" width="550" height="129.75" rx="43.55" ry="43.55"/>
+  <rect class="inner" x="281.6" y="285" width="550" height="129.75" rx="43.55" ry="43.55"/>
+  <rect class="inner" x="281.6" y="471.5" width="550" height="127" rx="43.08" ry="43.08"/>
+</svg>
