@@ -1,0 +1,84 @@
+$cell-base-size: 60;
+$border-width: calc(2 * var(--scale));
+$border-radius: 0;
+
+@function cell-size($scale: 1) {
+  @return calc(#{$scale} * var(--cell-size));
+}
+
+// 按比例缩放
+@function scaled($value) {
+  @return calc(#{$value} * var(--scale));
+}
+
+// 计算最小视口宽度和高度
+@function vw-vh-min($vw, $vh) {
+  @return min(#{$vw}vw, #{$vh}vh);
+}
+
+// mixins
+
+@mixin square-size($scale: 1) {
+  $size: cell-size($scale);
+  width: $size;
+  height: $size;
+  min-width: $size;
+  min-height: $size;
+  max-width: $size;
+  max-height: $size;
+}
+
+@mixin rect-size($width-scale: 1, $height-scale: 1) {
+  $width: cell-size($width-scale);
+  $height: cell-size($height-scale);
+  width: $width;
+  height: $height;
+  min-width: $width;
+  min-height: $height;
+  max-width: $width;
+  max-height: $height;
+}
+
+@mixin absolute-position($top: null, $right: null, $bottom: null, $left: null) {
+  position: absolute;
+
+  @if $top != null {
+    top: $top;
+  }
+  @if $right != null {
+    right: $right;
+  }
+  @if $bottom != null {
+    bottom: $bottom;
+  }
+  @if $left != null {
+    left: $left;
+  }
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin button-base {
+  background: transparent;
+  border: $border-width solid var(--foreground-color);
+  border-radius: $border-radius;
+  cursor: pointer;
+  @include flex-center;
+  box-sizing: border-box;
+}
+
+@mixin svg-icon($size) {
+  width: $size;
+  height: $size;
+}
+
+@mixin no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
