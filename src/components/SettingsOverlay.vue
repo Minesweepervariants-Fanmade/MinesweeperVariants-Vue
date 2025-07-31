@@ -227,12 +227,9 @@ type RuleType = 'lRule' | 'mRule' | 'rRule' | 'oRule'
 
 // 规则映射定义
 const RULE_DEFINITIONS: Record<string, [RuleType, string, string]> = {
-  'Q': ['oRule', '无方', '每个2x2区域内都至少有一个雷'],
-  'U': ['mRule', '终极模式', '增加游戏难度的特殊规则'],
-  'F': ['lRule', '快速标记', '允许快速标记多个地雷'],
-  'A': ['rRule', '自动展开', '自动展开安全区域'],
-  'N': ['lRule', '数字提示', '显示周围地雷数量'],
-  'H': ['mRule', '操作提示', '显示可能的操作建议'],
+  'Q': ['lRule', '无方', '每个2x2区域内都至少有一个雷'],
+  'R': ['mRule', '总雷数', '有时你会需要用到总雷数来推理'],
+  'V': ['rRule', '普通', '无特殊规则']
 }
 
 interface Props {
