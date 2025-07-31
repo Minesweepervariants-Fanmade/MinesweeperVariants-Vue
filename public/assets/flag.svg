@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="flag" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 1080 1080">
+  <defs>
+    <style>
+      .inner {
+        fill: #fff;
+      }
+
+      .outer {
+        fill: none;
+      }
+    </style>
+  </defs>
+  <path class="inner" d="M409.6,239.5v-15h-120.2v652.9h120.2v-323.7l397.6-157-397.6-157ZM368.7,836.2h-38.2V265.5h38.2v570.7ZM413.7,285.2l281.9,111.3-281.9,111.4v-222.7Z"/>
+  <polygon class="outer" points="695.6 396.6 413.7 507.9 413.7 396.6 413.7 285.2 695.6 396.6"/>
+  <rect class="outer" x="330.4" y="265.5" width="38.2" height="570.7"/>
+</svg>
