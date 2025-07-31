@@ -58,7 +58,7 @@ npm run preview
 
 ## 项目结构
 
-```
+```sh
 src/
 ├── components/     # 游戏界面的 Vue 组件
 ├── composables/    # 可复用的组合式函数
@@ -77,26 +77,30 @@ src/
 ### 字体
 
 #### Copperplate CC Bold (`copperplate-cc.bold.ttf`)
+
 - **许可证**: SIL Open Font License 1.1 (OFL-1.1)
 - **来源**: [CowboyCollective/CopperplateCC](https://github.com/CowboyCollective/CopperplateCC)
 - **版权**: Copyright 2014-2024 Cowboy Collective
 - **用途**: 免费用于商业和非商业用途
-- **许可证链接**: https://scripts.sil.org/OFL
+- **许可证链接**: <https://scripts.sil.org/OFL>
 
 #### 思源黑体 CN Heavy (`SourceHanSansCN-Heavy.ttf`)
+
 - **许可证**: SIL Open Font License 1.1 (OFL-1.1)
 - **来源**: [Adobe Fonts / Source Han Sans](https://github.com/adobe-fonts/source-han-sans)
 - **版权**: Copyright 2014-2021 Adobe Systems Incorporated
 - **用途**: 免费用于商业和非商业用途
-- **许可证链接**: https://scripts.sil.org/OFL
+- **许可证链接**: <https://scripts.sil.org/OFL>
 
 ### 图标和图形
 
 `src/assets/icons/` 目录下的所有 SVG 图标均由 KoolShow 创作，采用以下许可证：
+
 - **许可证**: Creative Commons CC0 1.0 Universal（公共域）
 - **用途**: 可自由用于任何目的，无需署名
 
 ### 网站图标
+
 - **许可证**: Creative Commons CC0 1.0 Universal（公共域）
 - **创作者**: KoolShow
 
@@ -110,6 +114,9 @@ src/
 
 ## 致谢
 
+- [14种扫雷变体](https://store.steampowered.com/app/1865060/14/)
+- [14种扫雷变体2](https://store.steampowered.com/app/2631960/142/)
+- [MinesweeperVariants(出题器)](https://github.com/WuZh-Rh/MinesweeperVariants)
 - Vue.js 团队提供的出色框架
 - [Cowboy Collective](https://github.com/CowboyCollective) 提供的 Copperplate CC 字体
 - [Adobe Systems](https://github.com/adobe-fonts/source-han-sans) 提供的思源字体系列
