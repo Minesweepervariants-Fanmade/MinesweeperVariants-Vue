@@ -1,5 +1,6 @@
 import { ref, reactive } from 'vue'
 import type { BoardMetadata, CellConfig, CellState, ClickResponse } from '@/types/game'
+import { getApiEndpoint } from '@/utils/endpointUtils'
 
 export function useGameConfig() {
   const metadata = ref<BoardMetadata | null>(null)
@@ -10,7 +11,7 @@ export function useGameConfig() {
   // 加载元数据配置
   const loadMetadata = async (): Promise<BoardMetadata> => {
     try {
-      const response = await fetch('/api/metadata')
+      const response = await fetch(getApiEndpoint('metadata'))
       if (!response.ok) {
         throw new Error(`Failed to load metadata: ${response.statusText}`)
       }
@@ -32,7 +33,7 @@ export function useGameConfig() {
     button: string
   ): Promise<ClickResponse> => {
     try {
-      const response = await fetch('/api/click', {
+      const response = await fetch(getApiEndpoint('click'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
