@@ -6,9 +6,7 @@
         <u><span class="rule-key">[R]</span> 总雷数</u>：<span class="mine-count">{{
           mineCount ?? '*'
         }}</span>
-        (剩余雷数/格数：<span class="remaining"
-          >{{ remainingMines ?? '*' }}/{{ remainingCells }}</span
-        >)
+        (剩余雷数/格数：<span class="remaining">{{ remainingMines ?? '*' }}/{{ remainingCells }}</span>)
       </div>
       <div class="rule-line">
         <u><span class="rule-key">[Q]</span> 无方</u>：每个2x2区域内都至少有一个雷
@@ -18,26 +16,26 @@
     <!-- 控制按钮 -->
     <div class="controls">
       <button class="control-btn" @click="onFlagClick">
-        <img :src="svgUrls.flag" />
+        <img :src="svgUrls.flag">
       </button>
       <button class="control-btn" @click="onCircleClick">
-        <img :src="svgUrls.circle" />
+        <img :src="svgUrls.circle">
       </button>
       <button class="control-btn" @click="onDoubleArrowClick">
-        <img :src="svgUrls.double_arrow" />
+        <img :src="svgUrls.double_arrow">
       </button>
       <button class="control-btn" @click="onArrowClick">
-        <img :src="svgUrls.arrow" />
+        <img :src="svgUrls.arrow">
       </button>
       <button class="control-btn" @click="onCrossClick">
-        <img :src="svgUrls.cross" />
+        <img :src="svgUrls.cross">
       </button>
     </div>
 
     <!-- 底部信息 -->
     <div class="bottom-info">
       <div class="star-section">
-        <img :src="svgUrls.star" class="star-icon" />
+        <img :src="svgUrls.star" class="star-icon">
         <span class="game-info">[Q]5x5-10-9991 (终极模式 +F +A)</span>
       </div>
       <div class="levelCount">{{ levelCount }}</div>
