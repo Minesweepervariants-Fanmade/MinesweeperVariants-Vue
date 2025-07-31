@@ -1,0 +1,36 @@
+:root {
+  --scale: min(0.125vw, 0.167vh);
+  --cell-size: calc(60 * var(--scale));
+
+  --font-family: 'Arial Black', 'Source Han Sans Heavy', Arial, sans-serif;
+  --table-font-family: 'CopperplateCC-Bold', 'Courier New', monospace;
+
+  // 主题颜色
+  --background-color: #000;
+  --foreground-color: #fff;
+  --error-color: #f00;
+  --hint-color: #0f0;
+  --hint2-color: #ff0;
+  --flag-color: #ff0;
+  --pointer-color: rgba(255, 255, 255, 0.15);
+}
+
+.theme-blue {
+  --background-color: #004;
+  --foreground-color: #ccf;
+  --error-color: #00f;
+  --hint-color: #0f0;
+  --hint2-color: #ff0;
+  --flag-color: #ff0;
+  --pointer-color: rgba(255, 255, 255, 0.15);
+}
+
+.theme-amber {
+  --background-color: #fda;
+  --foreground-color: #530;
+  --error-color: #fa0;
+  --hint-color: #0f0;
+  --hint2-color: #ff0;
+  --flag-color: #f00;
+  --pointer-color: rgba(0, 0, 0, 0.15);
+}
