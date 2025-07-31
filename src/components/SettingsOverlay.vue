@@ -1,0 +1,788 @@
+<template>
+  <BaseModal
+    :visible="visible"
+    confirm-text="保存"
+    :close-on-backdrop="closeOnBackdrop"
+    @confirm="onSave"
+    @close="onClose"
+    @update:visible="$emit('update:visible', $event)"
+  >
+    <h3 class="settings-title">游戏设置</h3>
+    <div class="settings-content">
+
+      <div class="setting-section">
+        <h4 class="section-title">盘面设置</h4>
+        <div class="setting-item">
+          <label class="setting-label">网格大小：</label>
+          <div class="grid-size-container">
+            <input
+              v-model.number="localSettings.gridWidth"
+              type="number"
+              class="setting-input grid-size-input"
+              :min="minWidth"
+              :max="200"
+            >
+            <span class="grid-separator">×</span>
+            <input
+              v-model.number="localSettings.gridHeight"
+              type="number"
+              class="setting-input grid-size-input"
+              :min="minHeight"
+              :max="200"
+            >
+          </div>
+        </div>
+        <div class="setting-item">
+          <label class="setting-label">地雷数量：</label>
+          <input
+            v-model.number="localSettings.mineCount"
+            type="number"
+            class="setting-input"
+            :min="0"
+            :max="maxMines"
+          >
+        </div>
+      </div>
+
+
+      <div class="setting-section">
+        <h4 class="section-title">游戏规则</h4>
+        <div class="rules-container">
+          <!-- 启用的规则 -->
+          <div class="rules-column">
+            <h5 class="rules-column-title">已启用</h5>
+            <div class="rules-list">
+              <div
+                v-for="rule in enabledRules"
+                :key="rule.code"
+                class="rule-item enabled"
+                @click="disableRule(rule.code)"
+              >
+                <span class="rule-code">[{{ rule.code }}]</span>
+                <span class="rule-name">{{ rule.name }}</span>
+                <span class="rule-type">{{ rule.type }}</span>
+              </div>
+              <div v-if="enabledRules.length === 0" class="rules-empty">
+                点击右侧规则来启用
+              </div>
+            </div>
+          </div>
+
+          <!-- 未启用的规则 -->
+          <div class="rules-column">
+            <h5 class="rules-column-title">可用规则</h5>
+            <div class="rules-list">
+              <div
+                v-for="rule in availableRules"
+                :key="rule.code"
+                class="rule-item available"
+                @click="enableRule(rule.code)"
+              >
+                <span class="rule-code">[{{ rule.code }}]</span>
+                <span class="rule-name">{{ rule.name }}</span>
+                <span class="rule-type">{{ rule.type }}</span>
+              </div>
+              <div v-if="availableRules.length === 0" class="rules-empty">
+                无可用规则
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 服务器设置 -->
+      <div class="setting-section">
+        <h4 class="section-title">服务器设置</h4>
+        <div class="setting-item">
+          <label class="setting-label">服务器地址：</label>
+          <input
+            v-model="localSettings.serverUrl"
+            type="url"
+            class="setting-input server-url-input"
+          >
+        </div>
+        <div class="setting-note">
+          <small>更改服务器地址后需要重新加载游戏</small>
+        </div>
+      </div>
+
+      <!-- 模式设置 -->
+      <div class="setting-section">
+        <h4 class="section-title">模式设置</h4>
+        <div class="setting-item">
+          <div class="game-mode-container">
+            <div
+              v-for="mode in (['normal', 'expert', 'ultimate'] as const)"
+              :key="mode"
+              class="game-mode-item"
+              :class="{ active: localSettings.gameMode === mode }"
+              @click="selectGameMode(mode)"
+            >
+              <div class="game-mode-header">
+                <input
+                  :id="`mode-${mode}`"
+                  v-model="localSettings.gameMode"
+                  type="radio"
+                  :value="mode"
+                  class="game-mode-radio"
+                >
+                <label :for="`mode-${mode}`" class="game-mode-title">
+                  {{ gameModeDescriptions[mode].title }}
+                </label>
+              </div>
+              <div class="game-mode-description">
+                {{ gameModeDescriptions[mode].description }}
+              </div>
+
+              <!-- 终极模式子选项 -->
+              <div v-if="mode === 'ultimate' && localSettings.gameMode === 'ultimate'" class="ultimate-options">
+                <div
+                  v-for="(option, key) in ultimateModeOptionDescriptions"
+                  :key="key"
+                  class="ultimate-option-item"
+                >
+                  <label class="setting-checkbox ultimate-checkbox">
+                    <input
+                      v-model="localSettings.ultimateModeOptions[key as keyof UltimateModeOptions]"
+                      type="checkbox"
+                    >
+                    <span class="checkmark" />
+                    <span class="ultimate-option-symbol">{{ option.symbol }}</span>
+                    <span class="ultimate-option-desc">{{ option.description }}</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 显示设置 -->
+      <div class="setting-section">
+        <h4 class="section-title">显示设置</h4>
+        <div class="setting-item">
+          <label class="setting-label">主题：</label>
+          <select v-model="localSettings.theme" class="setting-select">
+            <option value="dark">深色</option>
+            <option value="blue">蓝色</option>
+            <option value="amber">琥珀色</option>
+          </select>
+        </div>
+        <div class="setting-item">
+          <label class="setting-checkbox">
+            <input v-model="localSettings.drawTransparent" type="checkbox">
+            <span class="checkmark" />
+            画图透明度
+          </label>
+          <span class="setting-note">选中时,你的绘图会在解题时变为透明</span>
+        </div>
+        <div class="setting-item">
+          <label class="setting-checkbox">
+            <input v-model="localSettings.showRowColLabel" type="checkbox">
+            <span class="checkmark" />
+            显示行列标号
+          </label>
+        </div>
+      </div>
+
+      <!-- 控制设置 -->
+      <div class="setting-section">
+        <h4 class="section-title">控制设置</h4>
+        <div class="setting-item">
+          <label class="setting-checkbox">
+            <input v-model="localSettings.touchMode" type="checkbox">
+            <span class="checkmark" />
+            触屏模式
+          </label>
+        </div>
+        <div class="setting-item">
+          <label class="setting-checkbox">
+            <input v-model="localSettings.swapMouseButtons" type="checkbox">
+            <span class="checkmark" />
+            交换鼠标左右键
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <template #actions>
+      <button class="reset-btn" type="button" @click="onReset">重置默认</button>
+      <button class="confirm-btn" type="button" @click="onSave">保存</button>
+    </template>
+  </BaseModal>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, watch } from 'vue'
+import BaseModal from './BaseModal.vue'
+import type { GameSettings, GameMode, UltimateModeOptions } from '@/composables/useSettings'
+import { defaultSettings, gameModeDescriptions, ultimateModeOptionDescriptions } from '@/composables/useSettings'
+import { useTheme } from '@/composables/useTheme'
+
+// 主题管理
+const { setTheme } = useTheme()
+
+// 规则类型定义
+type RuleType = 'lRule' | 'mRule' | 'rRule' | 'oRule'
+
+// 规则映射定义
+const RULE_DEFINITIONS: Record<string, [RuleType, string, string]> = {
+  'Q': ['oRule', '无方', '每个2x2区域内都至少有一个雷'],
+  'U': ['mRule', '终极模式', '增加游戏难度的特殊规则'],
+  'F': ['lRule', '快速标记', '允许快速标记多个地雷'],
+  'A': ['rRule', '自动展开', '自动展开安全区域'],
+  'N': ['lRule', '数字提示', '显示周围地雷数量'],
+  'H': ['mRule', '操作提示', '显示可能的操作建议'],
+}
+
+interface Props {
+  visible?: boolean
+  settings?: GameSettings
+  closeOnBackdrop?: boolean
+}
+
+interface Emits {
+  (_e: 'save', _settings: GameSettings): void
+  (_e: 'close'): void
+  (_e: 'update:visible', _value: boolean): void
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  visible: false,
+  closeOnBackdrop: true,
+  settings: () => (defaultSettings),
+})
+
+const emit = defineEmits<Emits>()
+
+// 本地设置副本
+const localSettings = ref<GameSettings>({ ...props.settings })
+
+// 监听主题变化并应用到系统
+watch(
+  () => localSettings.value.theme,
+  (newTheme) => {
+    if (newTheme) {
+      setTheme(newTheme)
+    }
+  }
+)
+
+// 根据网格大小计算最大地雷数
+const maxMines = computed(() => {
+  const width = localSettings.value.gridWidth
+  const height = localSettings.value.gridHeight
+  return width * height // 最大值为宽*高
+})
+
+// 计算宽度的最小值
+const minWidth = computed(() => {
+  return localSettings.value.gridHeight <= 2 ? 3 : 1
+})
+
+// 计算高度的最小值
+const minHeight = computed(() => {
+  return localSettings.value.gridWidth <= 2 ? 3 : 1
+})
+
+// 启用的规则列表
+const enabledRules = computed(() => {
+  return localSettings.value.enabledRules.map(code => ({
+    code,
+    ...RULE_DEFINITIONS[code] ? {
+      type: RULE_DEFINITIONS[code][0],
+      name: RULE_DEFINITIONS[code][1],
+      description: RULE_DEFINITIONS[code][2]
+    } : {
+      type: 'unknown' as RuleType,
+      name: '未知规则',
+      description: '未定义的规则'
+    }
+  }))
+})
+
+// 未启用的规则列表
+const availableRules = computed(() => {
+  return Object.entries(RULE_DEFINITIONS)
+    .filter(([code]) => !localSettings.value.enabledRules.includes(code))
+    .map(([code, [type, name, description]]) => ({
+      code,
+      type,
+      name,
+      description
+    }))
+})
+
+// 移动规则到启用列表
+const enableRule = (code: string) => {
+  if (!localSettings.value.enabledRules.includes(code)) {
+    localSettings.value.enabledRules.push(code)
+  }
+}
+
+// 移动规则到未启用列表
+const disableRule = (code: string) => {
+  const index = localSettings.value.enabledRules.indexOf(code)
+  if (index > -1) {
+    localSettings.value.enabledRules.splice(index, 1)
+  }
+}
+
+// 监听外部设置变化
+watch(
+  () => props.settings,
+  newSettings => {
+    localSettings.value = { ...newSettings }
+  },
+  { deep: true }
+)
+
+// 监听网格宽度变化，确保约束条件并调整雷数
+watch(
+  () => localSettings.value.gridWidth,
+  (newWidth) => {
+    if (newWidth <= 2 && localSettings.value.gridHeight <= 2) {
+      localSettings.value.gridHeight = 3
+    }
+
+    // 检查雷数是否在合法范围内
+    const maxMines = newWidth * localSettings.value.gridHeight
+    if (localSettings.value.mineCount > maxMines) {
+      localSettings.value.mineCount = maxMines
+    }
+    if (localSettings.value.mineCount < 1) {
+      localSettings.value.mineCount = 1
+    }
+  }
+)
+
+// 监听网格高度变化，确保约束条件并调整雷数
+watch(
+  () => localSettings.value.gridHeight,
+  (newHeight) => {
+    if (newHeight <= 2 && localSettings.value.gridWidth <= 2) {
+      localSettings.value.gridWidth = 3
+    }
+
+    // 检查雷数是否在合法范围内
+    const maxMines = localSettings.value.gridWidth * newHeight
+    if (localSettings.value.mineCount > maxMines) {
+      localSettings.value.mineCount = maxMines
+    }
+    if (localSettings.value.mineCount < 1) {
+      localSettings.value.mineCount = 1
+    }
+  }
+)
+
+const onSave = () => {
+  emit('save', { ...localSettings.value })
+  // 不关闭对话框，让用户可以继续调整设置
+}
+
+const onClose = () => {
+  // 恢复到原始设置
+  localSettings.value = { ...props.settings }
+  emit('close')
+}
+
+const selectGameMode = (mode: GameMode) => {
+  localSettings.value.gameMode = mode
+  // 如果不是终极模式，重置终极模式选项
+  if (mode !== 'ultimate') {
+    localSettings.value.ultimateModeOptions = { ...defaultSettings.ultimateModeOptions }
+  }
+}
+
+const onReset = () => {
+  localSettings.value = defaultSettings
+}
+</script>
+
+<style scoped lang="scss">
+@use '@/styles/variables';
+
+.settings-title {
+  margin: 0 0 variables.scaled(20) 0;
+  font-size: variables.scaled(24);
+  font-weight: bold;
+  color: white;
+  text-align: center;
+}
+
+.settings-content {
+  max-height: calc(100% - #{variables.scaled(60)});
+  overflow-y: auto;
+}
+
+.setting-section {
+  margin-bottom: variables.scaled(25);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.section-title {
+  margin: 0 0 variables.scaled(15) 0;
+  font-size: variables.scaled(18);
+  font-weight: bold;
+  color: #fff;
+  border-bottom: calc(1 * var(--scale)) solid rgba(#666, 0.6);
+  padding-bottom: variables.scaled(5);
+}
+
+.setting-item {
+  margin-bottom: variables.scaled(12);
+  display: flex;
+  align-items: center;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.setting-label {
+  color: #ddd;
+  font-size: variables.scaled(14);
+  min-width: variables.scaled(120);
+  margin-right: variables.scaled(10);
+}
+
+.setting-input,
+.setting-select {
+  background: rgba(#444, 0.8);
+  border: calc(1 * var(--scale)) solid rgba(#666, 0.6);
+  color: white;
+  padding: variables.scaled(6) variables.scaled(10);
+  font-size: variables.scaled(14);
+  border-radius: calc(2 * var(--scale));
+  min-width: variables.scaled(80);
+
+}
+
+.server-url-input {
+  min-width: variables.scaled(200);
+}
+
+.grid-size-input {
+  min-width: variables.scaled(60);
+  max-width: variables.scaled(80);
+  text-align: center;
+}
+
+.setting-note {
+  margin-top: variables.scaled(5);
+  margin-left: variables.scaled(130);
+
+  small {
+    color: #aaa;
+    font-size: variables.scaled(12);
+    font-style: italic;
+  }
+}
+
+.grid-size-container {
+  display: flex;
+  align-items: center;
+  gap: variables.scaled(8);
+}
+
+.grid-size-input {
+  min-width: variables.scaled(60);
+  max-width: variables.scaled(80);
+  text-align: center;
+}
+
+.grid-separator {
+  color: #ddd;
+  font-size: variables.scaled(16);
+  font-weight: bold;
+  user-select: none;
+}
+
+.setting-select {
+  cursor: pointer;
+}
+
+.rules-container {
+  display: flex;
+  gap: variables.scaled(20);
+  margin-top: variables.scaled(10);
+}
+
+.rules-column {
+  flex: 1;
+  min-height: variables.scaled(150);
+}
+
+.rules-column-title {
+  margin: 0 0 variables.scaled(10) 0;
+  font-size: variables.scaled(14);
+  font-weight: bold;
+  color: #ccc;
+  text-align: center;
+  padding-bottom: variables.scaled(5);
+  border-bottom: calc(1 * var(--scale)) solid rgba(#666, 0.4);
+}
+
+.rules-list {
+  border: calc(1 * var(--scale)) solid rgba(#666, 0.6);
+  border-radius: calc(4 * var(--scale));
+  background: rgba(#333, 0.8);
+  min-height: variables.scaled(120);
+  padding: variables.scaled(8);
+  display: flex;
+  flex-direction: column;
+  gap: variables.scaled(6);
+}
+
+.rule-item {
+  padding: variables.scaled(8) variables.scaled(12);
+  border-radius: calc(3 * var(--scale));
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: variables.scaled(8);
+
+  &.enabled {
+    background: rgba(#555, 0.8);
+    border: calc(1 * var(--scale)) solid rgba(#777, 0.6);
+
+    &:hover {
+      background: rgba(#666, 0.8);
+      border-color: rgba(#888, 0.8);
+    }
+  }
+
+  &.available {
+    background: rgba(#444, 0.6);
+    border: calc(1 * var(--scale)) solid rgba(#666, 0.4);
+
+    &:hover {
+      background: rgba(#555, 0.8);
+      border-color: rgba(#777, 0.6);
+    }
+  }
+}
+
+.rule-code {
+  color: #fff;
+  font-weight: bold;
+  font-size: variables.scaled(12);
+}
+
+.rule-name {
+  color: #ddd;
+  font-size: variables.scaled(13);
+  flex: 1;
+}
+
+.rule-type {
+  color: #aaa;
+  font-size: variables.scaled(11);
+  font-style: italic;
+}
+
+.rules-empty {
+  color: #888;
+  font-size: variables.scaled(12);
+  text-align: center;
+  padding: variables.scaled(20);
+  font-style: italic;
+}
+
+.setting-checkbox {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  color: #ddd;
+  font-size: variables.scaled(14);
+  user-select: none;
+
+  input[type='checkbox'] {
+    opacity: 0;
+    position: absolute;
+    cursor: pointer;
+  }
+
+  .checkmark {
+    display: inline-block;
+    width: variables.scaled(16);
+    height: variables.scaled(16);
+    background: rgba(#444, 0.8);
+    border: calc(1 * var(--scale)) solid rgba(#666, 0.6);
+    border-radius: calc(2 * var(--scale));
+    margin-right: variables.scaled(8);
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      display: none;
+      left: variables.scaled(5);
+      top: variables.scaled(2);
+      width: variables.scaled(4);
+      height: variables.scaled(8);
+      border: solid white;
+      border-width: 0 calc(2 * var(--scale)) calc(2 * var(--scale)) 0;
+      transform: rotate(45deg);
+    }
+  }
+
+  input:checked ~ .checkmark {
+    background: rgba(#666, 0.8);
+    border-color: rgba(#888, 0.8);
+
+    &::after {
+      display: block;
+    }
+  }
+
+  &:hover .checkmark {
+    background: rgba(#555, 0.8);
+  }
+}
+
+.reset-btn {
+  color: white;
+  background: rgba(#666, 0.6);
+  font-weight: bold;
+  border: none;
+  padding: variables.scaled(10) variables.scaled(24);
+  font-size: variables.scaled(16);
+  cursor: pointer;
+  min-width: variables.scaled(100);
+  margin-right: variables.scaled(10);
+
+  &:hover {
+    background: rgba(#777, 0.8);
+  }
+
+  &:active {
+    background: rgba(#555, 0.8);
+  }
+}
+
+.confirm-btn {
+  color: white;
+  background: rgba(#666, 0.8);
+  font-weight: bold;
+  border: none;
+  padding: variables.scaled(10) variables.scaled(24);
+  font-size: variables.scaled(16);
+  cursor: pointer;
+  min-width: variables.scaled(100);
+
+  &:hover {
+    background: #666;
+    border-color: #888;
+  }
+
+  &:active {
+    background: #444;
+  }
+}
+
+// 游戏模式设置样式
+.game-mode-container {
+  width: 100%;
+}
+
+.game-mode-item {
+  border: calc(2 * var(--scale)) solid rgba(#666, 0.4);
+  border-radius: variables.scaled(8);
+  padding: variables.scaled(12);
+  margin-bottom: variables.scaled(12);
+  background: rgba(#333, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  &:hover {
+    border-color: rgba(#888, 0.6);
+    background: rgba(#444, 0.3);
+  }
+
+  &.active {
+    border-color: var(--accent-color);
+    background: rgba(var(--accent-color-rgb), 0.1);
+  }
+}
+
+.game-mode-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: variables.scaled(8);
+}
+
+.game-mode-radio {
+  margin-right: variables.scaled(8);
+  width: variables.scaled(16);
+  height: variables.scaled(16);
+}
+
+.game-mode-title {
+  font-size: variables.scaled(16);
+  font-weight: bold;
+  color: #fff;
+  cursor: pointer;
+  margin: 0;
+}
+
+.game-mode-description {
+  font-size: variables.scaled(13);
+  color: #ccc;
+  line-height: 1.4;
+  margin-left: variables.scaled(24);
+}
+
+.ultimate-options {
+  margin-top: variables.scaled(12);
+  padding-top: variables.scaled(12);
+  border-top: calc(1 * var(--scale)) solid rgba(#666, 0.3);
+  margin-left: variables.scaled(24);
+}
+
+.ultimate-option-item {
+  margin-bottom: variables.scaled(8);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.ultimate-checkbox {
+  display: flex;
+  align-items: flex-start;
+  font-size: variables.scaled(12);
+  color: #bbb;
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    margin-right: variables.scaled(6);
+    margin-top: variables.scaled(2);
+    flex-shrink: 0;
+  }
+
+  .checkmark {
+    margin-right: variables.scaled(6);
+    margin-top: variables.scaled(1);
+  }
+}
+
+.ultimate-option-symbol {
+  font-weight: bold;
+  color: var(--accent-color);
+  margin-right: variables.scaled(6);
+  flex-shrink: 0;
+}
+
+.ultimate-option-desc {
+  line-height: 1.3;
+}
+</style>
