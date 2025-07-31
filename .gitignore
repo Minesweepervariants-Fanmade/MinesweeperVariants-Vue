@@ -18,7 +18,6 @@ public/api/*
 !.vscode/extensions.json
 !.vscode/tasks.json
 .idea
-.github
 .DS_Store
 *.suo
 *.ntvs*
