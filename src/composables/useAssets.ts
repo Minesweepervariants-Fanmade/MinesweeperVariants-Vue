@@ -48,7 +48,6 @@ export function useAssets() {
 
         if (svgElement.tagName === 'svg') {
           assetTemplates.value[name as keyof AssetTemplates] = svgElement as unknown as SVGElement
-          console.log(`Successfully loaded SVG: ${name}`)
           return { name, success: true }
         } else {
           throw new Error(`Invalid SVG format in ${url}`)
