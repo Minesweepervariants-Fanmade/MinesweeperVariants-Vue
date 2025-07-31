@@ -191,7 +191,6 @@ onUnmounted(() => {
   font-size: variables.vw-vh-min(2, 2.67);
   color: var(--foreground-color);
   vertical-align: middle;
-  font-family: var(--table-font-family);
   box-sizing: border-box;
   @include variables.no-select;
 }
