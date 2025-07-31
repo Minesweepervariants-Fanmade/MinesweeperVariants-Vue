@@ -1,10 +1,17 @@
 <template>
   <div class="app-container">
-    <div v-if="isLoading" class="loading">正在加载游戏配置...</div>
+    <div v-if="isLoading" class="loading">
+      正在加载游戏配置...
+      <button class="settings-btn" @click="showSettingsDialog = true">设置
+      </button>
+    </div>
 
     <div v-else-if="error" class="error">
       加载失败: {{ error }}
       <button @click="initializeGame">重试</button>
+      <button class="settings-btn" @click="showSettingsDialog = true">
+        设置
+      </button>
     </div>
 
     <div v-else-if="isInitialized" class="game-container">
@@ -43,17 +50,27 @@
       confirm-text="重新开始"
       @confirm="handleGameOverConfirm"
     />
+
+    <!-- 设置对话框 -->
+    <SettingsOverlay
+      v-model:visible="showSettingsDialog"
+      :settings="gameSettings"
+      @save="handleSettingsSave"
+      @close="handleSettingsClose"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, computed } from 'vue'
+import { onMounted, onUnmounted, computed, ref } from 'vue'
 import { useGameLogic } from '@/composables/useGameLogic'
 import { useAssets } from '@/composables/useAssets'
 import { useTheme } from '@/composables/useTheme'
+import { useSettings } from '@/composables/useSettings'
 import GameTable from '@/components/GameTable.vue'
 import Overlay from '@/components/Overlay.vue'
 import InfoOverlay from '@/components/InfoOverlay.vue'
+import SettingsOverlay from '@/components/SettingsOverlay.vue'
 
 // 使用游戏逻辑
 const {
@@ -72,7 +89,7 @@ const {
 } = useGameLogic()
 
 const { waitForAssets } = useAssets()
-const { setupThemeToggle } = useTheme()
+const { setupThemeToggle, setTheme } = useTheme()
 
 const gameOverTitle = computed(() => {
   if (!isGameOver.value) return ''
@@ -82,6 +99,12 @@ const gameOverTitle = computed(() => {
 const gameOverMessage = computed(() => {
   return gameOverReason.value || '游戏已结束'
 })
+
+// 使用持久化设置
+const { settings: gameSettings, updateSettings } = useSettings()
+
+// 设置相关状态
+const showSettingsDialog = ref(false)
 
 // 游戏状态数据
 const levelCount = computed(() => '10/10')
@@ -110,6 +133,24 @@ const handleCrossClick = () => {
   // 实现关闭功能
 }
 
+// 设置处理方法
+const handleSettingsSave = (newSettings: typeof gameSettings.value) => {
+  const oldServerUrl = gameSettings.value.serverUrl
+
+  // 使用 updateSettings 来更新设置，这会自动触发 localStorage 保存
+  updateSettings(newSettings)
+  // 不自动关闭设置对话框，让用户可以继续调整
+
+  // 如果服务器地址改变了，重新初始化游戏
+  if (oldServerUrl !== newSettings.serverUrl) {
+    initializeGame()
+  }
+}
+
+const handleSettingsClose = () => {
+  showSettingsDialog.value = false
+}
+
 // 键盘快捷键
 function setupKeyboardShortcuts() {
   const handleKeydown = (e: KeyboardEvent) => {
@@ -131,6 +172,9 @@ let cleanupKeyboardShortcuts: (() => void) | null = null
 onMounted(async () => {
   // 预加载素材
   await waitForAssets()
+
+  // 从设置中初始化主题
+  setTheme(gameSettings.value.theme)
 
   // 初始化游戏
   await initializeGame()
@@ -168,24 +212,33 @@ onUnmounted(() => {
 .error {
   text-align: center;
   padding: calc(20 * var(--scale));
-  font-family: var(--table-font-family);
   color: var(--foreground-color);
   font-size: calc(16 * var(--scale));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(15 * var(--scale));
 }
 
-.error button {
-  margin-top: calc(10 * var(--scale));
-  padding: calc(8 * var(--scale)) calc(16 * var(--scale));
+.error button,
+.loading .settings-btn,
+.error .settings-btn {
+  padding: calc(10 * var(--scale)) calc(20 * var(--scale));
   background: var(--foreground-color);
   color: var(--background-color);
   border: none;
-  border-radius: calc(4 * var(--scale));
+  border-radius: calc(6 * var(--scale));
   cursor: pointer;
-  font-family: var(--table-font-family);
   font-size: calc(14 * var(--scale));
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: calc(5 * var(--scale));
 }
 
-.error button:hover {
+.error button:hover,
+.loading .settings-btn:hover,
+.error .settings-btn:hover {
   opacity: 0.8;
 }
 
@@ -197,21 +250,7 @@ onUnmounted(() => {
   align-items: center;
   gap: calc(40 * var(--scale));
   padding: calc(20 * var(--scale));
-  font-family: var(--table-font-family);
   position: relative;
   z-index: 1;
-}
-
-@media (max-width: 1024px) {
-  .game-container {
-    gap: calc(20 * var(--scale));
-  }
-}
-
-@media (max-width: 768px) {
-  .game-container {
-    flex-direction: column;
-    gap: calc(15 * var(--scale));
-  }
 }
 </style>
