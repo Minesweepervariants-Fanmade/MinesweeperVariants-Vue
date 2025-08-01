@@ -81,8 +81,7 @@ const handleClick = () => {
   emit('click', props.row, props.col, props.boardName)
 }
 
-const handleRightClick = (event: globalThis.MouseEvent) => {
-  event.preventDefault() // 阻止浏览器默认右键菜单
+const handleRightClick = () => {
   emit('right-click', props.row, props.col, props.boardName)
 }
 
@@ -133,7 +132,6 @@ watch(
   position: relative;
   overflow: hidden;
   box-sizing: border-box;
-  @include variables.no-select;
 
   &:hover {
     background: var(--pointer-color);
@@ -187,6 +185,5 @@ watch(
   color: color-mix(var(--background-color), var(--foreground-color), 50%);
   font-weight: bold;
   pointer-events: none;
-  user-select: none;
 }
 </style>

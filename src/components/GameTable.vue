@@ -196,7 +196,6 @@ onUnmounted(() => {
   color: var(--foreground-color);
   vertical-align: middle;
   box-sizing: border-box;
-  @include variables.no-select;
 }
 
 // 列标题
@@ -210,7 +209,6 @@ onUnmounted(() => {
   text-align: center;
   vertical-align: middle;
   box-sizing: border-box;
-  @include variables.no-select;
 }
 
 // 行标题
@@ -224,6 +222,5 @@ onUnmounted(() => {
   text-align: center;
   vertical-align: middle;
   box-sizing: border-box;
-  @include variables.no-select;
 }
 </style>
