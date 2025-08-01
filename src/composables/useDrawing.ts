@@ -14,7 +14,7 @@ function createDrawingInstance() {
 
   const state = reactive<DrawingState>({
     currentTool: 'brush',
-    currentColor: '#000000',
+    currentColor: '#FF0000',
     currentSize: 5,
     isDrawing: false,
     paths: [],
