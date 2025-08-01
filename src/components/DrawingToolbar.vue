@@ -12,8 +12,7 @@
       :visible="showBrushSizePanel"
       :current-size="drawing.state.currentSize"
       :current-tool="drawing.state.currentTool"
-      :brush-size="drawing.state.brushSize"
-      :eraser-size="drawing.state.eraserSize"
+      :brush-size="drawing.state.currentSize"
       @size-change="handleSizeChange"
       @tool-change="handleToolChange"
       @close="showBrushSizePanel = false"
@@ -140,57 +139,8 @@
           </svg>
         </template>
       </BaseButton>
-
-      <!-- 帮助按钮 -->
-      <BaseButton
-        variant="square"
-        :active="showHelp"
-        tooltip="快捷键帮助"
-        @click="showHelp = !showHelp"
-      >
-        <template #icon>
-          <svg viewBox="0 0 24 24">
-            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z" />
-          </svg>
-        </template>
-      </BaseButton>
     </div>
-
-    <!-- 快捷键帮助面板 -->
-    <div v-if="showHelp" class="help-panel">
-      <h3>快捷键帮助</h3>
-      <div class="help-content">
-        <div class="help-section">
-          <h4>工具切换</h4>
-          <ul>
-            <li><kbd>B</kbd> - 画笔</li>
-            <li><kbd>E</kbd> - 橡皮</li>
-            <li><kbd>M</kbd> - 魔术橡皮</li>
-            <li><kbd>L</kbd> - 套索橡皮</li>
-            <li><kbd>O</kbd> - O标记</li>
-          </ul>
-        </div>
-        <div class="help-section">
-          <h4>面板操作</h4>
-          <ul>
-            <li><kbd>Ctrl+C</kbd> - 调色板</li>
-            <li><kbd>Ctrl+S</kbd> - 粗细调整</li>
-            <li><kbd>C</kbd> - 清空画板</li>
-          </ul>
-        </div>
-        <div class="help-section">
-          <h4>历史操作</h4>
-          <ul>
-            <li><kbd>Ctrl+Z</kbd> - 撤销</li>
-            <li><kbd>Ctrl+Shift+Z</kbd> - 重做</li>
-            <li><kbd>Ctrl+Y</kbd> - 重做</li>
-          </ul>
-        </div>
-      </div>
-      <BaseButton variant="square" @click="showHelp = false">关闭</BaseButton>
-    </div>
-  </div>
-</template>
+  </div></template>
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
@@ -206,7 +156,6 @@ const drawing = useDrawing()
 // 状态管理
 const showColorPalette = ref(false)
 const showBrushSizePanel = ref(false)
-const showHelp = ref(false)
 
 // 绘画事件处理函数
 const handleToolChange = (tool: DrawingTool) => {
@@ -333,73 +282,4 @@ onUnmounted(() => {
   @include variables.svg-icon(variables.scaled(24));
 }
 
-.help-panel {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: var(--background-color);
-  border: variables.scaled(2) solid var(--hint-color);
-  border-radius: 0;
-  padding: variables.scaled(24);
-  max-width: variables.scaled(400);
-  width: 90vw;
-  max-height: 80vh;
-  overflow-y: auto;
-  box-shadow: 0 variables.scaled(4) variables.scaled(12) rgba(0, 0, 0, 0.3);
-  pointer-events: auto;
-
-  h3 {
-    margin: 0 0 variables.scaled(16);
-    color: var(--hint-color);
-    text-align: center;
-    font-size: variables.scaled(20);
-    font-weight: bold;
-  }
-
-  .help-content {
-    display: grid;
-    gap: variables.scaled(16);
-  }
-
-  .help-section {
-    h4 {
-      margin: 0 0 variables.scaled(8);
-      color: var(--foreground-color);
-      font-size: variables.scaled(16);
-      font-weight: bold;
-      border-bottom: variables.scaled(1) solid var(--foreground-color);
-      padding-bottom: variables.scaled(4);
-    }
-
-    ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-
-      li {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: variables.scaled(4) 0;
-        border-bottom: variables.scaled(1) solid rgba(255, 255, 255, 0.1);
-        color: var(--foreground-color);
-
-        &:last-child {
-          border-bottom: none;
-        }
-
-        kbd {
-          background: var(--hint-color);
-          color: var(--background-color);
-          padding: variables.scaled(2) variables.scaled(6);
-          border-radius: 0;
-          font-family: monospace;
-          font-size: variables.scaled(12);
-          font-weight: bold;
-        }
-      }
-    }
-  }
-}
 </style>
