@@ -16,8 +16,6 @@ function createDrawingInstance() {
     currentTool: 'brush',
     currentColor: '#000000',
     currentSize: 5,
-    brushSize: 5,     // 画笔默认尺寸
-    eraserSize: 10,   // 橡皮默认尺寸（通常比画笔大一些）
     isDrawing: false,
     paths: [],
     historyIndex: -1
@@ -226,7 +224,8 @@ function createDrawingInstance() {
         color: state.currentColor,
         size: state.currentSize,
         tool: state.currentTool,
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        visible: true  // 新路径默认可见
       }
 
       state.paths.push(path)
@@ -284,8 +283,15 @@ function createDrawingInstance() {
     // 移除当前位置之后的历史记录
     history.value = history.value.slice(0, state.historyIndex + 1)
 
+    // 深拷贝当前状态，保留可见性信息
+    const pathsCopy = state.paths.map(path => ({
+      ...path,
+      points: [...path.points],
+      visible: path.visible !== undefined ? path.visible : true
+    }))
+
     // 添加当前状态
-    history.value.push([...state.paths])
+    history.value.push(pathsCopy)
     state.historyIndex++
 
     // 限制历史记录大小
@@ -299,7 +305,12 @@ function createDrawingInstance() {
   const undo = () => {
     if (state.historyIndex > 0) {
       state.historyIndex--
-      state.paths = [...history.value[state.historyIndex]]
+      // 深拷贝历史状态以避免引用问题
+      state.paths = history.value[state.historyIndex].map(path => ({
+        ...path,
+        points: [...path.points],
+        visible: path.visible !== undefined ? path.visible : true
+      }))
       redrawCanvas()
     } else if (state.historyIndex === 0) {
       state.historyIndex = -1
@@ -312,7 +323,12 @@ function createDrawingInstance() {
   const redo = () => {
     if (state.historyIndex < history.value.length - 1) {
       state.historyIndex++
-      state.paths = [...history.value[state.historyIndex]]
+      // 深拷贝历史状态以避免引用问题
+      state.paths = history.value[state.historyIndex].map(path => ({
+        ...path,
+        points: [...path.points],
+        visible: path.visible !== undefined ? path.visible : true
+      }))
       redrawCanvas()
     }
   }
@@ -339,14 +355,22 @@ function createDrawingInstance() {
 
   // 清空当前颜色
   const clearCurrentColor = () => {
-    state.paths = state.paths.filter(path => path.color !== state.currentColor)
+    // 将当前颜色的路径设置为不可见，而不是删除
+    state.paths.forEach(path => {
+      if (path.color === state.currentColor) {
+        path.visible = false
+      }
+    })
     redrawCanvas()
     saveToHistory()
   }
 
   // 清空整个画板
   const clearAll = () => {
-    state.paths = []
+    // 将所有路径设置为不可见，而不是删除
+    state.paths.forEach(path => {
+      path.visible = false
+    })
     clearCanvas()
     saveToHistory()
   }
@@ -368,7 +392,13 @@ function createDrawingInstance() {
     for (const path of state.paths) {
       if (path.points.length === 0) continue
 
+      // 跳过魔术橡皮工具路径
       if (path.tool === 'magic-eraser') {
+        continue
+      }
+
+      // 跳过不可见的路径
+      if (path.visible === false) {
         continue
       }
 
@@ -439,13 +469,13 @@ function createDrawingInstance() {
     }
   }
 
-  // 更新当前尺寸（根据工具类型）
+  // 更新当前尺寸（只对画笔和圆形标记工具有效）
   const updateCurrentSize = () => {
-    if (state.currentTool === 'brush' || state.currentTool === 'circle-marker') {
-      state.currentSize = state.brushSize
-    } else if (state.currentTool === 'magic-eraser') {
-      state.currentSize = state.eraserSize
+    // 魔术橡皮不需要尺寸设置，直接跳过
+    if (state.currentTool === 'magic-eraser') {
+      return
     }
+    // 画笔和圆形标记使用当前尺寸设置
   }
 
   // 切换工具
@@ -463,32 +493,9 @@ function createDrawingInstance() {
   const setSize = (size: number) => {
     const clampedSize = Math.max(1, Math.min(50, size))
 
-    // 根据当前工具类型存储到相应的尺寸变量
+    // 只对画笔和圆形标记工具设置尺寸
     if (state.currentTool === 'brush' || state.currentTool === 'circle-marker') {
-      state.brushSize = clampedSize
-    } else if (state.currentTool === 'magic-eraser') {
-      state.eraserSize = clampedSize
-    }
-
-    // 更新当前尺寸
-    state.currentSize = clampedSize
-  }
-
-  // 直接设置画笔尺寸
-  const setBrushSize = (size: number) => {
-    state.brushSize = Math.max(1, Math.min(50, size))
-    // 如果当前是画笔工具，同时更新当前尺寸
-    if (state.currentTool === 'brush' || state.currentTool === 'circle-marker') {
-      state.currentSize = state.brushSize
-    }
-  }
-
-  // 直接设置橡皮尺寸
-  const setEraserSize = (size: number) => {
-    state.eraserSize = Math.max(1, Math.min(50, size))
-    // 如果当前是魔术橡皮工具，同时更新当前尺寸
-    if (state.currentTool === 'magic-eraser') {
-      state.currentSize = state.eraserSize
+      state.currentSize = clampedSize
     }
   }
 
@@ -509,10 +516,9 @@ function createDrawingInstance() {
     setTool,
     setColor,
     setSize,
-    setBrushSize,
-    setEraserSize,
     redrawCanvas,
-    handleCanvasResize
+    handleCanvasResize,
+    saveToHistory  // 暴露 saveToHistory 方法
   }
 }
 
