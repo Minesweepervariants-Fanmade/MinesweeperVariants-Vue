@@ -52,15 +52,6 @@ function createDrawingInstance() {
     }
   }
 
-  // 坐标转换：从逻辑坐标转换为显示坐标（用于魔术橡皮）
-  const logicalToDisplay = (point: DrawingPoint): DrawingPoint => {
-    return {
-      x: point.x * canvasSize.value.scale.x,
-      y: point.y * canvasSize.value.scale.y
-    }
-  }
-
-  // 绘制圆形画笔（用户视角圆形 -> 逻辑画布椭圆）
   const drawCircleBrush = (point: DrawingPoint) => {
     if (!ctx.value) return
 
@@ -144,11 +135,8 @@ function createDrawingInstance() {
 
     const logicalPoint = getEventPoint(event)  // 直接获取逻辑坐标
 
-    // 魔术橡皮特殊处理：需要使用实际Canvas像素坐标
-    if (state.currentTool === 'continuous-eraser') {
+    if (state.currentTool === 'magic-eraser') {
       state.isDrawing = true
-      const displayPoint = logicalToDisplay(logicalPoint)
-      eraseContinuousArea(displayPoint)
       return
     }
 
@@ -159,15 +147,11 @@ function createDrawingInstance() {
       ctx.value.strokeStyle = state.currentColor
       ctx.value.fillStyle = state.currentColor
       ctx.value.globalCompositeOperation = 'source-over'
-    } else if (state.currentTool === 'eraser') {
-      ctx.value.globalCompositeOperation = 'destination-out'
     }
 
     // 绘制起始点的圆形
     if (state.currentTool === 'brush') {
       drawCircleBrush(logicalPoint)
-    } else if (state.currentTool === 'eraser') {
-      drawCircleEraser(logicalPoint)
     } else if (state.currentTool === 'circle-marker') {
       // 圆形标记不在开始时绘制
     }
@@ -179,10 +163,7 @@ function createDrawingInstance() {
 
     const logicalPoint = getEventPoint(event)  // 直接获取逻辑坐标
 
-    // 魔术橡皮在拖拽时继续擦除
-    if (state.currentTool === 'continuous-eraser') {
-      const displayPoint = logicalToDisplay(logicalPoint)
-      eraseContinuousArea(displayPoint)
+    if (state.currentTool === 'magic-eraser') {
       return
     }
 
@@ -206,8 +187,7 @@ function createDrawingInstance() {
   const stopDrawing = () => {
     if (!state.isDrawing || !ctx.value) return
 
-    // 魔术橡皮不需要处理结束事件（已在开始时处理完成）
-    if (state.currentTool === 'continuous-eraser') {
+    if (state.currentTool === 'magic-eraser') {
       state.isDrawing = false
       return
     }
@@ -278,91 +258,7 @@ function createDrawingInstance() {
     }
   }
 
-  // 魔术橡皮：擦除相连的同色区域
-  const eraseContinuousArea = (clickPoint: DrawingPoint) => {
-    if (!canvas.value || !ctx.value) return
 
-    // 获取画布的像素数据
-    const imageData = ctx.value.getImageData(0, 0, canvas.value.width, canvas.value.height)
-    const data = imageData.data
-    const width = canvas.value.width
-    const height = canvas.value.height
-
-    const x = Math.floor(clickPoint.x)
-    const y = Math.floor(clickPoint.y)
-
-    // 检查点击位置是否在画布范围内
-    if (x < 0 || x >= width || y < 0 || y >= height) return
-
-    // 获取点击位置的颜色
-    const targetColorIndex = (y * width + x) * 4
-    const targetColor = {
-      r: data[targetColorIndex],
-      g: data[targetColorIndex + 1],
-      b: data[targetColorIndex + 2],
-      a: data[targetColorIndex + 3]
-    }
-
-    // 如果点击位置已经是透明的，则不需要擦除
-    if (targetColor.a === 0) return
-
-    // 使用洪水填充算法找到所有相连的同色像素
-    const visited = new Set<string>()
-    const stack: DrawingPoint[] = [{ x, y }]
-    const pixelsToErase: DrawingPoint[] = []
-
-    while (stack.length > 0) {
-      const current = stack.pop()!
-      const key = `${current.x},${current.y}`
-
-      if (visited.has(key)) continue
-      visited.add(key)
-
-      // 检查当前像素是否在范围内
-      if (current.x < 0 || current.x >= width || current.y < 0 || current.y >= height) continue
-
-      // 获取当前像素的颜色
-      const currentIndex = (current.y * width + current.x) * 4
-      const currentColor = {
-        r: data[currentIndex],
-        g: data[currentIndex + 1],
-        b: data[currentIndex + 2],
-        a: data[currentIndex + 3]
-      }
-
-      // 检查颜色是否匹配（考虑一定的容差）
-      if (colorsMatch(targetColor, currentColor)) {
-        pixelsToErase.push(current)
-
-        // 添加相邻的像素到栈中
-        stack.push({ x: current.x + 1, y: current.y })
-        stack.push({ x: current.x - 1, y: current.y })
-        stack.push({ x: current.x, y: current.y + 1 })
-        stack.push({ x: current.x, y: current.y - 1 })
-      }
-    }
-
-    // 擦除找到的像素
-    if (pixelsToErase.length > 0) {
-      for (const pixel of pixelsToErase) {
-        const index = (pixel.y * width + pixel.x) * 4
-        data[index + 3] = 0 // 设置alpha为0，使像素透明
-      }
-
-      // 将修改后的像素数据放回画布
-      ctx.value.putImageData(imageData, 0, 0)
-
-      // 暂时不记录到历史中，避免撤销问题
-    }
-  }
-
-  // 颜色匹配函数（带容差）
-  const colorsMatch = (color1: { r: number; g: number; b: number; a: number }, color2: { r: number; g: number; b: number; a: number }, tolerance = 32) => {
-    return Math.abs(color1.r - color2.r) <= tolerance &&
-           Math.abs(color1.g - color2.g) <= tolerance &&
-           Math.abs(color1.b - color2.b) <= tolerance &&
-           Math.abs(color1.a - color2.a) <= tolerance
-  }
 
   // 处理画布尺寸变化和缩放
   const handleCanvasResize = (_scaleX: number, _scaleY: number, _newWidth: number, _newHeight: number) => {
@@ -472,16 +368,16 @@ function createDrawingInstance() {
     for (const path of state.paths) {
       if (path.points.length === 0) continue
 
-      if (path.tool === 'eraser' || path.tool === 'continuous-eraser') {
-        ctx.value.globalCompositeOperation = 'destination-out'
-      } else {
-        ctx.value.globalCompositeOperation = 'source-over'
-        ctx.value.fillStyle = path.color
-        ctx.value.strokeStyle = path.color
+      if (path.tool === 'magic-eraser') {
+        continue
       }
 
+      ctx.value.globalCompositeOperation = 'source-over'
+      ctx.value.fillStyle = path.color
+      ctx.value.strokeStyle = path.color
+
       if (path.tool === 'circle-marker' && path.points.length >= 2) {
-        // 绘制圆形标记 - 用户视角圆形转换为逻辑画布椭圆
+        // 绘制圆形标记
         const firstLogical = path.points[0]
         const lastLogical = path.points[path.points.length - 1]
         const logicalRadius = Math.sqrt(
@@ -501,8 +397,8 @@ function createDrawingInstance() {
         ctx.value.beginPath()
         ctx.value.ellipse(firstLogical.x, firstLogical.y, ellipseRadiusX, ellipseRadiusY, 0, 0, 2 * Math.PI)
         ctx.value.stroke()
-      } else if (path.tool === 'brush' || path.tool === 'eraser') {
-        // 绘制椭圆画笔路径（用户视角圆形 -> 逻辑画布椭圆）
+      } else if (path.tool === 'brush') {
+        // 绘制椭圆画笔路径
         const userRadius = path.size / 2
         const radiusX = userRadius / canvasSize.value.scale.x
         const radiusY = userRadius / canvasSize.value.scale.y
@@ -547,7 +443,7 @@ function createDrawingInstance() {
   const updateCurrentSize = () => {
     if (state.currentTool === 'brush' || state.currentTool === 'circle-marker') {
       state.currentSize = state.brushSize
-    } else if (state.currentTool === 'eraser' || state.currentTool === 'continuous-eraser') {
+    } else if (state.currentTool === 'magic-eraser') {
       state.currentSize = state.eraserSize
     }
   }
@@ -570,7 +466,7 @@ function createDrawingInstance() {
     // 根据当前工具类型存储到相应的尺寸变量
     if (state.currentTool === 'brush' || state.currentTool === 'circle-marker') {
       state.brushSize = clampedSize
-    } else if (state.currentTool === 'eraser' || state.currentTool === 'continuous-eraser') {
+    } else if (state.currentTool === 'magic-eraser') {
       state.eraserSize = clampedSize
     }
 
@@ -590,8 +486,8 @@ function createDrawingInstance() {
   // 直接设置橡皮尺寸
   const setEraserSize = (size: number) => {
     state.eraserSize = Math.max(1, Math.min(50, size))
-    // 如果当前是橡皮工具，同时更新当前尺寸
-    if (state.currentTool === 'eraser' || state.currentTool === 'continuous-eraser') {
+    // 如果当前是魔术橡皮工具，同时更新当前尺寸
+    if (state.currentTool === 'magic-eraser') {
       state.currentSize = state.eraserSize
     }
   }
