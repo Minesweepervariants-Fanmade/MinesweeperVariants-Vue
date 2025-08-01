@@ -15,26 +15,26 @@
     <!-- 控制按钮 -->
     <div class="controls">
       <button class="control-btn" @click="onBrushClick">
-        <img :src="svgUrls.brush">
+        <div ref="brushIcon" class="icon-container" />
       </button>
       <button class="control-btn" @click="onHintClick">
-        <img :src="svgUrls.hint">
+        <div ref="hintIcon" class="icon-container" />
       </button>
       <button class="control-btn" @click="onCheckClick">
-        <img :src="svgUrls.check">
+        <div ref="checkIcon" class="icon-container" />
       </button>
       <button class="control-btn" @click="onResetClick">
-        <img :src="svgUrls.reset">
+        <div ref="resetIcon" class="icon-container" />
       </button>
       <button class="control-btn" @click="onMenuClick">
-        <img :src="svgUrls.menu">
+        <div ref="menuIcon" class="icon-container" />
       </button>
     </div>
 
     <!-- 底部信息 -->
     <div class="bottom-info">
       <div class="star-section">
-        <img :src="svgUrls.star" class="star-icon">
+        <div ref="starIcon" class="icon-container star-icon" />
         <span class="game-info">[Q]5x5-10-9991 (终极模式 +F +A)</span>
       </div>
       <div class="levelCount">{{ levelCount }}</div>
@@ -43,10 +43,55 @@
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import { useAssets } from '@/composables/useAssets'
-// 获取SVG URLs
-const { getSvgUrls } = useAssets()
-const svgUrls = getSvgUrls()
+
+// 获取资源管理器
+const { cloneAsset } = useAssets()
+
+// 图标容器的引用
+const brushIcon = ref<HTMLElement>()
+const hintIcon = ref<HTMLElement>()
+const checkIcon = ref<HTMLElement>()
+const resetIcon = ref<HTMLElement>()
+const menuIcon = ref<HTMLElement>()
+const starIcon = ref<HTMLElement>()
+
+// 渲染图标
+const renderIcon = async (container: HTMLElement | undefined, assetName: 'brush' | 'hint' | 'check' | 'reset' | 'menu' | 'star') => {
+  if (!container) return
+
+  const iconSvg = await cloneAsset(assetName)
+  if (iconSvg) {
+    // 清空容器
+    container.innerHTML = ''
+
+    // 设置SVG样式
+    iconSvg.style.width = '100%'
+    iconSvg.style.height = '100%'
+    iconSvg.style.display = 'block'
+    iconSvg.style.maxWidth = '100%'
+    iconSvg.style.maxHeight = '100%'
+
+    // 设置内部元素颜色
+    const innerElements = iconSvg.querySelectorAll('.inner')
+    innerElements.forEach(innerElement => {
+      (innerElement as HTMLElement).style.fill = 'var(--foreground-color)'
+    })
+
+    container.appendChild(iconSvg)
+  }
+}
+
+// 在组件挂载后渲染所有图标
+onMounted(async () => {
+  await renderIcon(brushIcon.value, 'brush')
+  await renderIcon(hintIcon.value, 'hint')
+  await renderIcon(checkIcon.value, 'check')
+  await renderIcon(resetIcon.value, 'reset')
+  await renderIcon(menuIcon.value, 'menu')
+  await renderIcon(starIcon.value, 'star')
+})
 
 // 定义 props
 interface Props {
@@ -142,6 +187,11 @@ const onMenuClick = () => emit('menuClick')
     img {
       @include variables.svg-icon(variables.vw-vh-min(3, 4));
     }
+
+    .icon-container {
+      @include variables.svg-icon(variables.vw-vh-min(3, 4));
+      @include variables.flex-center;
+    }
   }
 }
 
@@ -164,6 +214,7 @@ const onMenuClick = () => emit('menuClick')
 
     .star-icon {
       @include variables.svg-icon(variables.vw-vh-min(3, 4));
+      @include variables.flex-center;
     }
 
     .game-info {

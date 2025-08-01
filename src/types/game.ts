@@ -44,12 +44,17 @@ export interface InfoOverlayConfig {
 }
 
 export interface AssetTemplates {
-  flag: SVGElement | null
-  star: SVGElement | null
-  circle: SVGElement | null
-  cross: SVGElement | null
-  arrow: SVGElement | null
-  double_arrow: SVGElement | null
+  flag?: SVGElement
+  star?: SVGElement
+  circle?: SVGElement
+  cross?: SVGElement
+  arrow?: SVGElement
+  double_arrow?: SVGElement
+  brush?: SVGElement
+  hint?: SVGElement
+  check?: SVGElement
+  reset?: SVGElement
+  menu?: SVGElement
 }
 
 // API响应类型

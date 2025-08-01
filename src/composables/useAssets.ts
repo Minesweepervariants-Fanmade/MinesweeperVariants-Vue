@@ -15,14 +15,7 @@ import resetSvg from '@/assets/icons/reset.svg'
 import menuSvg from '@/assets/icons/menu.svg'
 
 export function useAssets() {
-  const assetTemplates = ref<AssetTemplates>({
-    flag: null,
-    star: null,
-    circle: null,
-    cross: null,
-    arrow: null,
-    double_arrow: null,
-  })
+  const assetTemplates = ref<AssetTemplates>({})
 
   const assetsLoaded = ref(false)
   const assetsLoadingPromise = ref<Promise<AssetTemplates> | null>(null)
@@ -37,6 +30,11 @@ export function useAssets() {
       cross: crossSvg,
       arrow: arrowSvg,
       double_arrow: doubleArrowSvg,
+      brush: brushSvg,
+      hint: hintSvg,
+      check: checkSvg,
+      reset: resetSvg,
+      menu: menuSvg,
     }
 
     const loadPromises = Object.entries(svgUrls).map(async ([name, url]) => {
@@ -73,7 +71,7 @@ export function useAssets() {
         }
       } catch (err) {
         console.warn(`Failed to load ${name} SVG:`, err)
-        assetTemplates.value[name as keyof AssetTemplates] = null
+        delete assetTemplates.value[name as keyof AssetTemplates]
         return { name, success: false, error: err }
       }
     })
@@ -99,13 +97,13 @@ export function useAssets() {
   }
 
   // 复制素材
-  const cloneAsset = async (assetName: keyof AssetTemplates): Promise<SVGElement | null> => {
+  const cloneAsset = async (assetName: keyof AssetTemplates): Promise<SVGElement | undefined> => {
     await waitForAssets()
     const template = assetTemplates.value[assetName]
     if (template) {
       return template.cloneNode(true) as SVGElement
     }
-    return null
+    return undefined
   }
 
   // 获取SVG URLs
