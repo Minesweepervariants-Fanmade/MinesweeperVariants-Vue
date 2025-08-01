@@ -3,9 +3,8 @@
     <!-- 规则信息 -->
     <div class="rules">
       <div class="rule-line">
-        <u><span class="rule-key">[R]</span> 总雷数</u>：<span class="mine-count">{{
-          mineCount ?? '*'
-        }}</span>
+        <u><span class="rule-key">[R]</span> 总雷数</u>：
+        <span class="mine-count"> {{ mineCount ?? '*' }} </span>
         (剩余雷数/格数：<span class="remaining">{{ remainingMines ?? '*' }}/{{ remainingCells }}</span>)
       </div>
       <div class="rule-line">
