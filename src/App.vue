@@ -2,16 +2,13 @@
   <div class="app-container">
     <div v-if="isLoading" class="loading">
       正在加载游戏配置...
-      <button class="settings-btn" @click="showSettingsDialog = true">设置
-      </button>
+      <BaseButton @click="showSettingsDialog = true">设置</BaseButton>
     </div>
 
     <div v-else-if="error" class="error">
       加载失败: {{ error }}
-      <button @click="initializeGame">重试</button>
-      <button class="settings-btn" @click="showSettingsDialog = true">
-        设置
-      </button>
+      <BaseButton @click="initializeGame">重试</BaseButton>
+      <BaseButton @click="showSettingsDialog = true">设置</BaseButton>
     </div>
 
     <div v-else-if="isInitialized" class="game-container">
@@ -29,6 +26,9 @@
       />
     </div>
 
+    <!-- 绘画覆盖层 -->
+    <DrawingCanvas v-show="showDrawingOverlay" />
+
     <!-- 游戏覆盖层组件 -->
     <Overlay
       v-if="isInitialized"
@@ -36,12 +36,15 @@
       :mine-count="totalMines"
       :remaining-mines="remainingMines"
       :remaining-cells="remainingCells"
-      @flag-click="handleFlagClick"
-      @circle-click="handleCircleClick"
-      @double-arrow-click="handleDoubleArrowClick"
-      @arrow-click="handleArrowClick"
-      @cross-click="handleCrossClick"
+      @brush-click="handleBrushClick"
+      @hint-click="handleHintClick"
+      @check-click="handleCheckClick"
+      @reset-click="handleResetClick"
+      @menu-click="handleMenuClick"
     />
+
+    <!-- 绘画工具栏 -->
+    <DrawingToolbar v-show="showDrawingOverlay" />
 
     <!-- 游戏结束信息提示 -->
     <InfoOverlay
@@ -68,10 +71,29 @@ import { useGameLogic } from '@/composables/useGameLogic'
 import { useAssets } from '@/composables/useAssets'
 import { useTheme } from '@/composables/useTheme'
 import { useSettings } from '@/composables/useSettings'
+import BaseButton from '@/components/BaseButton.vue'
 import GameTable from '@/components/GameTable.vue'
 import Overlay from '@/components/Overlay.vue'
 import InfoOverlay from '@/components/InfoOverlay.vue'
 import SettingsOverlay from '@/components/SettingsOverlay.vue'
+import DrawingCanvas from '@/components/DrawingCanvas.vue'
+import DrawingToolbar from '@/components/DrawingToolbar.vue'
+
+// 全局阻止右键菜单
+const preventContextMenu = (event: MouseEvent) => {
+  event.preventDefault()
+}
+
+// 生命周期钩子
+onMounted(() => {
+  // 添加全局右键菜单阻止事件
+  document.addEventListener('contextmenu', preventContextMenu)
+})
+
+onUnmounted(() => {
+  // 清理全局事件监听器
+  document.removeEventListener('contextmenu', preventContextMenu)
+})
 
 // 使用游戏逻辑
 const {
@@ -106,6 +128,7 @@ const { settings: gameSettings, updateSettings } = useSettings()
 
 // 设置相关状态
 const showSettingsDialog = ref(false)
+const showDrawingOverlay = ref(false)
 
 // 游戏状态数据
 const levelCount = computed(() => '10/10')
@@ -114,24 +137,27 @@ const remainingMines = computed(() => undefined)
 const remainingCells = computed(() => 21)
 
 // 控制按钮事件处理
-const handleFlagClick = () => {
-  // 实现旗帜功能
+const handleBrushClick = () => {
+  // 切换绘画覆盖层显示
+  showDrawingOverlay.value = !showDrawingOverlay.value
 }
 
-const handleCircleClick = () => {
-  // 实现圆圈功能
+const handleHintClick = () => {
+  // 实现提示功能
 }
 
-const handleDoubleArrowClick = () => {
-  // 实现双箭头功能
+const handleCheckClick = () => {
+  // 实现检查功能
 }
 
-const handleArrowClick = () => {
-  // 实现箭头功能
+const handleResetClick = () => {
+  // 重置游戏
+  resetGame()
 }
 
-const handleCrossClick = () => {
-  // 实现关闭功能
+const handleMenuClick = () => {
+  // 显示设置菜单
+  showSettingsDialog.value = true
 }
 
 // 设置处理方法
@@ -222,25 +248,17 @@ onUnmounted(() => {
 }
 
 .error button,
-.loading .settings-btn,
-.error .settings-btn {
+.loading button {
   padding: calc(10 * var(--scale)) calc(20 * var(--scale));
   background: var(--foreground-color);
   color: var(--background-color);
   border: none;
-  border-radius: calc(6 * var(--scale));
-  cursor: pointer;
+  border-radius: calc(100 * var(--scale));
   font-size: calc(14 * var(--scale));
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
   gap: calc(5 * var(--scale));
-}
-
-.error button:hover,
-.loading .settings-btn:hover,
-.error .settings-btn:hover {
-  opacity: 0.8;
 }
 
 .game-container {
@@ -252,6 +270,6 @@ onUnmounted(() => {
   gap: calc(40 * var(--scale));
   padding: calc(20 * var(--scale));
   position: relative;
-  z-index: 1;
 }
+
 </style>
