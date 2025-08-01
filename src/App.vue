@@ -24,7 +24,8 @@
         :cols="boardConfig!.labels.cols"
         :board-name="boardConfig!.name"
         :cell-configs="allCells"
-        @cell-click="(row, col, boardName) => handleCellClick(boardName!, row, col)"
+        @cell-click="(row, col, boardName) => handleCellClick(boardName!, row, col, 'left')"
+        @cell-right-click="(row, col, boardName) => handleCellClick(boardName!, row, col, 'right')"
       />
     </div>
 

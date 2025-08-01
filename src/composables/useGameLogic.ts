@@ -66,7 +66,7 @@ export function useGameLogic() {
     }
   }
 
-  const handleCellClick = async (boardName: string, row: number, col: string) => {
+  const handleCellClick = async (boardName: string, row: number, col: string, button: string = 'left') => {
     if (isGameOver.value || showGameOverDialog.value) {
       console.log('Game is over or dialog is shown, click ignored')
       return
@@ -77,7 +77,7 @@ export function useGameLogic() {
     const cellState = board[key]
 
     console.log(
-      `Cell clicked: Board ${boardName}, Position ${key} (row: ${row}, col: ${col})`,
+      `Cell clicked: Board ${boardName}, Position ${key} (row: ${row}, col: ${col}), Button: ${button}`,
       cellState
     )
 
@@ -87,7 +87,7 @@ export function useGameLogic() {
     if (cellState && cellState.type === 'empty' && !cellState.isRevealed) {
       try {
         // 调用postClick API发送点击事件到服务器
-        const response: ClickResponse = await postClick(boardName, x, y, 'left')
+        const response: ClickResponse = await postClick(boardName, x, y, button)
 
         // 检查响应状态
         if (!response.success) {

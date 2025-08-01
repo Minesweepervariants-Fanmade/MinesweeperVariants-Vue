@@ -25,6 +25,7 @@
           :board-name="boardName"
           :is-highlighted="_isCellHighlighted(row, col)"
           @click="(row, col, boardName) => $emit('cell-click', row, col, boardName)"
+          @right-click="(row, col, boardName) => $emit('cell-right-click', row, col, boardName)"
           @mouse-enter="handleCellMouseEnter"
           @mouse-leave="handleCellMouseLeave"
         />
@@ -49,6 +50,7 @@ interface Props {
 
 interface Emits {
   (_e: 'cell-click', _row: number, _col: string, _boardName?: string): void
+  (_e: 'cell-right-click', _row: number, _col: string, _boardName?: string): void
 }
 
 const props = defineProps<Props>()

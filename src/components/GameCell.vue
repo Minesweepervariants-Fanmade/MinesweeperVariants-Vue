@@ -7,6 +7,7 @@
     :data-board="boardName"
     :data-cell-id="cellId"
     @click="handleClick"
+    @contextmenu="handleRightClick"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
   >
@@ -34,6 +35,7 @@ interface Props {
 
 interface Emits {
   (_e: 'click', _row: number, _col: string, _boardName?: string): void
+  (_e: 'right-click', _row: number, _col: string, _boardName?: string): void
   (
     _e: 'mouse-enter',
     _row: number,
@@ -77,6 +79,11 @@ const cellClasses = computed(() => {
 
 const handleClick = () => {
   emit('click', props.row, props.col, props.boardName)
+}
+
+const handleRightClick = (event: globalThis.MouseEvent) => {
+  event.preventDefault() // 阻止浏览器默认右键菜单
+  emit('right-click', props.row, props.col, props.boardName)
 }
 
 const handleMouseEnter = () => {
