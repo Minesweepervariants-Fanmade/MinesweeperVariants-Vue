@@ -663,42 +663,39 @@ const handleResize = () => {
   // 获取第一个题板的当前位置
   const firstGameTable = document.querySelector('.game-table') as HTMLElement
   if (!firstGameTable || !initialBoardRect.value) {
-    // 如果没有找到题板或没有初始位置信息，使用原来的简单缩放
-    const scaleX = newWidth / canvasWidth.value
-    const scaleY = newHeight / canvasHeight.value
+    // 如果没有找到题板或没有初始位置信息，只更新画布尺寸，不变换路径
+    canvasWidth.value = newWidth
+    canvasHeight.value = newHeight
+    return
+  }
 
-    if (scaleX !== 1 || scaleY !== 1) {
-      drawing.state.paths.forEach(path => {
-        path.points.forEach(point => {
-          point.x = point.x * scaleX
-          point.y = point.y * scaleY
-        })
-      })
-    }
-  } else {
-    // 获取当前题板位置
-    const currentBoardRect = firstGameTable.getBoundingClientRect()
+  // 获取当前题板位置
+  const currentBoardRect = firstGameTable.getBoundingClientRect()
 
+  // 只在题板位置真正发生变化时才变换路径坐标
+  const positionChanged =
+    Math.abs(currentBoardRect.left - initialBoardRect.value.left) > 1 ||
+    Math.abs(currentBoardRect.top - initialBoardRect.value.top) > 1 ||
+    Math.abs(currentBoardRect.width - initialBoardRect.value.width) > 1 ||
+    Math.abs(currentBoardRect.height - initialBoardRect.value.height) > 1
+
+  if (positionChanged) {
     // 计算相对于初始题板位置的变换
     const scaleX = currentBoardRect.width / initialBoardRect.value.width
     const scaleY = currentBoardRect.height / initialBoardRect.value.height
-    const offsetX = currentBoardRect.left - initialBoardRect.value.left
-    const offsetY = currentBoardRect.top - initialBoardRect.value.top
 
     // 变换所有路径的坐标
-    if (scaleX !== 1 || scaleY !== 1 || offsetX !== 0 || offsetY !== 0) {
-      drawing.state.paths.forEach(path => {
-        path.points.forEach(point => {
-          // 相对于初始题板位置进行变换
-          const relativeX = point.x - initialBoardRect.value!.left
-          const relativeY = point.y - initialBoardRect.value!.top
+    drawing.state.paths.forEach(path => {
+      path.points.forEach(point => {
+        // 相对于初始题板位置进行变换
+        const relativeX = point.x - initialBoardRect.value!.left
+        const relativeY = point.y - initialBoardRect.value!.top
 
-          // 缩放后再加上新的偏移
-          point.x = currentBoardRect.left + relativeX * scaleX
-          point.y = currentBoardRect.top + relativeY * scaleY
-        })
+        // 缩放后再加上新的偏移
+        point.x = currentBoardRect.left + relativeX * scaleX
+        point.y = currentBoardRect.top + relativeY * scaleY
       })
-    }
+    })
 
     // 更新初始位置为当前位置
     initialBoardRect.value = currentBoardRect
