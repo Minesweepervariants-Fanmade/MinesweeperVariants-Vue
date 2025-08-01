@@ -2,15 +2,25 @@
   <Teleport to="body">
     <div v-if="visible" class="modal-overlay" @click="onBackdropClick">
       <div class="modal-container" @click.stop>
-        <button v-if="showCloseButton" class="close-btn" type="button" @click="onClose">×</button>
+        <BaseButton
+          v-if="showCloseButton"
+          variant="simple"
+
+          class="close-btn"
+          @click="onClose"
+        >×</BaseButton>
         <div class="modal-content">
           <slot />
         </div>
         <div v-if="showActions" class="modal-actions">
           <slot name="actions">
-            <button v-if="showConfirmButton" class="confirm-btn" type="button" @click="onConfirm">
+            <BaseButton
+              v-if="showConfirmButton"
+              variant="simple"
+              @click="onConfirm"
+            >
               {{ confirmText }}
-            </button>
+            </BaseButton>
           </slot>
         </div>
       </div>
@@ -19,6 +29,8 @@
 </template>
 
 <script setup lang="ts">
+import BaseButton from './BaseButton.vue'
+
 interface Props {
   visible?: boolean
   confirmText?: string
@@ -95,18 +107,7 @@ const onBackdropClick = () => {
   position: absolute;
   top: variables.scaled(8);
   right: variables.scaled(12);
-  background: rgba(#666, 0.8);
-  color: white;
-  border: none;
-  font-size: variables.scaled(20);
-  font-weight: bold;
-  cursor: pointer;
-  padding: variables.scaled(4) variables.scaled(8);
-  line-height: 1;
-
-  &:hover {
-    background: rgba(#888, 0.8);
-  }
+  min-width: auto;
 }
 
 .modal-content {
@@ -121,25 +122,9 @@ const onBackdropClick = () => {
   text-align: center;
   right: 0;
   bottom: 0;
-}
-
-.confirm-btn {
-  color: white;
-  background: rgba(#666, 0.8);
-  font-weight: bold;
-  border: none;
-  padding: variables.scaled(10) variables.scaled(24);
-  font-size: variables.scaled(16);
-  cursor: pointer;
-  min-width: variables.scaled(100);
-
-  &:hover {
-    background: #666;
-    border-color: #888;
-  }
-
-  &:active {
-    background: #444;
-  }
+  display: flex;
+  gap: variables.scaled(12);
+  justify-content: center;
+  align-items: center;
 }
 </style>
