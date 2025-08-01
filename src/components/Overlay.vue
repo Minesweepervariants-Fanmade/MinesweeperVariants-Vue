@@ -14,20 +14,20 @@
 
     <!-- 控制按钮 -->
     <div class="controls">
-      <button class="control-btn" @click="onFlagClick">
-        <img :src="svgUrls.flag">
+      <button class="control-btn" @click="onBrushClick">
+        <img :src="svgUrls.brush">
       </button>
-      <button class="control-btn" @click="onCircleClick">
-        <img :src="svgUrls.circle">
+      <button class="control-btn" @click="onHintClick">
+        <img :src="svgUrls.hint">
       </button>
-      <button class="control-btn" @click="onDoubleArrowClick">
-        <img :src="svgUrls.double_arrow">
+      <button class="control-btn" @click="onCheckClick">
+        <img :src="svgUrls.check">
       </button>
-      <button class="control-btn" @click="onArrowClick">
-        <img :src="svgUrls.arrow">
+      <button class="control-btn" @click="onResetClick">
+        <img :src="svgUrls.reset">
       </button>
-      <button class="control-btn" @click="onCrossClick">
-        <img :src="svgUrls.cross">
+      <button class="control-btn" @click="onMenuClick">
+        <img :src="svgUrls.menu">
       </button>
     </div>
 
@@ -44,7 +44,6 @@
 
 <script setup lang="ts">
 import { useAssets } from '@/composables/useAssets'
-
 // 获取SVG URLs
 const { getSvgUrls } = useAssets()
 const svgUrls = getSvgUrls()
@@ -64,21 +63,21 @@ withDefaults(defineProps<Props>(), {
 
 // 定义 emits
 interface Emits {
-  flagClick: []
-  circleClick: []
-  doubleArrowClick: []
-  arrowClick: []
-  crossClick: []
+  brushClick: []
+  hintClick: []
+  checkClick: []
+  resetClick: []
+  menuClick: []
 }
 
 const emit = defineEmits<Emits>()
 
 // 控制按钮事件处理
-const onFlagClick = () => emit('flagClick')
-const onCircleClick = () => emit('circleClick')
-const onDoubleArrowClick = () => emit('doubleArrowClick')
-const onArrowClick = () => emit('arrowClick')
-const onCrossClick = () => emit('crossClick')
+const onBrushClick = () => emit('brushClick')
+const onHintClick = () => emit('hintClick')
+const onCheckClick = () => emit('checkClick')
+const onResetClick = () => emit('resetClick')
+const onMenuClick = () => emit('menuClick')
 </script>
 
 <style lang="scss" scoped>

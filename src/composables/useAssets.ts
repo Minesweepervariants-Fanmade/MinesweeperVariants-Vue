@@ -8,6 +8,11 @@ import circleSvg from '@/assets/icons/circle.svg'
 import crossSvg from '@/assets/icons/cross.svg'
 import arrowSvg from '@/assets/icons/arrow.svg'
 import doubleArrowSvg from '@/assets/icons/double_arrow.svg'
+import brushSvg from '@/assets/icons/brush.svg'
+import hintSvg from '@/assets/icons/hint.svg'
+import checkSvg from '@/assets/icons/check.svg'
+import resetSvg from '@/assets/icons/reset.svg'
+import menuSvg from '@/assets/icons/menu.svg'
 
 export function useAssets() {
   const assetTemplates = ref<AssetTemplates>({
@@ -47,6 +52,20 @@ export function useAssets() {
         const svgElement = svgDoc.documentElement
 
         if (svgElement.tagName === 'svg') {
+          // 为 .inner 元素添加颜色样式
+          const innerElements = svgElement.querySelectorAll('.inner')
+          innerElements.forEach(element => {
+            // 设置 fill 颜色为 currentColor，继承父元素的颜色
+            element.setAttribute('style', 'fill: currentColor;')
+          })
+
+          // 为 .outer 元素设置透明样式
+          const outerElements = svgElement.querySelectorAll('.outer')
+          outerElements.forEach(element => {
+            // 设置 fill 为 transparent
+            element.setAttribute('style', 'fill: transparent;')
+          })
+
           assetTemplates.value[name as keyof AssetTemplates] = svgElement as unknown as SVGElement
           return { name, success: true }
         } else {
@@ -97,6 +116,11 @@ export function useAssets() {
     cross: crossSvg,
     arrow: arrowSvg,
     double_arrow: doubleArrowSvg,
+    brush: brushSvg,
+    hint: hintSvg,
+    check: checkSvg,
+    reset: resetSvg,
+    menu: menuSvg,
   })
 
   onMounted(() => {

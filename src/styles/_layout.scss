@@ -10,6 +10,7 @@
 body {
   background: var(--background-color);
   color: var(--foreground-color);
+  fill: var(--foreground-color);
   font-family: var(--font-family);
   font-size: calc(14 * var(--scale));
   line-height: 1.4;
