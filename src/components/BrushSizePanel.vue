@@ -20,18 +20,6 @@
       <span class="size-value">{{ currentSize }}px</span>
     </div>
 
-    <!-- 不同工具的尺寸信息 -->
-    <div class="size-info">
-      <div class="tool-size-item">
-        <span class="tool-label">画笔:</span>
-        <span class="tool-size">{{ brushSize }}px</span>
-      </div>
-      <div class="tool-size-item">
-        <span class="tool-label">橡皮:</span>
-        <span class="tool-size">{{ eraserSize }}px</span>
-      </div>
-    </div>
-
     <!-- 滑动条 -->
     <div class="slider-container">
       <input
@@ -122,7 +110,6 @@ interface Props {
   currentSize: number
   currentTool: DrawingTool
   brushSize: number
-  eraserSize: number
 }
 
 interface Emits {
