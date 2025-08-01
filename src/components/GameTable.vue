@@ -167,6 +167,8 @@ onUnmounted(() => {
   width: auto;
   height: auto;
 
+  font-family: var(--table-font-family);
+
   th,
   td {
     padding: 0;
