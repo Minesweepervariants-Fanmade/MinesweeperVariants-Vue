@@ -181,11 +181,27 @@ const handleSettingsClose = () => {
 // 键盘快捷键
 function setupKeyboardShortcuts() {
   const handleKeydown = (e: KeyboardEvent) => {
-    switch (e.key.toLowerCase()) {
-      case 'r':
-        // 重置游戏
-        resetGame()
-        break
+    // 防止在输入框中触发快捷键
+    if (e.target && (e.target as HTMLElement).tagName === 'INPUT') return
+
+    // 检查是否匹配重置游戏的快捷键
+    const shortcuts = gameSettings.value.keyboardShortcuts
+
+    // 如果重置游戏快捷键为空，则不处理
+    if (!shortcuts.resetGame || shortcuts.resetGame.trim() === '') return
+
+    const eventKeys = []
+    if (e.ctrlKey) eventKeys.push('ctrl')
+    if (e.shiftKey) eventKeys.push('shift')
+    if (e.altKey) eventKeys.push('alt')
+    if (e.metaKey) eventKeys.push('meta')
+    eventKeys.push(e.key.toLowerCase())
+
+    const eventShortcut = eventKeys.join('+')
+
+    if (eventShortcut === shortcuts.resetGame.toLowerCase()) {
+      e.preventDefault()
+      resetGame()
     }
   }
 
