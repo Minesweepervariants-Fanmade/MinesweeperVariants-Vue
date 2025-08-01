@@ -206,8 +206,8 @@
     </div>
 
     <template #actions>
-      <button class="reset-btn" type="button" @click="onReset">重置默认</button>
-      <button class="confirm-btn" type="button" @click="onSave">保存</button>
+      <BaseButton variant="simple" @click="onReset">重置默认</BaseButton>
+      <BaseButton variant="simple" @click="onSave">保存</BaseButton>
     </template>
   </BaseModal>
 </template>
@@ -215,6 +215,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import BaseModal from './BaseModal.vue'
+import BaseButton from './BaseButton.vue'
 import type { GameSettings, GameMode, UltimateModeOptions } from '@/composables/useSettings'
 import { defaultSettings, gameModeDescriptions, ultimateModeOptionDescriptions } from '@/composables/useSettings'
 import { useTheme } from '@/composables/useTheme'
@@ -374,7 +375,6 @@ watch(
 
 const onSave = () => {
   emit('save', { ...localSettings.value })
-  // 不关闭对话框，让用户可以继续调整设置
 }
 
 const onClose = () => {
@@ -495,7 +495,6 @@ const onReset = () => {
   color: #ddd;
   font-size: variables.scaled(16);
   font-weight: bold;
-  user-select: none;
 }
 
 .setting-select {
@@ -527,11 +526,12 @@ const onReset = () => {
   border: calc(1 * var(--scale)) solid rgba(#666, 0.6);
   border-radius: calc(4 * var(--scale));
   background: rgba(#333, 0.8);
-  min-height: variables.scaled(120);
+  height: variables.scaled(200);
   padding: variables.scaled(8);
   display: flex;
   flex-direction: column;
   gap: variables.scaled(6);
+  overflow-y: auto;
 }
 
 .rule-item {
@@ -596,7 +596,6 @@ const onReset = () => {
   cursor: pointer;
   color: #ddd;
   font-size: variables.scaled(14);
-  user-select: none;
 
   input[type='checkbox'] {
     opacity: 0;
@@ -642,45 +641,6 @@ const onReset = () => {
   }
 }
 
-.reset-btn {
-  color: white;
-  background: rgba(#666, 0.6);
-  font-weight: bold;
-  border: none;
-  padding: variables.scaled(10) variables.scaled(24);
-  font-size: variables.scaled(16);
-  cursor: pointer;
-  min-width: variables.scaled(100);
-  margin-right: variables.scaled(10);
-
-  &:hover {
-    background: rgba(#777, 0.8);
-  }
-
-  &:active {
-    background: rgba(#555, 0.8);
-  }
-}
-
-.confirm-btn {
-  color: white;
-  background: rgba(#666, 0.8);
-  font-weight: bold;
-  border: none;
-  padding: variables.scaled(10) variables.scaled(24);
-  font-size: variables.scaled(16);
-  cursor: pointer;
-  min-width: variables.scaled(100);
-
-  &:hover {
-    background: #666;
-    border-color: #888;
-  }
-
-  &:active {
-    background: #444;
-  }
-}
 
 // 游戏模式设置样式
 .game-mode-container {
