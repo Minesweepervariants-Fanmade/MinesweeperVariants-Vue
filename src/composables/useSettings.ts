@@ -3,6 +3,32 @@ import { ref, watch } from 'vue'
 // 游戏模式类型
 export type GameMode = 'normal' | 'expert' | 'ultimate'
 
+// 快捷键配置类型
+export interface KeyboardShortcuts {
+  brushTool: string          // 画笔工具
+  eraserTool: string         // 魔术橡皮
+  markerTool: string         // 标记工具
+  colorPalette: string       // 颜色面板
+  brushPanel: string         // 笔刷面板
+  clearCanvas: string        // 清空画布
+  undo: string              // 撤销
+  redo: string              // 重做
+  resetGame: string         // 重置游戏
+}
+
+// 鼠标快捷键配置类型
+export interface MouseShortcuts {
+  brushTool: string          // 画笔工具
+  eraserTool: string         // 魔术橡皮
+  markerTool: string         // 标记工具
+  colorPalette: string       // 颜色面板
+  brushPanel: string         // 笔刷面板
+  clearCanvas: string        // 清空画布
+  undo: string              // 撤销
+  redo: string              // 重做
+  resetGame: string         // 重置游戏
+}
+
 // 终极模式子选项
 export interface UltimateModeOptions {
   autoHint: boolean      // +A: 自动按下提示按钮
@@ -29,6 +55,8 @@ export interface GameSettings {
   showRowColLabel: boolean // 显示行列标号
   touchMode: boolean // 触屏模式
   swapMouseButtons: boolean // 交换鼠标左右键
+  keyboardShortcuts: KeyboardShortcuts // 键盘快捷键配置
+  mouseShortcuts: MouseShortcuts // 鼠标快捷键配置
 }
 
 // 默认设置
@@ -55,6 +83,28 @@ export const defaultSettings: GameSettings = {
   showRowColLabel: false,
   touchMode: false,
   swapMouseButtons: false,
+  keyboardShortcuts: {
+    brushTool: 'b',
+    eraserTool: 'e',
+    markerTool: 'o',
+    colorPalette: 'ctrl+c',
+    brushPanel: 'ctrl+s',
+    clearCanvas: 'c',
+    undo: 'ctrl+z',
+    redo: 'ctrl+shift+z',
+    resetGame: 'r'
+  },
+  mouseShortcuts: {
+    brushTool: '',
+    eraserTool: '',
+    markerTool: '',
+    colorPalette: 'wheel',
+    brushPanel: '',
+    clearCanvas: '',
+    undo: '',
+    redo: '',
+    resetGame: ''
+  },
 }
 
 const STORAGE_KEY = 'minesweeper-game-settings'
@@ -96,6 +146,46 @@ export const ultimateModeOptionDescriptions = {
   hideRemaining: {
     symbol: '+!',
     description: '如果勾选,游戏界面中不会给出剩余的可断定格数的信息。'
+  }
+} as const
+
+// 快捷键功能描述
+export const shortcutDescriptions = {
+  brushTool: {
+    name: '选择画笔工具',
+    category: '绘图工具'
+  },
+  eraserTool: {
+    name: '选择魔术橡皮',
+    category: '绘图工具'
+  },
+  markerTool: {
+    name: '选择标记工具',
+    category: '绘图工具'
+  },
+  colorPalette: {
+    name: '打开颜色面板',
+    category: '绘图工具'
+  },
+  brushPanel: {
+    name: '打开笔刷面板',
+    category: '绘图工具'
+  },
+  clearCanvas: {
+    name: '清空画布',
+    category: '绘图工具'
+  },
+  undo: {
+    name: '撤销',
+    category: '绘图工具'
+  },
+  redo: {
+    name: '重做',
+    category: '绘图工具'
+  },
+  resetGame: {
+    name: '重置游戏',
+    category: '游戏操作'
   }
 } as const
 
