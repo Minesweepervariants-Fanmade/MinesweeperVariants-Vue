@@ -10,6 +10,7 @@
       @mousemove="handleMouseMove"
       @mouseup="handleMouseUp"
       @mouseleave="handleMouseLeave"
+      @contextmenu="handleContextMenu"
       @touchstart="handleTouchStart"
       @touchmove="handleTouchMove"
       @touchend="handleTouchEnd"
@@ -74,7 +75,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import type { DrawingPoint, DrawingPath } from '@/types/drawing'
+import type { DrawingPoint, DrawingPath, DrawingTool } from '@/types/drawing'
 import { useDrawing } from '@/composables/useDrawing'
 
 const drawing = useDrawing()
@@ -84,15 +85,16 @@ const currentPoints = ref<DrawingPoint[]>([])
 const lastMousePosition = ref<DrawingPoint | null>(null)
 const hoverPosition = ref<DrawingPoint | null>(null)
 
+// 右键临时魔术橡皮状态
+const isRightClickErasing = ref(false)
+const originalTool = ref<DrawingTool>('brush')
+
 // 画布尺寸状态
 const canvasWidth = ref(window.innerWidth)
 const canvasHeight = ref(window.innerHeight)
 
 // 存储第一个题板的初始位置信息
 const initialBoardRect = ref<DOMRect | null>(null)
-
-// 调试用：题板边界路径
-const debugBoardPath = ref<DrawingPath | null>(null)
 
 // SVG视窗配置 - 使用实际的窗口尺寸
 const viewBox = computed(() => {
@@ -113,7 +115,12 @@ const visiblePaths = computed(() => {
       return false
     }
 
-    // 排除被标记为删除的路径
+    // 检查路径的可见性 (默认为 true)
+    if (path.visible === false) {
+      return false
+    }
+
+    // 排除被标记为删除的路径（仅用于当前操作预览）
     if (pathsToDelete.value.has(index)) {
       return false
     }
@@ -247,19 +254,34 @@ const lineSegmentsIntersect = (
   return minDistance < threshold
 }
 
-// 应用路径删除操作
+// 应用路径删除操作（通过设置可见性）
 const applyPathDeletions = () => {
   if (pathsToDelete.value.size === 0) return
 
-  // 按索引降序排列，从后往前删除避免索引错乱
-  const indicesToDelete = Array.from(pathsToDelete.value).sort((a, b) => b - a)
+  // 记录被删除路径的索引，用于历史记录
+  const deletedIndices: number[] = []
 
-  indicesToDelete.forEach(index => {
-    drawing.state.paths.splice(index, 1)
+  // 设置路径为不可见，而不是真正删除
+  pathsToDelete.value.forEach(index => {
+    if (index < drawing.state.paths.length) {
+      drawing.state.paths[index].visible = false
+      deletedIndices.push(index)
+    }
   })
+
+  // 如果有路径被"删除"，保存到历史记录
+  if (deletedIndices.length > 0) {
+    saveToHistory()
+  }
 
   // 清除删除标记
   pathsToDelete.value.clear()
+}
+
+// 保存到历史记录的辅助函数
+const saveToHistory = () => {
+  // 直接调用 useDrawing 的 saveToHistory 方法
+  drawing.saveToHistory()
 }
 
 // 简化路径点（Douglas-Peucker算法的简化版本）
@@ -377,23 +399,6 @@ const getActualStrokeWidth = (size: number): number => {
   return Math.max(1, size)
 }
 
-// 创建题板边界的调试路径
-const createDebugBoardPath = (rect: DOMRect): DrawingPath => {
-  return {
-    points: [
-      { x: rect.left, y: rect.top },           // 左上角
-      { x: rect.right, y: rect.top },          // 右上角
-      { x: rect.right, y: rect.bottom },       // 右下角
-      { x: rect.left, y: rect.bottom },        // 左下角
-      { x: rect.left, y: rect.top }            // 回到起点形成闭合
-    ],
-    tool: 'brush',
-    color: '#ff0000', // 红色调试线
-    size: 3,
-    timestamp: Date.now()
-  }
-}
-
 // 获取圆形标记的半径
 const getCircleRadius = (path: DrawingPath): number => {
   if (path.points.length < 2) return 0
@@ -482,7 +487,8 @@ const continueDrawing = (position: DrawingPoint) => {
 
     // 检查与现有路径的碰撞
     drawing.state.paths.forEach((path, index) => {
-      if (path.tool === 'brush' || path.tool === 'circle-marker') {
+      // 只检查可见的画笔和圆形标记路径
+      if ((path.tool === 'brush' || path.tool === 'circle-marker') && path.visible !== false) {
         if (pathsIntersect(currentPath, path)) {
           pathsToDelete.value.add(index)
         }
@@ -553,14 +559,15 @@ const stopDrawing = () => {
       color: drawing.state.currentColor,
       size: drawing.state.currentSize,
       tool: drawing.state.currentTool,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      visible: true  // 新路径默认可见
     }
 
     // 添加到绘图状态
     drawing.state.paths.push(newPath)
 
-    // 保存到历史记录 - 我们需要调用内部的saveToHistory，但它没有暴露
-    // 这里暂时跳过历史记录，主要功能在undo/redo中处理
+    // 保存到历史记录
+    saveToHistory()
   }
 
   // 清理临时状态
@@ -572,6 +579,17 @@ const stopDrawing = () => {
 const handleMouseDown = (event: MouseEvent) => {
   event.preventDefault()
   const position = getEventPosition(event)
+
+  // 检查是否是右键点击
+  if (event.button === 2) {
+    // 右键：临时切换到魔术橡皮
+    if (!isRightClickErasing.value) {
+      originalTool.value = drawing.state.currentTool
+      drawing.state.currentTool = 'magic-eraser'
+      isRightClickErasing.value = true
+    }
+  }
+
   startDrawing(position)
 }
 
@@ -589,13 +607,32 @@ const handleMouseMove = (event: MouseEvent) => {
 
 const handleMouseUp = (event: MouseEvent) => {
   event.preventDefault()
+
   stopDrawing()
+
+  // 如果是右键释放，恢复原来的工具
+  if (event.button === 2 && isRightClickErasing.value) {
+    drawing.state.currentTool = originalTool.value
+    isRightClickErasing.value = false
+  }
 }
 
 const handleMouseLeave = (event: MouseEvent) => {
   event.preventDefault()
   hoverPosition.value = null
   stopDrawing()
+
+  // 如果正在右键擦除，恢复原来的工具
+  if (isRightClickErasing.value) {
+    drawing.state.currentTool = originalTool.value
+    isRightClickErasing.value = false
+  }
+}
+
+// 阻止右键菜单
+const handleContextMenu = (event: MouseEvent) => {
+  event.preventDefault()
+  return false
 }
 
 // 触摸事件处理
@@ -665,9 +702,6 @@ const handleResize = () => {
 
     // 更新初始位置为当前位置
     initialBoardRect.value = currentBoardRect
-
-    // 更新调试边界路径
-    debugBoardPath.value = createDebugBoardPath(currentBoardRect)
   }
 
   // 更新画布尺寸
@@ -685,8 +719,6 @@ onMounted(() => {
       const firstGameTable = document.querySelector('.game-table') as HTMLElement
       if (firstGameTable) {
         initialBoardRect.value = firstGameTable.getBoundingClientRect()
-        // 创建调试边界路径
-        debugBoardPath.value = createDebugBoardPath(initialBoardRect.value)
       }
     }, 100) // 延迟一点时间确保DOM已经渲染完成
   }
