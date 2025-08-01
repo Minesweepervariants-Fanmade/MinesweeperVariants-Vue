@@ -76,9 +76,17 @@ $border-radius: 0;
   height: $size;
 }
 
-@mixin no-select {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+@mixin user-select($value) {
+  -webkit-user-select: $value;
+  -moz-user-select: $value;
+  -ms-user-select: $value;
+  user-select: $value;
+}
+
+// 同时设置颜色和背景
+@mixin paint($color, $bg) {
+  fill: $color;
+  color: $color;
+  border-color: $color;
+  background: $bg;
 }

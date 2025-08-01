@@ -7,6 +7,10 @@
   box-sizing: border-box;
 }
 
+*{
+  outline: none;
+}
+
 body {
   background: var(--background-color);
   color: var(--foreground-color);
@@ -15,4 +19,5 @@ body {
   font-size: calc(14 * var(--scale));
   line-height: 1.4;
   overflow: hidden;
+  @include variables.user-select(none);
 }
