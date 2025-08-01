@@ -76,7 +76,6 @@ const onBackdropClick = () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
 }
 
 .modal-container {
@@ -104,7 +103,6 @@ const onBackdropClick = () => {
   cursor: pointer;
   padding: variables.scaled(4) variables.scaled(8);
   line-height: 1;
-  z-index: 1;
 
   &:hover {
     background: rgba(#888, 0.8);

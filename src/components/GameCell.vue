@@ -188,6 +188,5 @@ watch(
   font-weight: bold;
   pointer-events: none;
   user-select: none;
-  z-index: 10;
 }
 </style>
