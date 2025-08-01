@@ -3,7 +3,6 @@
     :visible="visible"
     title="颜色选择"
     position="left"
-
     transition="slide-left"
     :show-confirm-button="false"
     cancel-text="取消"
@@ -66,6 +65,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import BasePanel from '@/components/BasePanel.vue'
+import { presetColors } from '@/utils/colorUtils'
 
 interface Props {
   visible: boolean
@@ -82,14 +82,6 @@ const emit = defineEmits<Emits>()
 
 const customColor = ref(props.currentColor)
 const recentColors = ref<string[]>([])
-
-// 预设颜色
-const presetColors = [
-  '#000000', '#333333', '#666666', '#999999', '#CCCCCC', '#FFFFFF',
-  '#FF0000', '#FF6600', '#FFFF00', '#00FF00', '#00FFFF', '#0066FF',
-  '#6600FF', '#FF00FF', '#FF0066', '#66FF00', '#00FF66', '#0066CC',
-  '#CC6600', '#CC0066', '#6600CC', '#006600', '#660000', '#006666'
-]
 
 // 监听当前颜色变化
 watch(() => props.currentColor, (newColor) => {

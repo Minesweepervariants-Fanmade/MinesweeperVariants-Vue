@@ -27,7 +27,7 @@
     </div>
 
     <!-- 绘画覆盖层 -->
-    <DrawingCanvas v-show="showDrawingOverlay" />
+    <DrawingCanvas :style="{ opacity: showDrawingToolbar ? '100%' : '50%' }" />
 
     <!-- 游戏覆盖层组件 -->
     <Overlay
@@ -44,7 +44,7 @@
     />
 
     <!-- 绘画工具栏 -->
-    <DrawingToolbar v-show="showDrawingOverlay" />
+    <DrawingToolbar v-show="showDrawingToolbar" :visible="showDrawingToolbar" />
 
     <!-- 游戏结束信息提示 -->
     <InfoOverlay
@@ -128,7 +128,7 @@ const { settings: gameSettings, updateSettings } = useSettings()
 
 // 设置相关状态
 const showSettingsDialog = ref(false)
-const showDrawingOverlay = ref(false)
+const showDrawingToolbar = ref(false)
 
 // 游戏状态数据
 const levelCount = computed(() => '10/10')
@@ -139,7 +139,7 @@ const remainingCells = computed(() => 21)
 // 控制按钮事件处理
 const handleBrushClick = () => {
   // 切换绘画覆盖层显示
-  showDrawingOverlay.value = !showDrawingOverlay.value
+  showDrawingToolbar.value = !showDrawingToolbar.value
 }
 
 const handleHintClick = () => {
