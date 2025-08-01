@@ -14,21 +14,31 @@
 
     <!-- 控制按钮 -->
     <div class="controls">
-      <button class="control-btn" @click="onBrushClick">
-        <div ref="brushIcon" class="icon-container" />
-      </button>
-      <button class="control-btn" @click="onHintClick">
-        <div ref="hintIcon" class="icon-container" />
-      </button>
-      <button class="control-btn" @click="onCheckClick">
-        <div ref="checkIcon" class="icon-container" />
-      </button>
-      <button class="control-btn" @click="onResetClick">
-        <div ref="resetIcon" class="icon-container" />
-      </button>
-      <button class="control-btn" @click="onMenuClick">
-        <div ref="menuIcon" class="icon-container" />
-      </button>
+      <BaseButton variant="square" @click="onBrushClick">
+        <template #icon>
+          <div ref="brushIcon" class="icon-container" />
+        </template>
+      </BaseButton>
+      <BaseButton variant="square" @click="onHintClick">
+        <template #icon>
+          <div ref="hintIcon" class="icon-container" />
+        </template>
+      </BaseButton>
+      <BaseButton variant="square" @click="onCheckClick">
+        <template #icon>
+          <div ref="checkIcon" class="icon-container" />
+        </template>
+      </BaseButton>
+      <BaseButton variant="square" @click="onResetClick">
+        <template #icon>
+          <div ref="resetIcon" class="icon-container" />
+        </template>
+      </BaseButton>
+      <BaseButton variant="square" @click="onMenuClick">
+        <template #icon>
+          <div ref="menuIcon" class="icon-container" />
+        </template>
+      </BaseButton>
     </div>
 
     <!-- 底部信息 -->
@@ -45,6 +55,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useAssets } from '@/composables/useAssets'
+import BaseButton from './BaseButton.vue'
 
 // 获取资源管理器
 const { cloneAsset } = useAssets()
@@ -172,25 +183,10 @@ const onMenuClick = () => emit('menuClick')
   display: flex;
   gap: variables.scaled(10);
   align-items: center;
-  @include variables.no-select;
 
-  .control-btn {
-    @include variables.square-size(0.5);
-    @include variables.button-base;
-    @include variables.no-select;
-
-    &:hover {
-      background: var(--pointer-color);
-    }
-
-    img {
-      @include variables.svg-icon(variables.vw-vh-min(3, 4));
-    }
-
-    .icon-container {
-      @include variables.svg-icon(variables.vw-vh-min(3, 4));
-      @include variables.flex-center;
-    }
+  .icon-container {
+    @include variables.svg-icon(variables.vw-vh-min(3, 4));
+    @include variables.flex-center;
   }
 }
 
