@@ -51,11 +51,11 @@
         </template>
       </BaseButton>
 
-      <!-- 橡皮 -->
+      <!-- 魔术橡皮 -->
       <BaseButton
         variant="square"
-        :active="['eraser', 'continuous-eraser'].includes(drawing.state.currentTool)"
-        tooltip="橡皮"
+        :active="drawing.state.currentTool === 'magic-eraser'"
+        tooltip="魔术橡皮"
         @click="setBasicTool('eraser')"
       >
         <template #icon>
@@ -165,7 +165,8 @@
           <ul>
             <li><kbd>B</kbd> - 画笔</li>
             <li><kbd>E</kbd> - 橡皮</li>
-            <li><kbd>R</kbd> - 魔术橡皮</li>
+            <li><kbd>M</kbd> - 魔术橡皮</li>
+            <li><kbd>L</kbd> - 套索橡皮</li>
             <li><kbd>O</kbd> - O标记</li>
           </ul>
         </div>
@@ -230,10 +231,7 @@ const handleKeyDown = (event: globalThis.KeyboardEvent) => {
       handleToolChange('brush')
       break
     case 'e':
-      handleToolChange('eraser')
-      break
-    case 'r':
-      handleToolChange('continuous-eraser')
+      handleToolChange('magic-eraser')
       break
     case 'o':
       handleToolChange('circle-marker')
@@ -277,10 +275,8 @@ const setBasicTool = (toolType: 'brush' | 'eraser' | 'circle-marker') => {
   if (toolType === 'brush') {
     handleToolChange('brush')
   } else if (toolType === 'eraser') {
-    // 如果当前是橡皮类工具，保持，否则设为普通橡皮
-    if (!['eraser', 'continuous-eraser'].includes(drawing.state.currentTool)) {
-      handleToolChange('eraser')
-    }
+    // 直接设为魔术橡皮
+    handleToolChange('magic-eraser')
   } else if (toolType === 'circle-marker') {
     handleToolChange('circle-marker')
   }
