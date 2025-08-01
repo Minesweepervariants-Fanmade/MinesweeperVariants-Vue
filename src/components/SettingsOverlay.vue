@@ -1097,15 +1097,6 @@ const onReset = () => {
   overflow: hidden;
 }
 
-.shortcut-header {
-  display: flex;
-  background: rgba(#444, 0.9);
-  border-bottom: calc(1 * var(--scale)) solid rgba(#666, 0.6);
-  font-weight: bold;
-  font-size: variables.scaled(14);
-  color: #fff;
-}
-
 .shortcut-body {
   display: flex;
   flex-direction: column;
