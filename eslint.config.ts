@@ -3,6 +3,11 @@ import pluginVue from 'eslint-plugin-vue'
 import * as parserVue from 'vue-eslint-parser'
 import * as parserTypeScript from '@typescript-eslint/parser'
 import pluginTypeScript from '@typescript-eslint/eslint-plugin'
+import globals from 'globals'
+
+const customGlobals = {
+
+}
 
 export default [
   {
@@ -21,18 +26,8 @@ export default [
         extraFileExtensions: ['.vue'],
       },
       globals: {
-        // Browser globals
-        document: 'readonly',
-        window: 'readonly',
-        console: 'readonly',
-        fetch: 'readonly',
-        DOMParser: 'readonly',
-        HTMLElement: 'readonly',
-        HTMLStyleElement: 'readonly',
-        SVGElement: 'readonly',
-        KeyboardEvent: 'readonly',
-        // Node.js globals for config files
-        process: 'readonly',
+        ...customGlobals,
+        ...globals.browser,
       },
     },
     plugins: {
@@ -86,13 +81,14 @@ export default [
     },
   },
   {
-    files: ['*.js', '*.mjs', 'eslint.config.js'],
+    files: ['*.js', '*.mjs', 'eslint.config.js', 'vite.config.ts', '*.config.{js,ts}'],
     languageOptions: {
       parserOptions: {
         ecmaVersion: 2022,
         sourceType: 'module',
       },
       globals: {
+        ...globals.node,
         process: 'readonly',
       },
     },
