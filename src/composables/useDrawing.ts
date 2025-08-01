@@ -82,7 +82,9 @@ function createDrawingInstance() {
     if (!ctx.value) return
 
     const distance = Math.sqrt(Math.pow(to.x - from.x, 2) + Math.pow(to.y - from.y, 2))
-    const steps = Math.ceil(distance / (state.currentSize / 4)) // 密集绘制以保证连续性
+    // 使用逻辑坐标系的步长计算，转换用户尺寸到逻辑尺寸
+    const logicalStepSize = (state.currentSize / 4) / Math.min(canvasSize.value.scale.x, canvasSize.value.scale.y)
+    const steps = Math.ceil(distance / logicalStepSize) // 密集绘制以保证连续性
 
     for (let i = 0; i <= steps; i++) {
       const t = i / steps
@@ -193,21 +195,16 @@ function createDrawingInstance() {
     state.isDrawing = false
 
     if (state.currentTool === 'circle-marker' && currentPath.value.length > 0) {
-      // 绘制圆形标记 - 用户视角圆形转换为逻辑画布椭圆
+      // 绘制圆形标记 - 直接使用逻辑坐标系计算半径
       const firstLogical = currentPath.value[0]
       const lastLogical = currentPath.value[currentPath.value.length - 1]
       const logicalRadius = Math.sqrt(
         Math.pow(lastLogical.x - firstLogical.x, 2) + Math.pow(lastLogical.y - firstLogical.y, 2)
       ) || state.currentSize
 
-      // 将逻辑半径转换为用户视角半径，然后再转换回椭圆
-      const userRadiusX = logicalRadius * canvasSize.value.scale.x
-      const userRadiusY = logicalRadius * canvasSize.value.scale.y
-      const userRadius = Math.sqrt(userRadiusX * userRadiusY) // 取几何平均值作为用户视角半径
-
-      // 转换为逻辑椭圆半径
-      const ellipseRadiusX = userRadius / canvasSize.value.scale.x
-      const ellipseRadiusY = userRadius / canvasSize.value.scale.y
+      // 直接使用逻辑半径，无需复杂的转换
+      const ellipseRadiusX = logicalRadius
+      const ellipseRadiusY = logicalRadius
 
       ctx.value.strokeStyle = state.currentColor
       ctx.value.lineWidth = state.currentSize / Math.min(canvasSize.value.scale.x, canvasSize.value.scale.y)
@@ -263,16 +260,16 @@ function createDrawingInstance() {
   const handleCanvasResize = (_scaleX: number, _scaleY: number, _newWidth: number, _newHeight: number) => {
     if (!canvas.value) return
 
-    // 重新计算画布尺寸，使用当前窗口尺寸
-    const containerWidth = window.innerWidth
-    const containerHeight = window.innerHeight
+    // 使用传入的新尺寸参数而不是窗口尺寸
+    const containerWidth = _newWidth || window.innerWidth
+    const containerHeight = _newHeight || window.innerHeight
     canvasSize.value = calculateCanvasSize(containerWidth, containerHeight)
 
     // Canvas内部分辨率保持逻辑尺寸不变
     canvas.value.width = canvasSize.value.logical.width
     canvas.value.height = canvasSize.value.logical.height
 
-    // 更新CSS显示尺寸为整个屏幕
+    // 更新CSS显示尺寸为新的容器尺寸
     canvas.value.style.width = `${canvasSize.value.display.width}px`
     canvas.value.style.height = `${canvasSize.value.display.height}px`
 
@@ -407,21 +404,16 @@ function createDrawingInstance() {
       ctx.value.strokeStyle = path.color
 
       if (path.tool === 'circle-marker' && path.points.length >= 2) {
-        // 绘制圆形标记
+        // 绘制圆形标记 - 直接使用逻辑坐标系计算半径
         const firstLogical = path.points[0]
         const lastLogical = path.points[path.points.length - 1]
         const logicalRadius = Math.sqrt(
           Math.pow(lastLogical.x - firstLogical.x, 2) + Math.pow(lastLogical.y - firstLogical.y, 2)
         )
 
-        // 将逻辑半径转换为用户视角半径，然后再转换回椭圆
-        const userRadiusX = logicalRadius * canvasSize.value.scale.x
-        const userRadiusY = logicalRadius * canvasSize.value.scale.y
-        const userRadius = Math.sqrt(userRadiusX * userRadiusY) // 取几何平均值作为用户视角半径
-
-        // 转换为逻辑椭圆半径
-        const ellipseRadiusX = userRadius / canvasSize.value.scale.x
-        const ellipseRadiusY = userRadius / canvasSize.value.scale.y
+        // 直接使用逻辑半径，无需复杂的转换
+        const ellipseRadiusX = logicalRadius
+        const ellipseRadiusY = logicalRadius
 
         ctx.value.lineWidth = path.size / Math.min(canvasSize.value.scale.x, canvasSize.value.scale.y)
         ctx.value.beginPath()
