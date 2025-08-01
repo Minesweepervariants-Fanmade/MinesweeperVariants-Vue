@@ -85,40 +85,16 @@
           tooltip="标准画笔"
           @click="selectTool('brush')"
         >
-          <template #icon>
-            <svg viewBox="0 0 24 24">
-              <path d="M7 14c-1.66 0-3 1.34-3 3 0 1.31-1.16 2-2 2 .92 1.22 2.49 2 4 2 2.21 0 4-1.79 4-4 0-1.66-1.34-3-3-3z" />
-              <path d="M20.71 4.63l-1.34-1.34c-.39-.39-1.02-.39-1.41 0L9 12.25 11.75 15l8.96-8.96c.39-.39.39-1.02 0-1.41z" />
-            </svg>
-          </template>
           标准画笔
         </BaseButton>
 
-        <!-- 普通橡皮 -->
+        <!-- 魔术橡皮 -->
         <BaseButton
-          :active="currentTool === 'eraser'"
-          tooltip="普通橡皮"
-          @click="selectTool('eraser')"
+          :active="currentTool === 'magic-eraser'"
+          tooltip="魔术橡皮"
+          @click="selectTool('magic-eraser')"
         >
-          <template #icon>
-            <svg viewBox="0 0 24 24">
-              <path d="M16.24 3.56l4.95 4.94c.78.79.78 2.05 0 2.84L12 20.53a4.008 4.008 0 0 1-5.66 0L2.81 17c-.78-.79-.78-2.05 0-2.84l10.6-10.6c.79-.78 2.05-.78 2.83 0" />
-            </svg>
-          </template>
-          普通橡皮
-        </BaseButton>
 
-
-        <BaseButton
-          :active="currentTool === 'continuous-eraser'"
-          @click="selectTool('continuous-eraser')"
-        >
-          <template #icon>
-            <svg viewBox="0 0 24 24">
-              <path d="M16.24 3.56l4.95 4.94c.78.79.78 2.05 0 2.84L12 20.53a4.008 4.008 0 0 1-5.66 0L2.81 17c-.78-.79-.78-2.05 0-2.84l10.6-10.6c.79-.78 2.05-.78 2.83 0" />
-              <circle cx="18" cy="6" r="2" fill="currentColor" />
-            </svg>
-          </template>
           魔术橡皮
         </BaseButton>
 
@@ -128,18 +104,6 @@
           tooltip="圆形标记"
           @click="selectTool('circle-marker')"
         >
-          <template #icon>
-            <svg viewBox="0 0 24 24">
-              <circle
-                cx="12"
-                cy="12"
-                r="8"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              />
-            </svg>
-          </template>
           圆形标记
         </BaseButton>
       </div>
@@ -179,7 +143,7 @@ const quickSizes = [1, 3, 5, 8, 12, 16, 20, 25, 30, 40, 50]
 const panelTitle = computed(() => {
   if (props.currentTool === 'brush' || props.currentTool === 'circle-marker') {
     return '画笔粗细'
-  } else if (props.currentTool === 'eraser' || props.currentTool === 'continuous-eraser') {
+  } else if (props.currentTool === 'magic-eraser') {
     return '橡皮粗细'
   }
   return '工具粗细'
