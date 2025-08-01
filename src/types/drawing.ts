@@ -11,7 +11,7 @@ export interface DrawingPath {
   timestamp: number
 }
 
-export type DrawingTool = 'brush' | 'eraser' | 'continuous-eraser' | 'circle-marker'
+export type DrawingTool = 'brush' | 'magic-eraser' | 'circle-marker'
 
 export interface DrawingState {
   currentTool: DrawingTool
