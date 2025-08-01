@@ -1,6 +1,7 @@
 import { ref, reactive } from 'vue'
 import type { BoardMetadata, CellConfig, CellState, ClickResponse } from '@/types/game'
 import { getApiEndpoint } from '@/utils/endpointUtils'
+import { fetchWithValidation } from '@/utils/fetchUtils'
 
 export function useGameConfig() {
   const metadata = ref<BoardMetadata | null>(null)
@@ -11,13 +12,12 @@ export function useGameConfig() {
   // 加载元数据配置
   const loadMetadata = async (): Promise<BoardMetadata> => {
     try {
-      const response = await fetch(getApiEndpoint('metadata'))
-      if (!response.ok) {
-        throw new Error(`Failed to load metadata: ${response.statusText}`)
+      const result = await fetchWithValidation<BoardMetadata>(getApiEndpoint('metadata'))
+      if (result.error) {
+        throw new Error(`Failed to load metadata: ${result.error}`)
       }
-      const data = await response.json()
-      metadata.value = data
-      return data
+      metadata.value = result.data!
+      return result.data!
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error loading metadata'
       error.value = errorMessage
@@ -33,7 +33,7 @@ export function useGameConfig() {
     button: string
   ): Promise<ClickResponse> => {
     try {
-      const response = await fetch(getApiEndpoint('click'), {
+      const result = await fetchWithValidation<ClickResponse>(getApiEndpoint('click'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -45,10 +45,10 @@ export function useGameConfig() {
           button,
         }),
       })
-      if (!response.ok) {
-        throw new Error(`Failed to post click: ${response.statusText}`)
+      if (result.error) {
+        throw new Error(`Failed to post click: ${result.error}`)
       }
-      const data: ClickResponse = await response.json()
+      const data = result.data!
       additionalCells.value = data.cells
       return data
     } catch (err) {
