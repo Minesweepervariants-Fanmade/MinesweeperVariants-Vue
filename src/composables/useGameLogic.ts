@@ -83,8 +83,7 @@ export function useGameLogic() {
 
     const { x, y } = displayCoordToIndex(row, col)
 
-    // 只有空单元格且未揭开的才能点击
-    if (cellState && cellState.type === 'empty' && !cellState.isRevealed) {
+    if (cellState) {
       try {
         // 调用postClick API发送点击事件到服务器
         const response: ClickResponse = await postClick(boardName, x, y, button)
