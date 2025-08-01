@@ -81,13 +81,7 @@ export function useGameLogic() {
       cellState
     )
 
-    // 检查单元格配置中的clickable属性
     const { x, y } = displayCoordToIndex(row, col)
-    const cellConfig = getCellConfig(boardName, x, y)
-    if (cellConfig && cellConfig.clickable === false) {
-      console.log('Cell is not clickable according to configuration')
-      return
-    }
 
     // 只有空单元格且未揭开的才能点击
     if (cellState && cellState.type === 'empty' && !cellState.isRevealed) {
@@ -126,18 +120,10 @@ export function useGameLogic() {
           gameOverReason.value = response.reason
           console.log('Game over:', response.reason)
 
-          // 游戏结束处理逻辑 - 主动显示 InfoOverlay
-          // 延迟显示对话框，给用户一点时间看到最后的操作结果
+          // 显示游戏结束对话框
           window.setTimeout(() => {
             showGameOverDialog.value = true
-          }, 500)
-
-          // 禁用进一步的游戏交互（通过 isGameOver 状态在 handleCellClick 开头已经检查）
-
-          // 可以在这里添加游戏结束的额外逻辑，比如：
-          // - 记录游戏统计数据
-          // - 播放游戏结束音效
-          // - 发送游戏结果到服务器等
+          }, 0)
         }
       } catch (error) {
         console.error('Failed to post click:', error)

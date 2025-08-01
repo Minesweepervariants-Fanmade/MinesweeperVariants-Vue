@@ -24,7 +24,6 @@ export interface CellConfig {
   }
   component: ComponentConfig
   highlight?: Record<string, [number, number][]>
-  clickable?: boolean
   rule?: string
 }
 

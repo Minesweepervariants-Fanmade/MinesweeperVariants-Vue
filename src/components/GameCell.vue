@@ -76,10 +76,6 @@ const cellClasses = computed(() => {
 // 单元格事件
 
 const handleClick = () => {
-  // 如果配置中明确设置为不可点击，则不触发点击事件
-  if (props.cellConfig && props.cellConfig.clickable === false) {
-    return
-  }
   emit('click', props.row, props.col, props.boardName)
 }
 
