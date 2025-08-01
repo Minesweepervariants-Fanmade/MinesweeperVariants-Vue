@@ -146,6 +146,10 @@ const currentPathData = computed(() => {
 const pathsIntersect = (path1: DrawingPath, path2: DrawingPath): boolean => {
   const threshold = Math.max(path1.size, path2.size) * 2
 
+  if (path2.points.length === 1) {
+    return pathsIntersect(path2, path1)
+  }
+
   // 如果path1只有一个点（初始点击），使用点到路径的距离检测
   if (path1.points.length === 1) {
     const point = path1.points[0]
