@@ -146,6 +146,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import type { DrawingTool } from '@/types/drawing'
 import { useDrawing } from '@/composables/useDrawing'
+import { useSettings } from '@/composables/useSettings'
 import BaseButton from '@/components/BaseButton.vue'
 import ColorPalette from '@/components/ColorPalette.vue'
 import BrushSizePanel from '@/components/BrushSizePanel.vue'
@@ -161,6 +162,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 // 直接使用绘画状态管理
 const drawing = useDrawing()
+const { settings } = useSettings()
 
 // 状态管理
 const showColorPalette = ref(false)
@@ -179,51 +181,54 @@ const handleSizeChange = (size: number) => {
   drawing.setSize(size)
 }
 
+// 检查快捷键是否匹配
+const isShortcutMatch = (event: KeyboardEvent, shortcut: string) => {
+  // 如果快捷键为空，则不匹配
+  if (!shortcut || shortcut.trim() === '') return false
+
+  const eventKeys = []
+  if (event.ctrlKey) eventKeys.push('ctrl')
+  if (event.shiftKey) eventKeys.push('shift')
+  if (event.altKey) eventKeys.push('alt')
+  if (event.metaKey) eventKeys.push('meta')
+  eventKeys.push(event.key.toLowerCase())
+
+  const eventShortcut = eventKeys.join('+')
+  return eventShortcut === shortcut.toLowerCase()
+}
+
 // 键盘快捷键处理
 const handleKeyDown = (event: globalThis.KeyboardEvent) => {
   // 防止在输入框中触发快捷键
   if (event.target && (event.target as HTMLElement).tagName === 'INPUT') return
 
-  switch (event.key.toLowerCase()) {
-    case 'b':
-      handleToolChange('brush')
-      break
-    case 'e':
-      handleToolChange('magic-eraser')
-      break
-    case 'o':
-      handleToolChange('circle-marker')
-      break
-    case 'c':
-      if (event.ctrlKey || event.metaKey) {
-        event.preventDefault()
-        toggleColorPalette()
-      } else {
-        drawing.clear()
-      }
-      break
-    case 's':
-      if (event.ctrlKey || event.metaKey) {
-        event.preventDefault()
-        toggleBrushSizePanel()
-      }
-      break
-    case 'z':
-      if (event.ctrlKey || event.metaKey) {
-        event.preventDefault()
-        if (event.shiftKey) {
-          drawing.redo()
-        } else {
-          drawing.undo()
-        }
-      }
-      break
-    case 'y':
-      if (event.ctrlKey || event.metaKey) {
-        event.preventDefault()
-        drawing.redo()
-      }
-      break
+  const shortcuts = settings.value.keyboardShortcuts
+
+  // 检查各种快捷键
+  if (isShortcutMatch(event, shortcuts.brushTool)) {
+    event.preventDefault()
+    handleToolChange('brush')
+  } else if (isShortcutMatch(event, shortcuts.eraserTool)) {
+    event.preventDefault()
+    handleToolChange('magic-eraser')
+  } else if (isShortcutMatch(event, shortcuts.markerTool)) {
+    event.preventDefault()
+    handleToolChange('circle-marker')
+  } else if (isShortcutMatch(event, shortcuts.colorPalette)) {
+    event.preventDefault()
+    toggleColorPalette()
+  } else if (isShortcutMatch(event, shortcuts.brushPanel)) {
+    event.preventDefault()
+    toggleBrushSizePanel()
+  } else if (isShortcutMatch(event, shortcuts.clearCanvas)) {
+    event.preventDefault()
+    drawing.clear()
+  } else if (isShortcutMatch(event, shortcuts.undo)) {
+    event.preventDefault()
+    drawing.undo()
+  } else if (isShortcutMatch(event, shortcuts.redo)) {
+    event.preventDefault()
+    drawing.redo()
   }
 }
 
