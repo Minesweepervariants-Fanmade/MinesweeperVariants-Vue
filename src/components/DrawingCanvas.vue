@@ -6,11 +6,11 @@
       class="drawing-canvas"
       :viewBox="viewBox"
       preserveAspectRatio="none"
-      @mousedown="handleMouseDown"
       @mousemove="handleMouseMove"
       @mouseup="handleMouseUp"
       @mouseleave="handleMouseLeave"
       @contextmenu="handleContextMenu"
+
       @touchstart="handleTouchStart"
       @touchmove="handleTouchMove"
       @touchend="handleTouchEnd"
@@ -77,17 +77,19 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import type { DrawingPoint, DrawingPath, DrawingTool } from '@/types/drawing'
 import { useDrawing } from '@/composables/useDrawing'
+import { useSettings } from '@/composables/useSettings'
+import { presetColors } from '@/utils/colorUtils'
 
 const drawing = useDrawing()
+const { settings } = useSettings()
 
 const svgRef = ref<SVGSVGElement | null>(null)
 const currentPoints = ref<DrawingPoint[]>([])
 const lastMousePosition = ref<DrawingPoint | null>(null)
 const hoverPosition = ref<DrawingPoint | null>(null)
 
-// 右键临时魔术橡皮状态
-const isRightClickErasing = ref(false)
-const originalTool = ref<DrawingTool>('brush')
+// 当前正在使用的绘制工具状态
+const currentDrawingTool = ref<DrawingTool | null>(null)
 
 // 画布尺寸状态
 const canvasWidth = ref(window.innerWidth)
@@ -579,23 +581,164 @@ const stopDrawing = () => {
   lastMousePosition.value = null
 }
 
-// 鼠标事件处理
-const handleMouseDown = (event: MouseEvent) => {
-  event.preventDefault()
+// 检查鼠标快捷键是否匹配
+const isMouseShortcutMatch = (event: MouseEvent, shortcut: string): boolean => {
+  if (!shortcut || shortcut.trim() === '') return false
+
+  const normalizedShortcut = shortcut.toLowerCase().trim()
+
+  // 处理基本鼠标按键
+  if (normalizedShortcut === 'left' && event.button === 0) return true
+  if (normalizedShortcut === 'right' && event.button === 2) return true
+  if (normalizedShortcut === 'middle' && event.button === 1) return true
+
+  // 处理侧键（鼠标4、5键）
+  if (normalizedShortcut === 'mb4' && event.button === 3) return true
+  if (normalizedShortcut === 'mb5' && event.button === 4) return true
+
+  return false
+}
+
+// 处理鼠标快捷键操作（统一管理所有鼠标操作）
+const handleMouseShortcut = (event: MouseEvent, eventType: 'down' | 'up') => {
+  const mouseShortcuts = settings.value.mouseShortcuts
   const position = getEventPosition(event)
 
-  // 检查是否是右键点击
-  if (event.button === 2) {
-    // 右键：临时切换到魔术橡皮
-    if (!isRightClickErasing.value) {
-      originalTool.value = drawing.state.currentTool
+  // 画笔工具绘制
+  if (isMouseShortcutMatch(event, mouseShortcuts.brushTool)) {
+    if (eventType === 'down') {
+      currentDrawingTool.value = 'brush'
+      drawing.state.currentTool = 'brush'
+      startDrawing(position)
+    } else if (eventType === 'up' && currentDrawingTool.value === 'brush') {
+      stopDrawing()
+      currentDrawingTool.value = null
+    }
+    return true
+  }
+
+  // 橡皮工具绘制
+  if (isMouseShortcutMatch(event, mouseShortcuts.eraserTool)) {
+    if (eventType === 'down') {
+      currentDrawingTool.value = 'magic-eraser'
       drawing.state.currentTool = 'magic-eraser'
-      isRightClickErasing.value = true
+      startDrawing(position)
+    } else if (eventType === 'up' && currentDrawingTool.value === 'magic-eraser') {
+      stopDrawing()
+      currentDrawingTool.value = null
+    }
+    return true
+  }
+
+  // 标记工具绘制
+  if (isMouseShortcutMatch(event, mouseShortcuts.markerTool)) {
+    if (eventType === 'down') {
+      currentDrawingTool.value = 'circle-marker'
+      drawing.state.currentTool = 'circle-marker'
+      startDrawing(position)
+    } else if (eventType === 'up' && currentDrawingTool.value === 'circle-marker') {
+      stopDrawing()
+      currentDrawingTool.value = null
+    }
+    return true
+  }
+
+  // 功能快捷键（只在按下时触发）
+  if (eventType === 'down') {
+    if (isMouseShortcutMatch(event, mouseShortcuts.clearCanvas)) {
+      drawing.clear()
+      return true
+    } else if (isMouseShortcutMatch(event, mouseShortcuts.undo)) {
+      drawing.undo()
+      return true
+    } else if (isMouseShortcutMatch(event, mouseShortcuts.redo)) {
+      drawing.redo()
+      return true
     }
   }
 
-  startDrawing(position)
+  return false
 }
+
+// 检查滚轮快捷键是否匹配
+const isWheelShortcutMatch = (_event: WheelEvent, shortcut: string): boolean => {
+  if (!shortcut || shortcut.trim() === '') return false
+
+  const normalizedShortcut = shortcut.toLowerCase().trim()
+
+  // 处理滚轮事件
+  if (normalizedShortcut === 'wheel') return true
+
+  return false
+}
+
+// 处理鼠标滚轮快捷键（统一管理滚轮操作）
+const handleMouseWheelShortcut = (event: WheelEvent) => {
+  const mouseShortcuts = settings.value.mouseShortcuts
+
+  // 颜色面板切换
+  if (isWheelShortcutMatch(event, mouseShortcuts.colorPalette)) {
+    const currentColor = drawing.state.currentColor
+    const currentIndex = presetColors.indexOf(currentColor)
+    let nextIndex: number
+
+    if (currentIndex === -1) {
+      nextIndex = 0
+    } else {
+      if (event.deltaY > 0) {
+        nextIndex = (currentIndex + 1) % presetColors.length
+      } else {
+        nextIndex = (currentIndex - 1 + presetColors.length) % presetColors.length
+      }
+    }
+
+    const newColor = presetColors[nextIndex]
+    drawing.setColor(newColor)
+    console.log(`鼠标快捷键: 滚轮切换颜色到 ${newColor}`)
+    return true
+  }
+
+  if (isWheelShortcutMatch(event, mouseShortcuts.brushPanel)) {
+    // 滚轮调整笔刷大小
+    const currentSize = drawing.state.currentSize
+    const sizeStep = 2 // 每次滚动改变的大小
+    let newSize: number
+
+    if (event.deltaY > 0) {
+      // 向下滚动，减小笔刷大小
+      newSize = Math.max(1, currentSize - sizeStep)
+    } else {
+      // 向上滚动，增大笔刷大小
+      newSize = Math.min(50, currentSize + sizeStep)
+    }
+
+    drawing.setSize(newSize)
+    console.log(`鼠标快捷键: 滚轮调整笔刷大小到 ${newSize}`)
+    return true
+  }
+
+  return false
+}
+
+// 鼠标事件处理
+const handleMouseDown = (event: MouseEvent) => {
+  event.preventDefault()
+  // 只处理快捷键配置的鼠标操作
+  handleMouseShortcut(event, 'down')
+}
+// 绑定鼠标按下事件到SVG元素（替代模板上的@mousedown）
+onMounted(() => {
+  if (svgRef.value) {
+    svgRef.value.addEventListener('mousedown', handleMouseDown)
+    svgRef.value.addEventListener('wheel', handleWheel)
+  }
+})
+onUnmounted(() => {
+  if (svgRef.value) {
+    svgRef.value.removeEventListener('mousedown', handleMouseDown)
+    svgRef.value.removeEventListener('wheel', handleWheel)
+  }
+})
 
 const handleMouseMove = (event: MouseEvent) => {
   event.preventDefault()
@@ -604,32 +747,27 @@ const handleMouseMove = (event: MouseEvent) => {
   // 更新悬停位置（用于魔术橡皮预览）
   hoverPosition.value = position
 
-  if (drawing.state.isDrawing) {
+  // 只有在有活动绘制工具时才继续绘制
+  if (currentDrawingTool.value && drawing.state.isDrawing) {
     continueDrawing(position)
   }
 }
 
 const handleMouseUp = (event: MouseEvent) => {
   event.preventDefault()
-
-  stopDrawing()
-
-  // 如果是右键释放，恢复原来的工具
-  if (event.button === 2 && isRightClickErasing.value) {
-    drawing.state.currentTool = originalTool.value
-    isRightClickErasing.value = false
-  }
+  // 只处理快捷键配置的鼠标操作
+  handleMouseShortcut(event, 'up')
 }
 
 const handleMouseLeave = (event: MouseEvent) => {
   event.preventDefault()
   hoverPosition.value = null
-  stopDrawing()
 
-  // 如果正在右键擦除，恢复原来的工具
-  if (isRightClickErasing.value) {
-    drawing.state.currentTool = originalTool.value
-    isRightClickErasing.value = false
+  // 强制停止当前绘制操作
+  if (currentDrawingTool.value) {
+    stopDrawing()
+    currentDrawingTool.value = null
+    console.log('鼠标离开画布: 停止绘制')
   }
 }
 
@@ -637,6 +775,13 @@ const handleMouseLeave = (event: MouseEvent) => {
 const handleContextMenu = (event: MouseEvent) => {
   event.preventDefault()
   return false
+}
+
+// 处理滚轮事件
+const handleWheel = (event: WheelEvent) => {
+  if (handleMouseWheelShortcut(event)) {
+    event.preventDefault()
+  }
 }
 
 // 触摸事件处理

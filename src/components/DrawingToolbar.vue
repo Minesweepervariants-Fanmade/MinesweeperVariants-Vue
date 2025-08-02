@@ -150,15 +150,6 @@ import { useSettings } from '@/composables/useSettings'
 import BaseButton from '@/components/BaseButton.vue'
 import ColorPalette from '@/components/ColorPalette.vue'
 import BrushSizePanel from '@/components/BrushSizePanel.vue'
-import { presetColors } from '@/utils/colorUtils'
-
-interface Props {
-  visible?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  visible: true
-})
 
 // 直接使用绘画状态管理
 const drawing = useDrawing()
@@ -232,42 +223,6 @@ const handleKeyDown = (event: globalThis.KeyboardEvent) => {
   }
 }
 
-// 处理滚轮事件切换颜色
-const handleWheel = (event: globalThis.WheelEvent) => {
-  // 只有在绘图工具栏可见时才响应滚轮事件
-  if (!props.visible) return
-
-  // 只有当鼠标在 Canvas 上时才触发
-  const target = event.target as HTMLElement
-
-  // 检查是否是 Canvas
-  const isOnCanvas = target && target.tagName.toLowerCase() === 'svg'
-
-  if (!isOnCanvas) return
-
-  event.preventDefault()
-
-  const currentColor = drawing.state.currentColor
-  const currentIndex = presetColors.indexOf(currentColor)
-  let nextIndex: number
-
-  if (currentIndex === -1) {
-    // 如果当前颜色不在预设列表中，选择第一个颜色
-    nextIndex = 0
-  } else {
-    // 根据滚轮方向选择下一个颜色
-    if (event.deltaY > 0) {
-      // 向下滚动，选择下一个颜色
-      nextIndex = (currentIndex + 1) % presetColors.length
-    } else {
-      // 向上滚动，选择上一个颜色
-      nextIndex = (currentIndex - 1 + presetColors.length) % presetColors.length
-    }
-  }
-
-  handleColorChange(presetColors[nextIndex])
-}
-
 // 工具栏操作
 const setBasicTool = (toolType: 'brush' | 'eraser' | 'circle-marker') => {
   // 根据基本工具类型设置具体工具
@@ -298,12 +253,10 @@ const toggleBrushSizePanel = () => {
 // 生命周期
 onMounted(() => {
   window.addEventListener('keydown', handleKeyDown)
-  window.addEventListener('wheel', handleWheel, { passive: false })
 })
 
 onUnmounted(() => {
   window.removeEventListener('keydown', handleKeyDown)
-  window.removeEventListener('wheel', handleWheel)
 })
 </script>
 
