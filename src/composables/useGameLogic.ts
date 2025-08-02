@@ -84,7 +84,7 @@ export function useGameLogic() {
         }
 
         // 处理服务器返回的单元格更新
-        if (response.cells && response.cells.length > 0) {
+        if (response.cells) {
           // 应用服务器返回的单元格配置更新
           for (const cellUpdate of response.cells) {
             const updateBoard = gameBoards.value[cellUpdate.position.boardname]

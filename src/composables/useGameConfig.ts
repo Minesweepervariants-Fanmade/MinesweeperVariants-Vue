@@ -17,7 +17,7 @@ export function useGameConfig() {
       if (result.error) {
         throw new Error(`Failed to load metadata: ${result.error}`)
       }
-      
+
       // 检查返回的数据是否为空或无效
       const data = result.data!
       if (!data || !data.boards || Object.keys(data.boards).length === 0) {
@@ -27,7 +27,7 @@ export function useGameConfig() {
         metadata.value = newGameData
         return newGameData
       }
-      
+
       metadata.value = data
       return data
     } catch (err) {
