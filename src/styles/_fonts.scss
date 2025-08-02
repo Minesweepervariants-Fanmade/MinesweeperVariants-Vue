@@ -1,7 +1,7 @@
 // 使用Vite的asset处理，让Vite自动内联小文件
 @font-face {
-  font-family: 'CopperplateCC-Bold';
-  src: url('@/assets/fonts/copperplate-cc.bold.ttf') format('truetype');
+  font-family: 'CopperplateCC-Heavy';
+  src: url('@/assets/fonts/CopperplateCC-Heavy.ttf') format('truetype');
   font-weight: bold;
   font-style: normal;
 }
@@ -10,5 +10,12 @@
   font-family: 'Source Han Sans Heavy';
   src: url('@/assets/fonts/SourceHanSansCN-Heavy.ttf') format('truetype');
   font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Noto Sans ExtraBold';
+  src: url('@/assets/fonts/NotoSans-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
   font-style: normal;
 }

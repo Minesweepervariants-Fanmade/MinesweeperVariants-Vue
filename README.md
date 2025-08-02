@@ -76,7 +76,7 @@ src/
 
 ### 字体
 
-#### Copperplate CC Bold (`copperplate-cc.bold.ttf`)
+#### Copperplate CC Bold (`CopperplateCC-Heavy.ttf`)
 
 - **许可证**: SIL Open Font License 1.1 (OFL-1.1)
 - **来源**: [CowboyCollective/CopperplateCC](https://github.com/CowboyCollective/CopperplateCC)
@@ -89,6 +89,14 @@ src/
 - **许可证**: SIL Open Font License 1.1 (OFL-1.1)
 - **来源**: [Adobe Fonts / Source Han Sans](https://github.com/adobe-fonts/source-han-sans)
 - **版权**: Copyright 2014-2021 Adobe Systems Incorporated
+- **用途**: 免费用于商业和非商业用途
+- **许可证链接**: <https://scripts.sil.org/OFL>
+
+#### Noto Sans ExtraBold (`NotoSans-ExtraBold.ttf`)
+
+- **许可证**: SIL Open Font License 1.1 (OFL-1.1)
+- **来源**: [Google Fonts / Noto Fonts](https://github.com/googlefonts/noto-fonts)
+- **版权**: Copyright Google Inc.
 - **用途**: 免费用于商业和非商业用途
 - **许可证链接**: <https://scripts.sil.org/OFL>
 
