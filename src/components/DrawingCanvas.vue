@@ -80,8 +80,20 @@ import { useDrawing } from '@/composables/useDrawing'
 import { useSettings } from '@/composables/useSettings'
 import { presetColors } from '@/utils/colorUtils'
 
+// 定义组件属性
+interface Props {
+  pointerEventsEnabled?: boolean
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  pointerEventsEnabled: true
+})
+
 const drawing = useDrawing()
 const { settings } = useSettings()
+
+// 计算属性用于动态样式
+const canvasPointerEvents = computed(() => props.pointerEventsEnabled ? 'auto' : 'none')
 
 const svgRef = ref<SVGSVGElement | null>(null)
 const currentPoints = ref<DrawingPoint[]>([])
@@ -884,6 +896,7 @@ onUnmounted(() => {
   left: 0;
   width: 100vw;
   height: 100vh;
+  pointer-events: v-bind(canvasPointerEvents);
 }
 
 .drawing-canvas {
@@ -892,7 +905,7 @@ onUnmounted(() => {
   left: 0;
   width: 100vw !important;
   height: 100vh !important;
-  pointer-events: auto;
+  pointer-events: v-bind(canvasPointerEvents);
   background: transparent;
   cursor: crosshair;
 }

@@ -27,7 +27,10 @@
     </div>
 
     <!-- 绘画覆盖层 -->
-    <DrawingCanvas :style="{ opacity: showDrawingToolbar ? '100%' : '50%' }" />
+    <DrawingCanvas
+      :style="{ opacity: showDrawingToolbar ? '100%' : '50%' }"
+      :pointer-events-enabled="showDrawingToolbar"
+    />
 
     <!-- 游戏覆盖层组件 -->
     <Overlay
