@@ -108,6 +108,7 @@ const {
   isLoading,
   error,
   allCells,
+  gameBoards,
   isGameOver,
   gameOverReason,
   showGameOverDialog,
