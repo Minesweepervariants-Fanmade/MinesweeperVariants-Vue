@@ -118,8 +118,8 @@ interface Props {
 }
 
 interface Emits {
-  (e: 'update:keyboardShortcuts', shortcuts: KeyboardShortcuts): void
-  (e: 'update:mouseShortcuts', shortcuts: MouseShortcuts): void
+  (_e: 'update:keyboardShortcuts', _shortcuts: KeyboardShortcuts): void
+  (_e: 'update:mouseShortcuts', _shortcuts: MouseShortcuts): void
 }
 
 const props = defineProps<Props>()
