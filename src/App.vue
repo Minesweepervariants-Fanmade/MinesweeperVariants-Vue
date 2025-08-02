@@ -75,6 +75,9 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, computed, ref } from 'vue'
+import { fetchWithValidation } from '@/utils/fetchUtils'
+import { getApiEndpoint } from '@/utils/endpointUtils'
+import type { ClickResponse } from '@/types/game'
 
 import {
   setShortcuts,
@@ -146,8 +149,40 @@ const handleBrushClick = () => {
   showDrawingToolbar.value = !showDrawingToolbar.value
 }
 
-const handleHintClick = () => {
-  // 实现提示功能
+const handleHintClick = async () => {
+  // 获取 hint
+  try {
+    const endpoint = `${getApiEndpoint('hint')}?count=1`
+    const { data, error } = await fetchWithValidation<ClickResponse>(endpoint)
+    if (error || !data) {
+      window.alert(`获取提示失败: ${error || '未知错误'}`)
+      return
+    }
+    const { cells, gameover, reason } = data as ClickResponse
+    if (cells && Array.isArray(cells) && cells.length > 0) {
+      for (const cellUpdate of cells) {
+        const updateBoard = gameBoards.value[cellUpdate.position.boardname]
+        if (updateBoard) {
+          const updateKey = `${cellUpdate.position.x}-${cellUpdate.position.y}`
+          const updateCell = updateBoard[updateKey]
+          if (updateCell) {
+            updateCell.type = 'revealed'
+            updateCell.isRevealed = true
+          }
+        }
+      }
+      allCells.value = [...allCells.value, ...cells]
+    }
+    if (gameover) {
+      isGameOver.value = true
+      gameOverReason.value = reason || '游戏结束'
+      window.setTimeout(() => {
+        showGameOverDialog.value = true
+      }, 0)
+    }
+  } catch (e) {
+    window.alert(`获取提示失败: ${e instanceof Error ? e.message : e}`)
+  }
 }
 
 const handleCheckClick = () => {
