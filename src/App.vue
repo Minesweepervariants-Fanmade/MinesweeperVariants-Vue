@@ -30,7 +30,6 @@
     <DrawingCanvas
       :style="{ opacity: gameSettings.drawTransparent ? (showDrawingToolbar ? '100%' : '50%') : '100%' }"
       :pointer-events-enabled="showDrawingToolbar"
-      :shortcut-manager="settingsOverlayRef?.shortcutSettingsRef"
     />
 
     <!-- 游戏覆盖层组件 -->
@@ -51,7 +50,6 @@
     <DrawingToolbar
       v-show="showDrawingToolbar"
       :visible="showDrawingToolbar"
-      :shortcut-manager="settingsOverlayRef?.shortcutSettingsRef"
     />
 
     <!-- 游戏结束信息提示 -->
