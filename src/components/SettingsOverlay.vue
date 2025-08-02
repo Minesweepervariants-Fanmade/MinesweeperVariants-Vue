@@ -207,6 +207,7 @@
       <!-- 快捷键设置 -->
       <div class="setting-section">
         <ShortcutSettings
+          ref="shortcutSettingsRef"
           :keyboard-shortcuts="localSettings.keyboardShortcuts"
           :mouse-shortcuts="localSettings.mouseShortcuts"
           @update:keyboard-shortcuts="(shortcuts) => localSettings.keyboardShortcuts = shortcuts"
@@ -233,6 +234,9 @@ import { useTheme } from '@/composables/useTheme'
 
 // 主题管理
 const { setTheme } = useTheme()
+
+// 快捷键设置组件引用
+const shortcutSettingsRef = ref<InstanceType<typeof ShortcutSettings>>()
 
 // 规则类型定义
 type RuleType = 'lRule' | 'mRule' | 'rRule' | 'oRule'
@@ -410,6 +414,11 @@ const selectGameMode = (mode: GameMode) => {
 const onReset = () => {
   localSettings.value = defaultSettings
 }
+
+// 暴露快捷键设置组件引用
+defineExpose({
+  shortcutSettingsRef
+})
 </script>
 
 <style scoped lang="scss">
