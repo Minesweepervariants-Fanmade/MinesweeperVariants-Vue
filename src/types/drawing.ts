@@ -23,12 +23,6 @@ export interface DrawingState {
   historyIndex: number
 }
 
-export interface CanvasSize {
-  logical: { width: number; height: number }  // 逻辑尺寸（固定320x240比例）
-  display: { width: number; height: number }  // 显示尺寸（实际Canvas尺寸）
-  scale: { x: number; y: number }             // 坐标转换比例
-}
-
 export interface ColorPaletteProps {
   visible: boolean
   currentColor: string
