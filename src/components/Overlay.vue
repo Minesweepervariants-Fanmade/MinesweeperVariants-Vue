@@ -2,14 +2,14 @@
   <div class="game-overlay">
     <!-- 规则信息 -->
     <div class="rules">
-      <div class="rule-line">
-        <u><span class="rule-key">[R]</span> 总雷数</u>：
-        <span class="mine-count"> {{ mineCount ?? '*' }} </span>
-        (剩余雷数/格数：<span class="remaining">{{ remainingMines ?? '*' }}/{{ remainingCells }}</span>)
+      <div class="rule-line mine-count">
+        <u><span class="rule-key">[R]</span> 总雷数</u>：{{ mineCount }} / {{ remainingMines }} (剩余雷数/格数)
       </div>
-      <div class="rule-line">
-        <u><span class="rule-key">[Q]</span> 无方</u>：每个2x2区域内都至少有一个雷
-      </div>
+      <template v-for="(rule, _idx) in rules" :key="_idx">
+        <div class="rule-line">
+          <u><span class="rule-key">[{{ rule.code }}]</span> {{ rule.name }}</u>：{{ rule.desc }}
+        </div>
+      </template>
     </div>
 
     <!-- 控制按钮 -->
@@ -53,12 +53,42 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useAssets } from '@/composables/useAssets'
+import { useGameLogic } from '@/composables/useGameLogic'
 import BaseButton from './BaseButton.vue'
 
 // 获取资源管理器
 const { cloneAsset } = useAssets()
+
+// 获取游戏逻辑
+const { metadata } = useGameLogic()
+
+// 规则类型定义
+type RuleType = 'lRule' | 'mRule' | 'rRule' | 'oRule'
+
+// 获取缓存的规则定义
+const RULES_STORAGE_KEY = 'minesweeper_rules_cache'
+const getRuleDefinitions = (): Record<string, [RuleType, string, string]> => {
+  const cachedRules = localStorage.getItem(RULES_STORAGE_KEY)
+  if (cachedRules) {
+    try {
+      const parsed = JSON.parse(cachedRules)
+      if (parsed && typeof parsed === 'object') {
+        const definitions: Record<string, [RuleType, string, string]> = {}
+        for (const [code, arr] of Object.entries(parsed)) {
+          if (Array.isArray(arr) && arr.length >= 3) {
+            definitions[code] = arr as [RuleType, string, string]
+          }
+        }
+        return definitions
+      }
+    } catch {
+      // ignore JSON parse error
+    }
+  }
+  return {}
+}
 
 // 图标容器的引用
 const brushIcon = ref<HTMLElement>()
@@ -104,6 +134,7 @@ onMounted(async () => {
   await renderIcon(starIcon.value, 'star')
 })
 
+
 // 定义 props
 interface Props {
   levelCount?: string
@@ -116,6 +147,47 @@ withDefaults(defineProps<Props>(), {
   levelCount: '10/10',
   remainingCells: 21,
 })
+
+// 规则项类型
+interface RuleItem {
+  code: string
+  name: string
+  desc: string
+}
+
+// 响应式规则列表
+const rules = ref<RuleItem[]>([])
+
+// 动态添加规则函数
+function addRule(code: string, name: string, desc: string) {
+  rules.value.push({ code, name, desc })
+}
+
+// 处理metadata中的规则
+const processMetadataRules = () => {
+  if (!metadata.value?.rules) return
+
+  // 清空现有规则
+  rules.value.length = 0
+
+  // 获取规则定义
+  const ruleDefinitions = getRuleDefinitions()
+
+  // 遍历metadata中的规则列表
+  for (const ruleCode of metadata.value.rules) {
+    const definition = ruleDefinitions[ruleCode]
+    if (definition) {
+      // definition是[RuleType, string, string]格式，其中第二个是名称，第三个是描述
+      addRule(ruleCode, definition[1], definition[2])
+    }
+  }
+}
+
+// 监听metadata变化
+watch(metadata, processMetadataRules, { immediate: true })
+
+// 规则项类型
+// （已由响应式规则和addRule函数替代，见上方定义）
 
 // 定义 emits
 interface Emits {
