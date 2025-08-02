@@ -4,7 +4,7 @@
       <tr>
         <th class="corner-cell">{{ boardName }}</th>
         <th v-for="col in cols" :key="col" class="col-header">
-          {{ col }}
+          <template v-if="showRowColLabel !== false">{{ col }}</template>
         </th>
       </tr>
     </thead>
@@ -12,7 +12,7 @@
     <tbody>
       <tr v-for="row in rows" :key="row">
         <th class="row-header">
-          {{ row }}
+          <template v-if="showRowColLabel !== false">{{ row }}</template>
         </th>
 
         <GameCell
@@ -46,6 +46,7 @@ interface Props {
   cols: string[]
   boardName?: string
   cellConfigs?: CellConfig[]
+  showRowColLabel?: boolean
 }
 
 interface Emits {
@@ -54,6 +55,7 @@ interface Emits {
 }
 
 const props = defineProps<Props>()
+const showRowColLabel = props.showRowColLabel
 defineEmits<Emits>()
 
 // 动态样式元素引用
