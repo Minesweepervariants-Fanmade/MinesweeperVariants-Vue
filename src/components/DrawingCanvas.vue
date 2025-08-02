@@ -8,8 +8,7 @@
       preserveAspectRatio="none"
       @mousemove="handleMouseMove"
       @mouseup="handleMouseUp"
-      @mouseleave="handleMouseLeave"
-      @contextmenu="handleContextMenu"
+
 
       @touchstart="handleTouchStart"
       @touchmove="handleTouchMove"
@@ -77,10 +76,15 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import type { DrawingPoint, DrawingPath, DrawingTool } from '@/types/drawing'
 import { useDrawing } from '@/composables/useDrawing'
-import { useSettings } from '@/composables/useSettings'
 import { presetColors } from '@/utils/colorUtils'
 
+import {
+  registerMouseShortcut,
+  unregisterMouseShortcut
+} from '@/composables/shortcutManager'
+
 // 定义组件属性
+
 interface Props {
   pointerEventsEnabled?: boolean
 }
@@ -90,7 +94,6 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const drawing = useDrawing()
-const { settings } = useSettings()
 
 // 计算属性用于动态样式
 const canvasPointerEvents = computed(() => props.pointerEventsEnabled ? 'auto' : 'none')
@@ -102,6 +105,165 @@ const hoverPosition = ref<DrawingPoint | null>(null)
 
 // 当前正在使用的绘制工具状态
 const currentDrawingTool = ref<DrawingTool | null>(null)
+
+// 检查事件是否发生在画布上
+const isEventOnCanvas = (event: Event): boolean => {
+  console.log('isEventOnCanvas')
+  if (!svgRef.value) return false
+
+  // 检查事件目标是否是画布或其子元素
+  const target = event.target as Element
+  const result = svgRef.value === target || svgRef.value.contains(target)
+  console.log('isEventOnCanvas', result)
+  return result
+}
+
+// 鼠标快捷键回调函数
+const onBrushToolMouse = (event: MouseEvent): boolean => {
+  // 只有事件发生在画布上时才响应绘制工具快捷键
+  if (!isEventOnCanvas(event)) return false
+
+  if (event.type === 'mousedown') {
+    const position = getEventPosition(event)
+    currentDrawingTool.value = 'brush'
+    drawing.state.currentTool = 'brush'
+    startDrawing(position)
+    return true
+  } else if (event.type === 'mouseup') {
+    stopDrawing()
+    currentDrawingTool.value = null
+    return true
+  }
+
+  return false
+}
+
+const onEraserToolMouse = (event: MouseEvent): boolean => {
+  // 只有事件发生在画布上时才响应绘制工具快捷键
+  if (!isEventOnCanvas(event)) return false
+
+  if (event.type === 'mousedown') {
+    const position = getEventPosition(event)
+    currentDrawingTool.value = 'magic-eraser'
+    drawing.state.currentTool = 'magic-eraser'
+    startDrawing(position)
+    return true
+  } else if (event.type === 'mouseup') {
+    stopDrawing()
+    currentDrawingTool.value = null
+    return true
+  }
+
+  return false
+}
+
+const onMarkerToolMouse = (event: MouseEvent): boolean => {
+  // 只有事件发生在画布上时才响应绘制工具快捷键
+  if (!isEventOnCanvas(event)) return false
+
+  if (event.type === 'mousedown') {
+    const position = getEventPosition(event)
+    currentDrawingTool.value = 'circle-marker'
+    drawing.state.currentTool = 'circle-marker'
+    startDrawing(position)
+    return true
+  } else if (event.type === 'mouseup') {
+    stopDrawing()
+    currentDrawingTool.value = null
+    return true
+  }
+
+  return false
+}
+
+const onClearCanvasMouse = (): boolean => {
+  drawing.clear()
+  return true
+}
+
+const onUndoMouse = (): boolean => {
+  drawing.undo()
+  return true
+}
+
+const onRedoMouse = (): boolean => {
+  drawing.redo()
+  return true
+}
+
+// 滚轮快捷键回调函数
+const onColorPaletteWheel = (event: MouseEvent | WheelEvent): boolean => {
+  // 只有事件发生在画布上时才响应滚轮快捷键
+  if (!isEventOnCanvas(event)) return false
+
+  // 确保这是滚轮事件
+  if (!(event instanceof WheelEvent)) return false
+
+  const currentColor = drawing.state.currentColor
+  const currentIndex = presetColors.indexOf(currentColor)
+  let nextIndex: number
+
+  if (currentIndex === -1) {
+    nextIndex = 0
+  } else {
+    if (event.deltaY > 0) {
+      nextIndex = (currentIndex + 1) % presetColors.length
+    } else {
+      nextIndex = (currentIndex - 1 + presetColors.length) % presetColors.length
+    }
+  }
+
+  const newColor = presetColors[nextIndex]
+  drawing.setColor(newColor)
+  return true
+}
+
+const onBrushPanelWheel = (event: MouseEvent | WheelEvent): boolean => {
+  // 只有事件发生在画布上时才响应滚轮快捷键
+  if (!isEventOnCanvas(event)) return false
+
+  // 确保这是滚轮事件
+  if (!(event instanceof WheelEvent)) return false
+
+  const currentSize = drawing.state.currentSize
+  const sizeStep = 2 // 每次滚动改变的大小
+  let newSize: number
+
+  if (event.deltaY > 0) {
+    // 向下滚动，减小笔刷大小
+    newSize = Math.max(1, currentSize - sizeStep)
+  } else {
+    // 向上滚动，增大笔刷大小
+    newSize = Math.min(50, currentSize + sizeStep)
+  }
+
+  drawing.setSize(newSize)
+  console.log(`鼠标快捷键: 滚轮调整笔刷大小到 ${newSize}`)
+  return true
+}
+
+// 注册鼠标快捷键回调（全局注册）
+const registerMouseShortcuts = () => {
+  registerMouseShortcut('brushTool', onBrushToolMouse)
+  registerMouseShortcut('eraserTool', onEraserToolMouse)
+  registerMouseShortcut('markerTool', onMarkerToolMouse)
+  registerMouseShortcut('clearCanvas', onClearCanvasMouse)
+  registerMouseShortcut('undo', onUndoMouse)
+  registerMouseShortcut('redo', onRedoMouse)
+  registerMouseShortcut('colorPalette', onColorPaletteWheel)
+  registerMouseShortcut('brushPanel', onBrushPanelWheel)
+}
+
+const unregisterMouseShortcuts = () => {
+  unregisterMouseShortcut('brushTool')
+  unregisterMouseShortcut('eraserTool')
+  unregisterMouseShortcut('markerTool')
+  unregisterMouseShortcut('clearCanvas')
+  unregisterMouseShortcut('undo')
+  unregisterMouseShortcut('redo')
+  unregisterMouseShortcut('colorPalette')
+  unregisterMouseShortcut('brushPanel')
+}
 
 // 画布尺寸状态
 const canvasWidth = ref(window.innerWidth)
@@ -593,167 +755,16 @@ const stopDrawing = () => {
   lastMousePosition.value = null
 }
 
-// 检查鼠标快捷键是否匹配
-const isMouseShortcutMatch = (event: MouseEvent, shortcut: string): boolean => {
-  if (!shortcut || shortcut.trim() === '') return false
-
-  const normalizedShortcut = shortcut.toLowerCase().trim()
-
-  // 处理基本鼠标按键
-  if (normalizedShortcut === 'left' && event.button === 0) return true
-  if (normalizedShortcut === 'right' && event.button === 2) return true
-  if (normalizedShortcut === 'middle' && event.button === 1) return true
-
-  // 处理侧键（鼠标4、5键）
-  if (normalizedShortcut === 'mb4' && event.button === 3) return true
-  if (normalizedShortcut === 'mb5' && event.button === 4) return true
-
-  return false
-}
-
-// 处理鼠标快捷键操作（统一管理所有鼠标操作）
-const handleMouseShortcut = (event: MouseEvent, eventType: 'down' | 'up') => {
-  const mouseShortcuts = settings.value.mouseShortcuts
-  const position = getEventPosition(event)
-
-  // 画笔工具绘制
-  if (isMouseShortcutMatch(event, mouseShortcuts.brushTool)) {
-    if (eventType === 'down') {
-      currentDrawingTool.value = 'brush'
-      drawing.state.currentTool = 'brush'
-      startDrawing(position)
-    } else if (eventType === 'up' && currentDrawingTool.value === 'brush') {
-      stopDrawing()
-      currentDrawingTool.value = null
-    }
-    return true
-  }
-
-  // 橡皮工具绘制
-  if (isMouseShortcutMatch(event, mouseShortcuts.eraserTool)) {
-    if (eventType === 'down') {
-      currentDrawingTool.value = 'magic-eraser'
-      drawing.state.currentTool = 'magic-eraser'
-      startDrawing(position)
-    } else if (eventType === 'up' && currentDrawingTool.value === 'magic-eraser') {
-      stopDrawing()
-      currentDrawingTool.value = null
-    }
-    return true
-  }
-
-  // 标记工具绘制
-  if (isMouseShortcutMatch(event, mouseShortcuts.markerTool)) {
-    if (eventType === 'down') {
-      currentDrawingTool.value = 'circle-marker'
-      drawing.state.currentTool = 'circle-marker'
-      startDrawing(position)
-    } else if (eventType === 'up' && currentDrawingTool.value === 'circle-marker') {
-      stopDrawing()
-      currentDrawingTool.value = null
-    }
-    return true
-  }
-
-  // 功能快捷键（只在按下时触发）
-  if (eventType === 'down') {
-    if (isMouseShortcutMatch(event, mouseShortcuts.clearCanvas)) {
-      drawing.clear()
-      return true
-    } else if (isMouseShortcutMatch(event, mouseShortcuts.undo)) {
-      drawing.undo()
-      return true
-    } else if (isMouseShortcutMatch(event, mouseShortcuts.redo)) {
-      drawing.redo()
-      return true
-    }
-  }
-
-  return false
-}
-
-// 检查滚轮快捷键是否匹配
-const isWheelShortcutMatch = (_event: WheelEvent, shortcut: string): boolean => {
-  if (!shortcut || shortcut.trim() === '') return false
-
-  const normalizedShortcut = shortcut.toLowerCase().trim()
-
-  // 处理滚轮事件
-  if (normalizedShortcut === 'wheel') return true
-
-  return false
-}
-
-// 处理鼠标滚轮快捷键（统一管理滚轮操作）
-const handleMouseWheelShortcut = (event: WheelEvent) => {
-  const mouseShortcuts = settings.value.mouseShortcuts
-
-  // 颜色面板切换
-  if (isWheelShortcutMatch(event, mouseShortcuts.colorPalette)) {
-    const currentColor = drawing.state.currentColor
-    const currentIndex = presetColors.indexOf(currentColor)
-    let nextIndex: number
-
-    if (currentIndex === -1) {
-      nextIndex = 0
-    } else {
-      if (event.deltaY > 0) {
-        nextIndex = (currentIndex + 1) % presetColors.length
-      } else {
-        nextIndex = (currentIndex - 1 + presetColors.length) % presetColors.length
-      }
-    }
-
-    const newColor = presetColors[nextIndex]
-    drawing.setColor(newColor)
-    console.log(`鼠标快捷键: 滚轮切换颜色到 ${newColor}`)
-    return true
-  }
-
-  if (isWheelShortcutMatch(event, mouseShortcuts.brushPanel)) {
-    // 滚轮调整笔刷大小
-    const currentSize = drawing.state.currentSize
-    const sizeStep = 2 // 每次滚动改变的大小
-    let newSize: number
-
-    if (event.deltaY > 0) {
-      // 向下滚动，减小笔刷大小
-      newSize = Math.max(1, currentSize - sizeStep)
-    } else {
-      // 向上滚动，增大笔刷大小
-      newSize = Math.min(50, currentSize + sizeStep)
-    }
-
-    drawing.setSize(newSize)
-    console.log(`鼠标快捷键: 滚轮调整笔刷大小到 ${newSize}`)
-    return true
-  }
-
-  return false
-}
-
-// 鼠标事件处理
-const handleMouseDown = (event: MouseEvent) => {
-  event.preventDefault()
-  // 只处理快捷键配置的鼠标操作
-  handleMouseShortcut(event, 'down')
-}
-// 绑定鼠标按下事件到SVG元素（替代模板上的@mousedown）
+// 组件挂载时注册，卸载时注销
 onMounted(() => {
-  if (svgRef.value) {
-    svgRef.value.addEventListener('mousedown', handleMouseDown)
-    svgRef.value.addEventListener('wheel', handleWheel)
-  }
+  registerMouseShortcuts()
 })
+
 onUnmounted(() => {
-  if (svgRef.value) {
-    svgRef.value.removeEventListener('mousedown', handleMouseDown)
-    svgRef.value.removeEventListener('wheel', handleWheel)
-  }
+  unregisterMouseShortcuts()
 })
 
 const handleMouseMove = (event: MouseEvent) => {
-  event.preventDefault()
   const position = getEventPosition(event)
 
   // 更新悬停位置（用于魔术橡皮预览）
@@ -765,54 +776,29 @@ const handleMouseMove = (event: MouseEvent) => {
   }
 }
 
-const handleMouseUp = (event: MouseEvent) => {
-  event.preventDefault()
-  // 只处理快捷键配置的鼠标操作
-  handleMouseShortcut(event, 'up')
-}
-
-const handleMouseLeave = (event: MouseEvent) => {
-  event.preventDefault()
-  hoverPosition.value = null
-
-  // 强制停止当前绘制操作
+const handleMouseUp = (_event: MouseEvent) => {
+  // 停止任何正在进行的绘制操作
   if (currentDrawingTool.value) {
     stopDrawing()
     currentDrawingTool.value = null
-    console.log('鼠标离开画布: 停止绘制')
   }
 }
 
-// 阻止右键菜单
-const handleContextMenu = (event: MouseEvent) => {
-  event.preventDefault()
-  return false
-}
-
-// 处理滚轮事件
-const handleWheel = (event: WheelEvent) => {
-  if (handleMouseWheelShortcut(event)) {
-    event.preventDefault()
-  }
-}
 
 // 触摸事件处理
 const handleTouchStart = (event: TouchEvent) => {
-  event.preventDefault()
   const position = getEventPosition(event)
   startDrawing(position)
 }
 
 const handleTouchMove = (event: TouchEvent) => {
-  event.preventDefault()
   if (drawing.state.isDrawing) {
     const position = getEventPosition(event)
     continueDrawing(position)
   }
 }
 
-const handleTouchEnd = (event: TouchEvent) => {
-  event.preventDefault()
+const handleTouchEnd = (_event: TouchEvent) => {
   stopDrawing()
 }
 
