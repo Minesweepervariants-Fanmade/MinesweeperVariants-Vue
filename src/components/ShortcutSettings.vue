@@ -73,6 +73,7 @@
                 class="shortcut-input"
                 placeholder="按下鼠标按键或滚轮..."
                 readonly
+                @keydown="handleMouseShortcutKeyDown"
                 @mousedown="handleMouseShortcutDown"
                 @wheel="handleMouseWheel"
                 @blur="cancelEditMouseShortcut"
@@ -100,13 +101,12 @@
 
     <div class="shortcut-note">
       <p><small>游戏操作的鼠标快捷键：左键点击格子 = 揭示格子，右键点击格子 = 标记/取消标记</small></p>
-      <p><small>绘图工具的鼠标快捷键：在画布上滚动鼠标滚轮 = 切换颜色</small></p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, nextTick, onMounted, watch } from 'vue'
+import { ref, nextTick, onMounted, onUnmounted, watch } from 'vue'
 import BaseButton from './BaseButton.vue'
 import { useAssets } from '@/composables/useAssets'
 import type { KeyboardShortcuts, MouseShortcuts } from '@/composables/useSettings'
@@ -126,6 +126,13 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 const { cloneAsset } = useAssets()
+
+
+
+// 回调函数接口，包含优先级
+
+
+// 快捷键注册/注销全部交由 shortcutManager 处理
 
 // 编辑状态
 const editingShortcut = ref<string | null>(null)
@@ -243,6 +250,20 @@ const cancelEditMouseShortcut = () => {
   mouseShortcutInput.value = ''
 }
 
+const handleMouseShortcutKeyDown = (event: KeyboardEvent) => {
+  // 如果按下Esc键，清除鼠标快捷键
+  if (event.key === 'Escape') {
+    event.preventDefault()
+    if (editingMouseShortcut.value) {
+      const newShortcuts = { ...props.mouseShortcuts }
+      newShortcuts[editingMouseShortcut.value as keyof MouseShortcuts] = ''
+      emit('update:mouseShortcuts', newShortcuts)
+      editingMouseShortcut.value = null
+      mouseShortcutInput.value = ''
+    }
+  }
+}
+
 const handleMouseShortcutDown = (event: MouseEvent) => {
   event.preventDefault()
 
@@ -262,10 +283,20 @@ const handleMouseShortcutDown = (event: MouseEvent) => {
   }
 
   if (mouseAction) {
-    mouseShortcutInput.value = mouseAction
+    // 构建包含修饰键的鼠标快捷键字符串
+    const parts: string[] = []
+    if (event.ctrlKey) parts.push('ctrl')
+    if (event.altKey) parts.push('alt')
+    if (event.shiftKey) parts.push('shift')
+    if (event.metaKey) parts.push('meta')
+    parts.push(mouseAction)
+
+    const fullMouseAction = parts.join('+')
+
+    mouseShortcutInput.value = fullMouseAction
     if (editingMouseShortcut.value) {
       const newShortcuts = { ...props.mouseShortcuts }
-      newShortcuts[editingMouseShortcut.value as keyof MouseShortcuts] = mouseAction
+      newShortcuts[editingMouseShortcut.value as keyof MouseShortcuts] = fullMouseAction
       emit('update:mouseShortcuts', newShortcuts)
       editingMouseShortcut.value = null
       mouseShortcutInput.value = ''
@@ -276,7 +307,15 @@ const handleMouseShortcutDown = (event: MouseEvent) => {
 const handleMouseWheel = (event: WheelEvent) => {
   event.preventDefault()
 
-  const wheelAction = 'wheel'
+  // 构建包含修饰键的鼠标滚轮快捷键字符串
+  const parts: string[] = []
+  if (event.ctrlKey) parts.push('ctrl')
+  if (event.altKey) parts.push('alt')
+  if (event.shiftKey) parts.push('shift')
+  if (event.metaKey) parts.push('meta')
+  parts.push('wheel')
+
+  const wheelAction = parts.join('+')
   mouseShortcutInput.value = wheelAction
 
   if (editingMouseShortcut.value) {
@@ -337,17 +376,40 @@ const formatMouseShortcut = (shortcut: string) => {
     'left': '鼠标左键',
     'right': '鼠标右键',
     'middle': '鼠标中键',
-    'wheel': '鼠标滚轮'
+    'wheel': '鼠标滚轮',
+    'mb4': '侧键4',
+    'mb5': '侧键5'
+  }
+
+  // 处理组合键（如 ctrl+left, shift+wheel 等）
+  if (shortcut.includes('+')) {
+    const parts = shortcut.split('+')
+    const formattedParts = parts.map(part => {
+      const trimmedPart = part.trim().toLowerCase()
+      // 如果是修饰键
+      if (['ctrl', 'alt', 'shift', 'meta'].includes(trimmedPart)) {
+        return formatKeyName(trimmedPart)
+      }
+      // 如果是鼠标键
+      return mouseKeyMap[trimmedPart] || trimmedPart
+    })
+    return formattedParts.join(' + ')
   }
 
   return mouseKeyMap[shortcut] || shortcut
 }
 
-// 组件挂载后渲染图标
+// 匹配函数交由 shortcutManager 处理
+
+// 注册/注销函数交由 shortcutManager 处理
+
+// 全局快捷键处理器全部移除，由 App.vue + shortcutManager 负责
+
+// 暴露接口（如果需要，可以直接从 shortcutManager 导入并暴露）
+
+// 组件挂载后只负责渲染图标
 onMounted(() => {
-  // 使用nextTick确保DOM已经渲染
   nextTick(() => {
-    // 渲染所有重置按钮的图标
     Object.entries(resetBtnRefs.value).forEach(([_key, container]) => {
       if (container) {
         renderResetIcon(container)
@@ -355,6 +417,8 @@ onMounted(() => {
     })
   })
 })
+
+onUnmounted(() => {})
 
 // 监听快捷键变化，重新渲染图标
 watch(() => [props.keyboardShortcuts, props.mouseShortcuts], () => {
