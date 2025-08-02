@@ -108,13 +108,11 @@ const currentDrawingTool = ref<DrawingTool | null>(null)
 
 // 检查事件是否发生在画布上
 const isEventOnCanvas = (event: Event): boolean => {
-  console.log('isEventOnCanvas')
   if (!svgRef.value) return false
 
   // 检查事件目标是否是画布或其子元素
   const target = event.target as Element
   const result = svgRef.value === target || svgRef.value.contains(target)
-  console.log('isEventOnCanvas', result)
   return result
 }
 
@@ -238,7 +236,6 @@ const onBrushPanelWheel = (event: MouseEvent | WheelEvent): boolean => {
   }
 
   drawing.setSize(newSize)
-  console.log(`鼠标快捷键: 滚轮调整笔刷大小到 ${newSize}`)
   return true
 }
 
