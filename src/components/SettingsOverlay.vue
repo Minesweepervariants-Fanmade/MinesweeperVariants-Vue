@@ -415,9 +415,11 @@ const onReset = () => {
   localSettings.value = defaultSettings
 }
 
-// 暴露快捷键设置组件引用
+// 暴露快捷键设置组件引用和关闭/保存方法，确保父组件通过 ref 访问安全
 defineExpose({
-  shortcutSettingsRef
+  shortcutSettingsRef,
+  onSave,
+  onClose
 })
 </script>
 
