@@ -5,6 +5,7 @@ export type GameMode = 'normal' | 'expert' | 'ultimate'
 
 // 快捷键配置类型
 export interface KeyboardShortcuts {
+  [key: string]: string
   brushTool: string          // 画笔工具
   eraserTool: string         // 魔术橡皮
   markerTool: string         // 标记工具
@@ -18,6 +19,7 @@ export interface KeyboardShortcuts {
 
 // 鼠标快捷键配置类型
 export interface MouseShortcuts {
+  [key: string]: string
   brushTool: string          // 画笔工具
   eraserTool: string         // 魔术橡皮
   markerTool: string         // 标记工具
