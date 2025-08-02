@@ -30,6 +30,7 @@
     <DrawingCanvas
       :style="{ opacity: showDrawingToolbar ? '100%' : '50%' }"
       :pointer-events-enabled="showDrawingToolbar"
+      :shortcut-manager="settingsOverlayRef?.shortcutSettingsRef"
     />
 
     <!-- 游戏覆盖层组件 -->
@@ -47,7 +48,11 @@
     />
 
     <!-- 绘画工具栏 -->
-    <DrawingToolbar v-show="showDrawingToolbar" :visible="showDrawingToolbar" />
+    <DrawingToolbar
+      v-show="showDrawingToolbar"
+      :visible="showDrawingToolbar"
+      :shortcut-manager="settingsOverlayRef?.shortcutSettingsRef"
+    />
 
     <!-- 游戏结束信息提示 -->
     <InfoOverlay
@@ -60,6 +65,7 @@
 
     <!-- 设置对话框 -->
     <SettingsOverlay
+      ref="settingsOverlayRef"
       v-model:visible="showSettingsDialog"
       :settings="gameSettings"
       @save="handleSettingsSave"
@@ -69,7 +75,13 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, computed, ref } from 'vue'
+import { onMounted, onUnmounted, computed, ref, watch } from 'vue'
+import {
+  setShortcuts,
+  handleGlobalKeyDown,
+  handleGlobalMouseDown,
+  handleGlobalWheel
+} from '@/composables/shortcutManager'
 import { useGameLogic } from '@/composables/useGameLogic'
 import { useAssets } from '@/composables/useAssets'
 import { useTheme } from '@/composables/useTheme'
@@ -82,21 +94,8 @@ import SettingsOverlay from '@/components/SettingsOverlay.vue'
 import DrawingCanvas from '@/components/DrawingCanvas.vue'
 import DrawingToolbar from '@/components/DrawingToolbar.vue'
 
-// 全局阻止右键菜单
-const preventContextMenu = (event: MouseEvent) => {
-  event.preventDefault()
-}
-
-// 生命周期钩子
-onMounted(() => {
-  // 添加全局右键菜单阻止事件
-  document.addEventListener('contextmenu', preventContextMenu)
-})
-
-onUnmounted(() => {
-  // 清理全局事件监听器
-  document.removeEventListener('contextmenu', preventContextMenu)
-})
+// 组件引用
+const settingsOverlayRef = ref<InstanceType<typeof SettingsOverlay>>()
 
 // 使用游戏逻辑
 const {
@@ -181,39 +180,8 @@ const handleSettingsClose = () => {
   showSettingsDialog.value = false
 }
 
-// 键盘快捷键
-function setupKeyboardShortcuts() {
-  const handleKeydown = (e: KeyboardEvent) => {
-    // 防止在输入框中触发快捷键
-    if (e.target && (e.target as HTMLElement).tagName === 'INPUT') return
-
-    // 检查是否匹配重置游戏的快捷键
-    const shortcuts = gameSettings.value.keyboardShortcuts
-
-    // 如果重置游戏快捷键为空，则不处理
-    if (!shortcuts.resetGame || shortcuts.resetGame.trim() === '') return
-
-    const eventKeys = []
-    if (e.ctrlKey) eventKeys.push('ctrl')
-    if (e.shiftKey) eventKeys.push('shift')
-    if (e.altKey) eventKeys.push('alt')
-    if (e.metaKey) eventKeys.push('meta')
-    eventKeys.push(e.key.toLowerCase())
-
-    const eventShortcut = eventKeys.join('+')
-
-    if (eventShortcut === shortcuts.resetGame.toLowerCase()) {
-      e.preventDefault()
-      resetGame()
-    }
-  }
-
-  document.addEventListener('keydown', handleKeydown)
-  return () => document.removeEventListener('keydown', handleKeydown)
-}
-
 let cleanupThemeToggle: (() => void) | null = null
-let cleanupKeyboardShortcuts: (() => void) | null = null
+
 
 onMounted(async () => {
   // 预加载素材
@@ -228,15 +196,29 @@ onMounted(async () => {
   // 设置主题切换
   cleanupThemeToggle = setupThemeToggle()
 
-  // 设置键盘快捷键
-  cleanupKeyboardShortcuts = setupKeyboardShortcuts()
+  // 设置全局快捷键监听
+  setShortcuts(gameSettings.value.keyboardShortcuts, gameSettings.value.mouseShortcuts)
+  document.addEventListener('keydown', handleGlobalKeyDown)
+  document.addEventListener('mousedown', handleGlobalMouseDown)
+  document.addEventListener('wheel', handleGlobalWheel, { passive: false })
 })
 
 onUnmounted(() => {
   // 清理事件监听器
   if (cleanupThemeToggle) cleanupThemeToggle()
-  if (cleanupKeyboardShortcuts) cleanupKeyboardShortcuts()
+  document.removeEventListener('keydown', handleGlobalKeyDown)
+  document.removeEventListener('mousedown', handleGlobalMouseDown)
+  document.removeEventListener('wheel', handleGlobalWheel)
 })
+
+// 监听快捷键设置变化，动态更新快捷键映射
+watch(
+  () => [gameSettings.value.keyboardShortcuts, gameSettings.value.mouseShortcuts],
+  ([kb, mouse]) => {
+    setShortcuts(kb, mouse)
+  },
+  { deep: true }
+)
 </script>
 
 <style scoped>
