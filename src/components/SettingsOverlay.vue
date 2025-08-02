@@ -206,96 +206,12 @@
 
       <!-- 快捷键设置 -->
       <div class="setting-section">
-        <div class="section-header">
-          <h4 class="section-title">快捷键设置</h4>
-          <BaseButton variant="simple" @click="resetShortcuts">
-            重置默认
-          </BaseButton>
-        </div>
-        <div class="shortcut-table">
-          <div class="shortcut-body">
-            <div
-              v-for="key in Object.keys(localSettings.keyboardShortcuts)"
-              :key="key"
-              class="shortcut-row"
-            >
-              <div class="shortcut-col">
-                {{ shortcutDescriptions[key as keyof typeof shortcutDescriptions]?.name || key }}
-              </div>
-              <div class="shortcut-col shortcut-editable" @click="startEditingShortcut(key)">
-                <template v-if="editingShortcut === key">
-                  <input
-                    ref="shortcutInputRef"
-                    v-model="shortcutInput"
-                    type="text"
-                    class="shortcut-input"
-                    placeholder="按下新的快捷键..."
-                    readonly
-                    @keydown="handleShortcutKeyDown"
-                    @blur="cancelEditShortcut"
-                  >
-                </template>
-                <template v-else>
-                  <div class="shortcut-content">
-                    <div class="shortcut-display">
-                      <template v-if="localSettings.keyboardShortcuts[key as keyof KeyboardShortcuts]">
-                        <template v-for="(part, partIndex) in localSettings.keyboardShortcuts[key as keyof KeyboardShortcuts].split('+')" :key="partIndex">
-                          <span v-if="partIndex > 0" class="shortcut-separator">+</span>
-                          <kbd>{{ formatKeyName(part) }}</kbd>
-                        </template>
-                      </template>
-                      <span v-else class="shortcut-empty">点击设置</span>
-                    </div>
-                    <button
-                      class="reset-shortcut-btn"
-                      title="恢复默认键盘快捷键"
-                      @click.stop="restoreDefaultKeyboardShortcut(key)"
-                    >
-                      <div
-                        :ref="(el) => setResetBtnRef(el as HTMLElement, `kb-${key}`)"
-                        class="reset-icon-container"
-                      />
-                    </button>
-                  </div>
-                </template>
-              </div>
-              <div class="shortcut-col shortcut-editable" @click="startEditingMouseShortcut(key)">
-                <template v-if="editingMouseShortcut === key">
-                  <input
-                    ref="mouseShortcutInputRef"
-                    v-model="mouseShortcutInput"
-                    type="text"
-                    class="shortcut-input"
-                    placeholder="按下鼠标按键或滚轮..."
-                    readonly
-                    @mousedown="handleMouseShortcutDown"
-                    @wheel="handleMouseWheel"
-                    @blur="cancelEditMouseShortcut"
-                  >
-                </template>
-                <template v-else>
-                  <div class="shortcut-content">
-                    <span class="mouse-shortcut">{{ formatMouseShortcut(localSettings.mouseShortcuts[key as keyof MouseShortcuts]) }}</span>
-                    <button
-                      class="reset-shortcut-btn"
-                      title="恢复默认鼠标快捷键"
-                      @click.stop="restoreDefaultMouseShortcut(key)"
-                    >
-                      <div
-                        :ref="(el) => setResetBtnRef(el as HTMLElement, `mouse-${key}`)"
-                        class="reset-icon-container"
-                      />
-                    </button>
-                  </div>
-                </template>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="shortcut-note">
-          <p><small>游戏操作的鼠标快捷键：左键点击格子 = 揭示格子，右键点击格子 = 标记/取消标记</small></p>
-          <p><small>绘图工具的鼠标快捷键：在画布上滚动鼠标滚轮 = 切换颜色</small></p>
-        </div>
+        <ShortcutSettings
+          :keyboard-shortcuts="localSettings.keyboardShortcuts"
+          :mouse-shortcuts="localSettings.mouseShortcuts"
+          @update:keyboard-shortcuts="(shortcuts) => localSettings.keyboardShortcuts = shortcuts"
+          @update:mouse-shortcuts="(shortcuts) => localSettings.mouseShortcuts = shortcuts"
+        />
       </div>
     </div>
 
@@ -307,48 +223,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted } from 'vue'
+import { ref, computed, watch } from 'vue'
 import BaseModal from './BaseModal.vue'
 import BaseButton from './BaseButton.vue'
-import type { GameSettings, GameMode, KeyboardShortcuts, MouseShortcuts, UltimateModeOptions } from '@/composables/useSettings'
-import { defaultSettings, gameModeDescriptions, ultimateModeOptionDescriptions, shortcutDescriptions } from '@/composables/useSettings'
+import ShortcutSettings from './ShortcutSettings.vue'
+import type { GameSettings, GameMode, UltimateModeOptions } from '@/composables/useSettings'
+import { defaultSettings, gameModeDescriptions, ultimateModeOptionDescriptions } from '@/composables/useSettings'
 import { useTheme } from '@/composables/useTheme'
-import { useAssets } from '@/composables/useAssets'
 
 // 主题管理
 const { setTheme } = useTheme()
-
-// 资源管理
-const { cloneAsset } = useAssets()
-
-// 重置按钮容器的引用
-const resetBtnRefs = ref<Record<string, HTMLElement>>({})
-
-// 设置ref
-const setResetBtnRef = (el: HTMLElement | null, key: string) => {
-  if (el) {
-    resetBtnRefs.value[key] = el
-  }
-}
-
-// 渲染重置图标
-const renderResetIcon = async (container: HTMLElement) => {
-  if (!container) return
-
-  const iconSvg = await cloneAsset('reset')
-  if (iconSvg) {
-    // 清空容器
-    container.innerHTML = ''
-
-    // 设置SVG样式
-    iconSvg.style.width = '14px'
-    iconSvg.style.height = '14px'
-    iconSvg.style.fill = 'currentColor'
-
-    // 添加到容器
-    container.appendChild(iconSvg)
-  }
-}
 
 // 规则类型定义
 type RuleType = 'lRule' | 'mRule' | 'rRule' | 'oRule'
@@ -382,12 +266,6 @@ const emit = defineEmits<Emits>()
 
 // 本地设置副本
 const localSettings = ref<GameSettings>({ ...props.settings })
-
-// 快捷键编辑状态
-const editingShortcut = ref<string | null>(null)
-const shortcutInput = ref<string>('')
-const editingMouseShortcut = ref<string | null>(null)
-const mouseShortcutInput = ref<string>('')
 
 // 监听主题变化并应用到系统
 watch(
@@ -528,214 +406,6 @@ const selectGameMode = (mode: GameMode) => {
     localSettings.value.ultimateModeOptions = { ...defaultSettings.ultimateModeOptions }
   }
 }
-
-// 快捷键编辑相关函数
-const startEditingShortcut = async (key: string) => {
-  editingShortcut.value = key
-  shortcutInput.value = localSettings.value.keyboardShortcuts[key as keyof KeyboardShortcuts]
-
-  // 等待DOM更新后聚焦输入框
-  await nextTick()
-  const inputElement = document.querySelector('.shortcut-input') as HTMLInputElement
-  if (inputElement) {
-    inputElement.focus()
-    inputElement.select()
-  }
-}
-
-const restoreDefaultKeyboardShortcut = (key: string) => {
-  localSettings.value.keyboardShortcuts[key as keyof KeyboardShortcuts] = defaultSettings.keyboardShortcuts[key as keyof KeyboardShortcuts]
-}
-
-const restoreDefaultMouseShortcut = (key: string) => {
-  localSettings.value.mouseShortcuts[key as keyof MouseShortcuts] = defaultSettings.mouseShortcuts[key as keyof MouseShortcuts]
-}
-
-const cancelEditShortcut = () => {
-  editingShortcut.value = null
-  shortcutInput.value = ''
-}
-
-const handleShortcutKeyDown = (event: KeyboardEvent) => {
-  event.preventDefault()
-
-  // 如果按下Escape键，清除快捷键
-  if (event.key === 'Escape') {
-    if (editingShortcut.value) {
-      localSettings.value.keyboardShortcuts[editingShortcut.value as keyof KeyboardShortcuts] = ''
-      editingShortcut.value = null
-      shortcutInput.value = ''
-    }
-    return
-  }
-
-  const parts: string[] = []
-  if (event.ctrlKey) parts.push('ctrl')
-  if (event.shiftKey) parts.push('shift')
-  if (event.altKey) parts.push('alt')
-  if (event.metaKey) parts.push('meta')
-
-  const keyName = event.key.toLowerCase()
-  if (!['control', 'shift', 'alt', 'meta'].includes(keyName)) {
-    parts.push(keyName)
-    const newShortcut = parts.join('+')
-    shortcutInput.value = newShortcut
-
-    // 自动保存快捷键
-    if (editingShortcut.value) {
-      localSettings.value.keyboardShortcuts[editingShortcut.value as keyof KeyboardShortcuts] = newShortcut.toLowerCase()
-      editingShortcut.value = null
-      shortcutInput.value = ''
-    }
-  }
-}
-
-const resetShortcuts = () => {
-  localSettings.value.keyboardShortcuts = { ...defaultSettings.keyboardShortcuts }
-}
-
-// 格式化按键名称显示
-const formatKeyName = (key: string) => {
-  const keyMap: Record<string, string> = {
-    'ctrl': 'Ctrl',
-    'shift': 'Shift',
-    'alt': 'Alt',
-    'meta': 'Meta',
-    ' ': 'Space',
-    'arrowup': '↑',
-    'arrowdown': '↓',
-    'arrowleft': '←',
-    'arrowright': '→',
-    'enter': 'Enter',
-    'escape': 'Esc',
-    'backspace': 'Backspace',
-    'tab': 'Tab',
-    'delete': 'Delete',
-    'home': 'Home',
-    'end': 'End',
-    'pageup': 'PgUp',
-    'pagedown': 'PgDn'
-  }
-
-  return keyMap[key.toLowerCase()] || key.charAt(0).toUpperCase() + key.slice(1)
-}
-
-// 鼠标快捷键编辑相关函数
-const startEditingMouseShortcut = async (key: string) => {
-  editingMouseShortcut.value = key
-  mouseShortcutInput.value = localSettings.value.mouseShortcuts[key as keyof MouseShortcuts]
-
-  // 等待DOM更新后聚焦输入框
-  await nextTick()
-  const inputElement = document.querySelector('.shortcut-input') as HTMLInputElement
-  if (inputElement) {
-    inputElement.focus()
-    inputElement.select()
-  }
-}
-
-const cancelEditMouseShortcut = () => {
-  editingMouseShortcut.value = null
-  mouseShortcutInput.value = ''
-}
-
-const handleMouseShortcutDown = (event: MouseEvent) => {
-  event.preventDefault()
-
-  let mouseAction = ''
-
-  // 根据按下的鼠标按键生成快捷键字符串
-  if (event.button === 0) { // 左键
-    mouseAction = 'left'
-  } else if (event.button === 1) { // 中键
-    mouseAction = 'middle'
-  } else if (event.button === 2) { // 右键
-    mouseAction = 'right'
-  }
-
-  if (mouseAction) {
-    mouseShortcutInput.value = mouseAction
-    if (editingMouseShortcut.value) {
-      localSettings.value.mouseShortcuts[editingMouseShortcut.value as keyof MouseShortcuts] = mouseAction
-      editingMouseShortcut.value = null
-      mouseShortcutInput.value = ''
-    }
-  }
-}
-
-const handleMouseWheel = (event: WheelEvent) => {
-  event.preventDefault()
-
-  const wheelAction = 'wheel'
-  mouseShortcutInput.value = wheelAction
-
-  if (editingMouseShortcut.value) {
-    localSettings.value.mouseShortcuts[editingMouseShortcut.value as keyof MouseShortcuts] = wheelAction
-    editingMouseShortcut.value = null
-    mouseShortcutInput.value = ''
-  }
-}
-
-// 格式化鼠标快捷键显示
-const formatMouseShortcut = (shortcut: string) => {
-  if (!shortcut) return '点击设置'
-
-  const mouseKeyMap: Record<string, string> = {
-    'left': '鼠标左键',
-    'right': '鼠标右键',
-    'middle': '鼠标中键',
-    'wheel': '鼠标滚轮'
-  }
-
-  return mouseKeyMap[shortcut] || shortcut
-}
-
-// 组件挂载后渲染图标
-onMounted(() => {
-  // 使用nextTick确保DOM已经渲染
-  nextTick(() => {
-    // 渲染所有重置按钮的图标
-    Object.entries(resetBtnRefs.value).forEach(([_key, container]) => {
-      if (container) {
-        renderResetIcon(container)
-      }
-    })
-  })
-})
-
-// 监听快捷键变化，重新渲染图标
-watch(() => [localSettings.value.keyboardShortcuts, localSettings.value.mouseShortcuts], () => {
-  nextTick(() => {
-    // 渲染所有重置按钮的图标
-    Object.entries(resetBtnRefs.value).forEach(([_key, container]) => {
-      if (container) {
-        renderResetIcon(container)
-      }
-    })
-  })
-}, { deep: true })
-
-// 监听resetBtnRefs变化，为新添加的按钮渲染图标
-watch(() => resetBtnRefs.value, () => {
-  nextTick(() => {
-    Object.entries(resetBtnRefs.value).forEach(([_key, container]) => {
-      if (container && !container.querySelector('svg')) {
-        renderResetIcon(container)
-      }
-    })
-  })
-}, { deep: true })
-
-// 监听编辑状态变化，重新渲染图标
-watch(() => [editingShortcut.value, editingMouseShortcut.value], () => {
-  nextTick(() => {
-    Object.entries(resetBtnRefs.value).forEach(([_key, container]) => {
-      if (container && !container.querySelector('svg')) {
-        renderResetIcon(container)
-      }
-    })
-  })
-})
 
 const onReset = () => {
   localSettings.value = defaultSettings

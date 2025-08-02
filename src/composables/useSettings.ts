@@ -86,23 +86,23 @@ export const defaultSettings: GameSettings = {
   keyboardShortcuts: {
     brushTool: 'b',
     eraserTool: 'e',
-    markerTool: 'o',
-    colorPalette: 'ctrl+c',
-    brushPanel: 'ctrl+s',
+    markerTool: '',
+    colorPalette: '',
+    brushPanel: '',
     clearCanvas: 'c',
-    undo: 'ctrl+z',
-    redo: 'ctrl+shift+z',
+    undo: 'z',
+    redo: 'y',
     resetGame: 'r'
   },
   mouseShortcuts: {
-    brushTool: '',
-    eraserTool: '',
+    brushTool: 'left',
+    eraserTool: 'right',
     markerTool: '',
     colorPalette: 'wheel',
     brushPanel: '',
-    clearCanvas: '',
-    undo: '',
-    redo: '',
+    clearCanvas: 'middle',
+    undo: 'mb5',
+    redo: 'mb4',
     resetGame: ''
   },
 }
