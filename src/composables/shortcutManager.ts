@@ -140,16 +140,13 @@ export function handleGlobalKeyDown(event: KeyboardEvent) {
 }
 
 export function handleGlobalMouseDown(event: MouseEvent) {
-  console.log('Global mouse down event:', event)
   const matchedShortcuts = getMatchedShortcuts<{ action: string; shortcut: string; complexity: number }>(mouseShortcuts, s => isMouseShortcutMatch(event, s))
   for (const { action } of matchedShortcuts) {
-    console.log(`Matched mouse shortcut for action: `,action)
     const callbackEntries = mouseCallbacks.value[action]
     if (callbackEntries && callbackEntries.length > 0) {
       for (const entry of callbackEntries) {
         try {
           const handled = entry.callback(event)
-          console.log(`Mouse shortcut callback for action "${action}" handled:`, handled)
           if (handled) {
             event.preventDefault()
             return

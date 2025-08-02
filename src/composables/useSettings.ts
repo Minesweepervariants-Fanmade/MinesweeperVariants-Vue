@@ -6,6 +6,7 @@ export type GameMode = 'normal' | 'expert' | 'ultimate'
 // 快捷键配置类型
 export interface KeyboardShortcuts {
   [key: string]: string
+  useCurrentTool: string     // 使用当前绘画工具
   brushTool: string          // 画笔工具
   eraserTool: string         // 魔术橡皮
   markerTool: string         // 标记工具
@@ -15,6 +16,7 @@ export interface KeyboardShortcuts {
   undo: string              // 撤销
   redo: string              // 重做
   resetGame: string         // 重置游戏
+  themeToggle: string       // 主题切换
 }
 
 // 鼠标快捷键配置类型
@@ -86,6 +88,7 @@ export const defaultSettings: GameSettings = {
   touchMode: false,
   swapMouseButtons: false,
   keyboardShortcuts: {
+    useCurrentTool: '',
     brushTool: 'b',
     eraserTool: 'e',
     markerTool: '',
@@ -94,14 +97,15 @@ export const defaultSettings: GameSettings = {
     clearCanvas: 'c',
     undo: 'z',
     redo: 'y',
-    resetGame: 'r'
+    resetGame: 'r',
+    themeToggle: 't'
   },
   mouseShortcuts: {
     brushTool: 'left',
     eraserTool: 'right',
     markerTool: '',
     colorPalette: 'wheel',
-    brushPanel: '',
+    brushPanel: 'ctrl+wheel',
     clearCanvas: 'middle',
     undo: 'mb5',
     redo: 'mb4',
@@ -151,8 +155,13 @@ export const ultimateModeOptionDescriptions = {
   }
 } as const
 
+
 // 快捷键功能描述
 export const shortcutDescriptions = {
+  useCurrentTool: {
+    name: '使用当前绘画工具',
+    category: '绘图工具'
+  },
   brushTool: {
     name: '选择画笔工具',
     category: '绘图工具'
@@ -188,6 +197,10 @@ export const shortcutDescriptions = {
   resetGame: {
     name: '重置游戏',
     category: '游戏操作'
+  },
+  themeToggle: {
+    name: '切换主题',
+    category: '界面操作'
   }
 } as const
 
