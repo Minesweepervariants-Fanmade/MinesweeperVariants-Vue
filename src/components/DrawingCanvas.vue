@@ -241,6 +241,7 @@ const onBrushPanelWheel = (event: MouseEvent | WheelEvent): boolean => {
 
 // 注册鼠标快捷键回调（全局注册）
 const registerMouseShortcuts = () => {
+  registerMouseShortcut('useCurrentTool', onUseCurrentToolMouse)
   registerMouseShortcut('brushTool', onBrushToolMouse)
   registerMouseShortcut('eraserTool', onEraserToolMouse)
   registerMouseShortcut('markerTool', onMarkerToolMouse)
@@ -252,6 +253,7 @@ const registerMouseShortcuts = () => {
 }
 
 const unregisterMouseShortcuts = () => {
+  unregisterMouseShortcut('useCurrentTool')
   unregisterMouseShortcut('brushTool')
   unregisterMouseShortcut('eraserTool')
   unregisterMouseShortcut('markerTool')
@@ -797,6 +799,21 @@ const handleTouchMove = (event: TouchEvent) => {
 
 const handleTouchEnd = (_event: TouchEvent) => {
   stopDrawing()
+}
+
+const onUseCurrentToolMouse = (event: MouseEvent): boolean => {
+  if (!isEventOnCanvas(event)) return false
+  if (event.type === 'mousedown') {
+    const position = getEventPosition(event)
+    currentDrawingTool.value = drawing.state.currentTool
+    startDrawing(position)
+    return true
+  } else if (event.type === 'mouseup') {
+    stopDrawing()
+    currentDrawingTool.value = null
+    return true
+  }
+  return false
 }
 
 // 处理窗口大小调整

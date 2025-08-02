@@ -75,16 +75,19 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, onUnmounted, computed, ref, watch } from 'vue'
+import { onMounted, onUnmounted, computed, ref } from 'vue'
+
 import {
   setShortcuts,
   handleGlobalKeyDown,
   handleGlobalMouseDown,
-  handleGlobalWheel
+  handleGlobalWheel,
+  registerKeyboardShortcut,
+  unregisterKeyboardShortcut
 } from '@/composables/shortcutManager'
+import { useTheme } from '@/composables/useTheme'
 import { useGameLogic } from '@/composables/useGameLogic'
 import { useAssets } from '@/composables/useAssets'
-import { useTheme } from '@/composables/useTheme'
 import { useSettings } from '@/composables/useSettings'
 import BaseButton from '@/components/BaseButton.vue'
 import GameTable from '@/components/GameTable.vue'
@@ -114,7 +117,7 @@ const {
 } = useGameLogic()
 
 const { waitForAssets } = useAssets()
-const { setupThemeToggle, setTheme } = useTheme()
+const { setTheme, toggleTheme } = useTheme()
 
 const gameOverTitle = computed(() => {
   if (!isGameOver.value) return ''
@@ -180,10 +183,16 @@ const handleSettingsClose = () => {
   showSettingsDialog.value = false
 }
 
-let cleanupThemeToggle: (() => void) | null = null
+
 
 
 let cleanupContextMenu: (() => void) | null = null
+// 主题切换快捷键回调
+const onThemeToggle = (_event: KeyboardEvent): boolean => {
+  toggleTheme()
+  return true
+}
+
 onMounted(async () => {
   // 预加载素材
   await waitForAssets()
@@ -194,8 +203,10 @@ onMounted(async () => {
   // 初始化游戏
   await initializeGame()
 
-  // 设置主题切换
-  cleanupThemeToggle = setupThemeToggle()
+  // 注册主题切换快捷键
+  registerKeyboardShortcut('themeToggle', onThemeToggle)
+  // 注册主题切换快捷键
+  registerKeyboardShortcut('themeToggle', onThemeToggle)
 
   // 禁用右键菜单
   const contextMenuHandler = (e: MouseEvent) => e.preventDefault()
@@ -211,21 +222,13 @@ onMounted(async () => {
 
 onUnmounted(() => {
   // 清理事件监听器
-  if (cleanupThemeToggle) cleanupThemeToggle()
+  unregisterKeyboardShortcut('themeToggle', onThemeToggle)
+  if (cleanupContextMenu) cleanupContextMenu()
   if (cleanupContextMenu) cleanupContextMenu()
   document.removeEventListener('keydown', handleGlobalKeyDown)
   document.removeEventListener('mousedown', handleGlobalMouseDown)
   document.removeEventListener('wheel', handleGlobalWheel)
 })
-
-// 监听快捷键设置变化，动态更新快捷键映射
-watch(
-  () => [gameSettings.value.keyboardShortcuts, gameSettings.value.mouseShortcuts],
-  ([kb, mouse]) => {
-    setShortcuts(kb, mouse)
-  },
-  { deep: true }
-)
 </script>
 
 <style scoped>

@@ -155,12 +155,6 @@ import {
   unregisterKeyboardShortcut
 } from '@/composables/shortcutManager'
 
-// Props
-
-
-
-
-
 // 直接使用绘画状态管理
 const drawing = useDrawing()
 
