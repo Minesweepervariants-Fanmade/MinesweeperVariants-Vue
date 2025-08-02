@@ -2,6 +2,7 @@ import { ref, reactive } from 'vue'
 import type { BoardMetadata, CellConfig, CellState, ClickResponse } from '@/types/game'
 import { getApiEndpoint } from '@/utils/endpointUtils'
 import { fetchWithValidation } from '@/utils/fetchUtils'
+import { createNewGame, getDefaultGameParams } from '@/utils/gameUtils'
 
 export function useGameConfig() {
   const metadata = ref<BoardMetadata | null>(null)
@@ -16,8 +17,19 @@ export function useGameConfig() {
       if (result.error) {
         throw new Error(`Failed to load metadata: ${result.error}`)
       }
-      metadata.value = result.data!
-      return result.data!
+      
+      // 检查返回的数据是否为空或无效
+      const data = result.data!
+      if (!data || !data.boards || Object.keys(data.boards).length === 0) {
+        // 如果metadata为空，创建新游戏
+        console.log('Metadata is empty, creating new game...')
+        const newGameData = await createNewGame(getDefaultGameParams())
+        metadata.value = newGameData
+        return newGameData
+      }
+      
+      metadata.value = data
+      return data
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error loading metadata'
       error.value = errorMessage
