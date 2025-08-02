@@ -40,6 +40,7 @@
       :mine-count="totalMines"
       :remaining-mines="remainingMines"
       :remaining-cells="remainingCells"
+      :show-drawing-toolbar="showDrawingToolbar"
       @brush-click="handleBrushClick"
       @hint-click="handleHintClick"
       @check-click="handleCheckClick"

@@ -14,7 +14,7 @@
 
     <!-- 控制按钮 -->
     <div class="controls">
-      <BaseButton variant="square" @click="onBrushClick">
+      <BaseButton variant="square" :active="props.showDrawingToolbar" @click="onBrushClick">
         <template #icon>
           <div ref="brushIcon" class="icon-container" />
         </template>
@@ -141,11 +141,13 @@ interface Props {
   mineCount?: number
   remainingMines?: number
   remainingCells?: number
+  showDrawingToolbar?: boolean
 }
 
-withDefaults(defineProps<Props>(), {
+const props = withDefaults(defineProps<Props>(), {
   levelCount: '10/10',
   remainingCells: 21,
+  showDrawingToolbar: false,
 })
 
 // 规则项类型
