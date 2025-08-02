@@ -28,7 +28,7 @@
 
     <!-- 绘画覆盖层 -->
     <DrawingCanvas
-      :style="{ opacity: showDrawingToolbar ? '100%' : '50%' }"
+      :style="{ opacity: gameSettings.drawTransparent ? (showDrawingToolbar ? '100%' : '50%') : '100%' }"
       :pointer-events-enabled="showDrawingToolbar"
       :shortcut-manager="settingsOverlayRef?.shortcutSettingsRef"
     />
