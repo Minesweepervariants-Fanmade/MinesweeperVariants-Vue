@@ -58,8 +58,8 @@
         <!-- 当前圆形标记预览 -->
         <circle
           v-else-if="drawing.state.currentTool === 'circle-marker' && currentPoints.length >= 1"
-          :cx="currentPoints[0].x"
-          :cy="currentPoints[0].y"
+          :cx="currentCircleX"
+          :cy="currentCircleY"
           :r="getCurrentCircleRadius()"
           fill="none"
           :stroke="drawing.state.currentColor"
@@ -279,11 +279,11 @@ const viewBox = computed(() => {
 // 获取要删除的路径（仅魔术橡皮）
 const pathsToDelete = ref<Set<number>>(new Set())
 
-// 计算可见路径（处理魔术橡皮擦除逻辑）
+// 计算可见路径（不需要坐标转换）
 const visiblePaths = computed(() => {
   const allPaths = drawing.state.paths
 
-  // 过滤掉要删除的路径和橡皮工具路径
+  // 直接过滤路径，不进行坐标转换
   return allPaths.filter((path, index) => {
     // 排除魔术橡皮工具本身的路径
     if (path.tool === 'magic-eraser') {
@@ -308,6 +308,8 @@ const visiblePaths = computed(() => {
 // 当前正在绘制的路径数据
 const currentPathData = computed(() => {
   if (currentPoints.value.length < 2) return ''
+
+  // 直接使用当前点，不进行坐标转换
   return generatePathData({
     points: currentPoints.value,
     tool: drawing.state.currentTool,
@@ -315,6 +317,17 @@ const currentPathData = computed(() => {
     size: drawing.state.currentSize,
     timestamp: Date.now()
   } as DrawingPath)
+})
+
+// 当前圆形标记的坐标（直接使用原始坐标）
+const currentCircleX = computed(() => {
+  if (currentPoints.value.length === 0) return 0
+  return currentPoints.value[0].x
+})
+
+const currentCircleY = computed(() => {
+  if (currentPoints.value.length === 0) return 0
+  return currentPoints.value[0].y
 })
 
 // 检查两个路径是否相交（用于魔术橡皮）
@@ -608,13 +621,13 @@ const getCurrentCircleRadius = (): number => {
   return Math.max(1, distance)
 }
 
-// 将屏幕坐标转换为SVG逻辑坐标
+// 将屏幕坐标转换为SVG绝对坐标
 const screenToSVG = (clientX: number, clientY: number): DrawingPoint => {
   if (!svgRef.value) return { x: 0, y: 0 }
 
   const rect = svgRef.value.getBoundingClientRect()
 
-  // 直接使用像素坐标，不进行缩放转换
+  // 使用绝对屏幕坐标
   return {
     x: clientX - rect.left,
     y: clientY - rect.top
@@ -824,7 +837,7 @@ const handleResize = () => {
   // 获取第一个题板的当前位置
   const firstGameTable = document.querySelector('.game-table') as HTMLElement
   if (!firstGameTable || !initialBoardRect.value) {
-    // 如果没有找到题板或没有初始位置信息，只更新画布尺寸，不变换路径
+    // 如果没有找到题板或没有初始位置信息，只更新画布尺寸
     canvasWidth.value = newWidth
     canvasHeight.value = newHeight
     return
@@ -833,26 +846,27 @@ const handleResize = () => {
   // 获取当前题板位置
   const currentBoardRect = firstGameTable.getBoundingClientRect()
 
-  // 只在题板位置真正发生变化时才变换路径坐标
-  const positionChanged =
-    Math.abs(currentBoardRect.left - initialBoardRect.value.left) > 1 ||
-    Math.abs(currentBoardRect.top - initialBoardRect.value.top) > 1 ||
-    Math.abs(currentBoardRect.width - initialBoardRect.value.width) > 1 ||
-    Math.abs(currentBoardRect.height - initialBoardRect.value.height) > 1
+  // 计算变换比例和偏移
+  const scaleX = currentBoardRect.width / initialBoardRect.value.width
+  const scaleY = currentBoardRect.height / initialBoardRect.value.height
+  const offsetX = currentBoardRect.left - initialBoardRect.value.left
+  const offsetY = currentBoardRect.top - initialBoardRect.value.top
 
-  if (positionChanged) {
-    // 计算相对于初始题板位置的变换
-    const scaleX = currentBoardRect.width / initialBoardRect.value.width
-    const scaleY = currentBoardRect.height / initialBoardRect.value.height
+  // 检查是否需要变换路径
+  const hasChanges = Math.abs(scaleX - 1) > 0.001 ||
+                    Math.abs(scaleY - 1) > 0.001 ||
+                    Math.abs(offsetX) > 1 ||
+                    Math.abs(offsetY) > 1
 
-    // 变换所有路径的坐标
+  if (hasChanges && !drawing.state.isDrawing) {
+    // 只在不绘制时变换路径坐标，避免干扰当前操作
     drawing.state.paths.forEach(path => {
       path.points.forEach(point => {
-        // 相对于初始题板位置进行变换
+        // 计算相对于初始题板的位置
         const relativeX = point.x - initialBoardRect.value!.left
         const relativeY = point.y - initialBoardRect.value!.top
 
-        // 缩放后再加上新的偏移
+        // 应用缩放和偏移
         point.x = currentBoardRect.left + relativeX * scaleX
         point.y = currentBoardRect.top + relativeY * scaleY
       })
@@ -869,16 +883,23 @@ const handleResize = () => {
 
 onMounted(() => {
   if (svgRef.value) {
-    // SVG组件已初始化，不需要调用原来的Canvas初始化
+    // SVG组件已初始化，添加窗口缩放监听
     window.addEventListener('resize', handleResize)
 
-    // 记录第一个题板的初始位置
-    setTimeout(() => {
+    // 记录第一个题板的初始位置，使用多次尝试确保DOM稳定
+    const recordInitialBoardPosition = () => {
       const firstGameTable = document.querySelector('.game-table') as HTMLElement
       if (firstGameTable) {
         initialBoardRect.value = firstGameTable.getBoundingClientRect()
+        console.log('初始题板位置已记录:', initialBoardRect.value)
+      } else {
+        // 如果还没找到题板，继续尝试
+        setTimeout(recordInitialBoardPosition, 100)
       }
-    }, 100) // 延迟一点时间确保DOM已经渲染完成
+    }
+
+    // 立即尝试一次，然后延迟再试
+    recordInitialBoardPosition()
   }
 })
 
