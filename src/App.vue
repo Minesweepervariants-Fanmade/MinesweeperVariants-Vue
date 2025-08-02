@@ -183,6 +183,7 @@ const handleSettingsClose = () => {
 let cleanupThemeToggle: (() => void) | null = null
 
 
+let cleanupContextMenu: (() => void) | null = null
 onMounted(async () => {
   // 预加载素材
   await waitForAssets()
@@ -196,6 +197,11 @@ onMounted(async () => {
   // 设置主题切换
   cleanupThemeToggle = setupThemeToggle()
 
+  // 禁用右键菜单
+  const contextMenuHandler = (e: MouseEvent) => e.preventDefault()
+  document.addEventListener('contextmenu', contextMenuHandler)
+  cleanupContextMenu = () => document.removeEventListener('contextmenu', contextMenuHandler)
+
   // 设置全局快捷键监听
   setShortcuts(gameSettings.value.keyboardShortcuts, gameSettings.value.mouseShortcuts)
   document.addEventListener('keydown', handleGlobalKeyDown)
@@ -206,6 +212,7 @@ onMounted(async () => {
 onUnmounted(() => {
   // 清理事件监听器
   if (cleanupThemeToggle) cleanupThemeToggle()
+  if (cleanupContextMenu) cleanupContextMenu()
   document.removeEventListener('keydown', handleGlobalKeyDown)
   document.removeEventListener('mousedown', handleGlobalMouseDown)
   document.removeEventListener('wheel', handleGlobalWheel)
