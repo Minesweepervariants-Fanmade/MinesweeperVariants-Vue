@@ -12,6 +12,9 @@
     @mouseleave="handleMouseLeave"
   >
     <div class="cell-content">
+      <template v-if="cellState?.isLoading">
+        <div class="loading-spinner" />
+      </template>
       <template v-if="cellState?.type === 'revealed'">
         <div ref="container" class="container" />
       </template>
@@ -109,9 +112,9 @@ const renderCell = async () => {
 
 // 监听单元格状态变化，重新渲染内容
 watch(
-  () => [props.cellState?.type, props.cellConfig, props.isHighlighted],
+  () => [props.cellState?.type, props.cellState?.isLoading, props.cellConfig, props.isHighlighted],
   async () => {
-    if (props.cellState?.type === 'revealed') {
+    if (props.cellState?.type === 'revealed' && !props.cellState?.isLoading) {
       await nextTick()
       renderCell()
     }
@@ -158,6 +161,61 @@ watch(
   height: 100%;
   @include variables.flex-center;
   position: relative;
+}
+
+// 加载旋转圈
+.loading-spinner {
+  position: absolute;
+  width: variables.vw-vh-min(3.5, 4.5);
+  height: variables.vw-vh-min(3.5, 4.5);
+  border-radius: 50%;
+  background: conic-gradient(
+    transparent 0deg,
+    transparent 60deg,
+    var(--foreground-color) 120deg,
+    var(--foreground-color) 180deg,
+    transparent 240deg,
+    transparent 360deg
+  );
+  opacity: 0;
+
+  --load-delay: 0.0s; // 延迟显示加载动画
+  animation:
+    delayed-show 0s linear var(--load-delay) forwards,
+    spin 1s ease-in-out var(--load-delay) infinite;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    height: 70%;
+    background: var(--background-color);
+    border-radius: 50%;
+    box-shadow: 0 0 variables.vw-vh-min(0.5, 0.7) rgba(0, 0, 0, 0.1);
+  }
+}
+
+@keyframes delayed-show {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.1);
+  }
+  100% {
+    transform: rotate(360deg);
+    filter: brightness(1);
+  }
 }
 
 /* 为动态创建的元素定义全局样式 */

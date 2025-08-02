@@ -5,6 +5,7 @@ export type CellType = 'empty' | 'revealed'
 export interface CellState {
   type: CellType
   isRevealed: boolean
+  isLoading?: boolean
 }
 
 // JSON配置相关类型定义

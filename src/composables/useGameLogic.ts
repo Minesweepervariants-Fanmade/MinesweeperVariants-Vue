@@ -74,8 +74,14 @@ export function useGameLogic() {
 
     if (cellState) {
       try {
+        // 设置加载状态
+        cellState.isLoading = true
+
         // 调用postClick API发送点击事件到服务器
         const response: ClickResponse = await postClick(boardName, x, y, button)
+
+        // 清除加载状态
+        cellState.isLoading = false
 
         // 检查响应状态
         if (!response.success) {
@@ -113,6 +119,8 @@ export function useGameLogic() {
           }, 0)
         }
       } catch (error) {
+        // 清除加载状态
+        cellState.isLoading = false
         console.error('Failed to post click:', error)
       }
     }
