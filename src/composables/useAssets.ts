@@ -78,7 +78,6 @@ export function useAssets() {
 
     await Promise.all(loadPromises)
     assetsLoaded.value = true
-    console.log('All SVG assets loading completed')
 
     return assetTemplates.value
   }

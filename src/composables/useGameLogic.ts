@@ -35,12 +35,6 @@ export function useGameLogic() {
       metadata.value = config.metadata
       allCells.value = config.allCells
       isInitialized.value = true
-
-      console.log('Game initialized with config:', {
-        metadata: config.metadata,
-        boards: Object.keys(config.boards),
-        cellCount: config.allCells.length,
-      })
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to initialize game'
       error.value = errorMessage
@@ -75,11 +69,6 @@ export function useGameLogic() {
     const board = getGameBoard(boardName)
     const key = cellCoordToKey(row, col)
     const cellState = board[key]
-
-    console.log(
-      `Cell clicked: Board ${boardName}, Position ${key} (row: ${row}, col: ${col}), Button: ${button}`,
-      cellState
-    )
 
     const { x, y } = displayCoordToIndex(row, col)
 
@@ -117,7 +106,6 @@ export function useGameLogic() {
         if (response.gameover) {
           isGameOver.value = true
           gameOverReason.value = response.reason
-          console.log('Game over:', response.reason)
 
           // 显示游戏结束对话框
           window.setTimeout(() => {
