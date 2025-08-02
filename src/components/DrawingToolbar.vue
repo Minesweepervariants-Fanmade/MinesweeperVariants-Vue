@@ -146,14 +146,23 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import type { DrawingTool } from '@/types/drawing'
 import { useDrawing } from '@/composables/useDrawing'
-import { useSettings } from '@/composables/useSettings'
 import BaseButton from '@/components/BaseButton.vue'
 import ColorPalette from '@/components/ColorPalette.vue'
 import BrushSizePanel from '@/components/BrushSizePanel.vue'
 
+import {
+  registerKeyboardShortcut,
+  unregisterKeyboardShortcut
+} from '@/composables/shortcutManager'
+
+// Props
+
+
+
+
+
 // 直接使用绘画状态管理
 const drawing = useDrawing()
-const { settings } = useSettings()
 
 // 状态管理
 const showColorPalette = ref(false)
@@ -172,55 +181,68 @@ const handleSizeChange = (size: number) => {
   drawing.setSize(size)
 }
 
-// 检查快捷键是否匹配
-const isShortcutMatch = (event: KeyboardEvent, shortcut: string) => {
-  // 如果快捷键为空，则不匹配
-  if (!shortcut || shortcut.trim() === '') return false
-
-  const eventKeys = []
-  if (event.ctrlKey) eventKeys.push('ctrl')
-  if (event.shiftKey) eventKeys.push('shift')
-  if (event.altKey) eventKeys.push('alt')
-  if (event.metaKey) eventKeys.push('meta')
-  eventKeys.push(event.key.toLowerCase())
-
-  const eventShortcut = eventKeys.join('+')
-  return eventShortcut === shortcut.toLowerCase()
+// 快捷键回调函数
+const onBrushTool = (_event: KeyboardEvent): boolean => {
+  handleToolChange('brush')
+  return true
 }
 
-// 键盘快捷键处理
-const handleKeyDown = (event: globalThis.KeyboardEvent) => {
-  // 防止在输入框中触发快捷键
-  if (event.target && (event.target as HTMLElement).tagName === 'INPUT') return
+const onEraserTool = (_event: KeyboardEvent): boolean => {
+  handleToolChange('magic-eraser')
+  return true
+}
 
-  const shortcuts = settings.value.keyboardShortcuts
+const onMarkerTool = (_event: KeyboardEvent): boolean => {
+  handleToolChange('circle-marker')
+  return true
+}
 
-  // 检查各种快捷键
-  if (isShortcutMatch(event, shortcuts.brushTool)) {
-    event.preventDefault()
-    handleToolChange('brush')
-  } else if (isShortcutMatch(event, shortcuts.eraserTool)) {
-    event.preventDefault()
-    handleToolChange('magic-eraser')
-  } else if (isShortcutMatch(event, shortcuts.markerTool)) {
-    event.preventDefault()
-    handleToolChange('circle-marker')
-  } else if (isShortcutMatch(event, shortcuts.colorPalette)) {
-    event.preventDefault()
-    toggleColorPalette()
-  } else if (isShortcutMatch(event, shortcuts.brushPanel)) {
-    event.preventDefault()
-    toggleBrushSizePanel()
-  } else if (isShortcutMatch(event, shortcuts.clearCanvas)) {
-    event.preventDefault()
-    drawing.clear()
-  } else if (isShortcutMatch(event, shortcuts.undo)) {
-    event.preventDefault()
-    drawing.undo()
-  } else if (isShortcutMatch(event, shortcuts.redo)) {
-    event.preventDefault()
-    drawing.redo()
-  }
+const onColorPalette = (_event: KeyboardEvent): boolean => {
+  toggleColorPalette()
+  return true
+}
+
+const onBrushPanel = (_event: KeyboardEvent): boolean => {
+  toggleBrushSizePanel()
+  return true
+}
+
+const onClearCanvas = (_event: KeyboardEvent): boolean => {
+  drawing.clear()
+  return true
+}
+
+const onUndo = (_event: KeyboardEvent): boolean => {
+  drawing.undo()
+  return true
+}
+
+const onRedo = (_event: KeyboardEvent): boolean => {
+  drawing.redo()
+  return true
+}
+
+// 注册快捷键回调（全局注册）
+const registerShortcuts = () => {
+  registerKeyboardShortcut('brushTool', onBrushTool)
+  registerKeyboardShortcut('eraserTool', onEraserTool)
+  registerKeyboardShortcut('markerTool', onMarkerTool)
+  registerKeyboardShortcut('colorPalette', onColorPalette)
+  registerKeyboardShortcut('brushPanel', onBrushPanel)
+  registerKeyboardShortcut('clearCanvas', onClearCanvas)
+  registerKeyboardShortcut('undo', onUndo)
+  registerKeyboardShortcut('redo', onRedo)
+}
+
+const unregisterShortcuts = () => {
+  unregisterKeyboardShortcut('brushTool')
+  unregisterKeyboardShortcut('eraserTool')
+  unregisterKeyboardShortcut('markerTool')
+  unregisterKeyboardShortcut('colorPalette')
+  unregisterKeyboardShortcut('brushPanel')
+  unregisterKeyboardShortcut('clearCanvas')
+  unregisterKeyboardShortcut('undo')
+  unregisterKeyboardShortcut('redo')
 }
 
 // 工具栏操作
@@ -252,11 +274,11 @@ const toggleBrushSizePanel = () => {
 
 // 生命周期
 onMounted(() => {
-  window.addEventListener('keydown', handleKeyDown)
+  registerShortcuts()
 })
 
 onUnmounted(() => {
-  window.removeEventListener('keydown', handleKeyDown)
+  unregisterShortcuts()
 })
 </script>
 
