@@ -86,7 +86,8 @@ import {
   handleGlobalMouseDown,
   handleGlobalWheel,
   registerKeyboardShortcut,
-  unregisterKeyboardShortcut
+  unregisterKeyboardShortcut,
+  registerMouseShortcut
 } from '@/composables/shortcutManager'
 import { useTheme } from '@/composables/useTheme'
 import { useGameLogic } from '@/composables/useGameLogic'
@@ -256,10 +257,26 @@ const onThemeToggle = (_event: KeyboardEvent): boolean => {
   return true
 }
 
+const onThemeToggleMouse = (_event: MouseEvent | WheelEvent): boolean => {
+  if (_event instanceof MouseEvent) {
+    toggleTheme()
+    return true
+  }
+  return false
+}
+
 // 切换绘图覆盖层快捷键回调
 const ontoggleDrawingToolbar = (_event: KeyboardEvent): boolean => {
   showDrawingToolbar.value = !showDrawingToolbar.value
   return true
+}
+
+const ontogglemouseDrawingToolbar = (_event: MouseEvent | WheelEvent): boolean => {
+  if (_event instanceof MouseEvent) {
+    showDrawingToolbar.value = !showDrawingToolbar.value
+    return true
+  }
+  return false
 }
 
 onMounted(async () => {
@@ -274,8 +291,10 @@ onMounted(async () => {
 
   // 注册主题切换快捷键
   registerKeyboardShortcut('themeToggle', onThemeToggle)
+  registerMouseShortcut('themeToggle', onThemeToggleMouse)
   // 注册绘图覆盖层切换快捷键
   registerKeyboardShortcut('toggleDrawingToolbar', ontoggleDrawingToolbar)
+  registerMouseShortcut('toggleDrawingToolbar', ontogglemouseDrawingToolbar)
 
   // 禁用右键菜单
   const contextMenuHandler = (e: MouseEvent) => e.preventDefault()
