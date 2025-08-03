@@ -6,6 +6,7 @@ export type GameMode = 'normal' | 'expert' | 'ultimate'
 // 快捷键配置类型
 export interface KeyboardShortcuts {
   [key: string]: string
+  toggleDrawingToolbar: string // 切换绘图覆盖层
   useCurrentTool: string     // 使用当前绘画工具
   brushTool: string          // 画笔工具
   eraserTool: string         // 魔术橡皮
@@ -22,6 +23,7 @@ export interface KeyboardShortcuts {
 // 鼠标快捷键配置类型
 export interface MouseShortcuts {
   [key: string]: string
+  toggleDrawingToolbar: string // 切换绘图覆盖层
   brushTool: string          // 画笔工具
   eraserTool: string         // 魔术橡皮
   markerTool: string         // 标记工具
@@ -88,6 +90,7 @@ export const defaultSettings: GameSettings = {
   touchMode: false,
   swapMouseButtons: false,
   keyboardShortcuts: {
+    toggleDrawingToolbar: 'd',
     useCurrentTool: '',
     brushTool: 'b',
     eraserTool: 'e',
@@ -101,6 +104,7 @@ export const defaultSettings: GameSettings = {
     themeToggle: 't'
   },
   mouseShortcuts: {
+    toggleDrawingToolbar: 'mb4',
     brushTool: 'left',
     eraserTool: 'right',
     markerTool: '',
@@ -108,7 +112,7 @@ export const defaultSettings: GameSettings = {
     brushPanel: 'ctrl+wheel',
     clearCanvas: 'middle',
     undo: 'mb5',
-    redo: 'mb4',
+    redo: '',
     resetGame: ''
   },
 }
@@ -158,6 +162,10 @@ export const ultimateModeOptionDescriptions = {
 
 // 快捷键功能描述
 export const shortcutDescriptions = {
+  toggleDrawingToolbar: {
+    name: '切换绘图覆盖层',
+    category: '界面操作'
+  },
   useCurrentTool: {
     name: '使用当前绘画工具',
     category: '绘图工具'

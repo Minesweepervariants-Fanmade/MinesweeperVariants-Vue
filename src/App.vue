@@ -256,6 +256,12 @@ const onThemeToggle = (_event: KeyboardEvent): boolean => {
   return true
 }
 
+// 切换绘图覆盖层快捷键回调
+const ontoggleDrawingToolbar = (_event: KeyboardEvent): boolean => {
+  showDrawingToolbar.value = !showDrawingToolbar.value
+  return true
+}
+
 onMounted(async () => {
   // 预加载素材
   await waitForAssets()
@@ -268,8 +274,8 @@ onMounted(async () => {
 
   // 注册主题切换快捷键
   registerKeyboardShortcut('themeToggle', onThemeToggle)
-  // 注册主题切换快捷键
-  registerKeyboardShortcut('themeToggle', onThemeToggle)
+  // 注册绘图覆盖层切换快捷键
+  registerKeyboardShortcut('toggleDrawingToolbar', ontoggleDrawingToolbar)
 
   // 禁用右键菜单
   const contextMenuHandler = (e: MouseEvent) => e.preventDefault()
@@ -286,7 +292,7 @@ onMounted(async () => {
 onUnmounted(() => {
   // 清理事件监听器
   unregisterKeyboardShortcut('themeToggle', onThemeToggle)
-  if (cleanupContextMenu) cleanupContextMenu()
+  unregisterKeyboardShortcut('toggleDrawingToolbar', ontoggleDrawingToolbar)
   if (cleanupContextMenu) cleanupContextMenu()
   document.removeEventListener('keydown', handleGlobalKeyDown)
   document.removeEventListener('mousedown', handleGlobalMouseDown)
