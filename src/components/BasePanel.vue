@@ -114,7 +114,6 @@ const onBackdropClick = () => {
   width: 100vw;
   height: 100vh;
   display: flex;
-  z-index: 1000;
   pointer-events: auto;
 }
 
