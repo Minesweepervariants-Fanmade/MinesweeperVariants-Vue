@@ -10,6 +10,11 @@ export function useGameConfig() {
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
+  // 辅助函数：生成cellConfig的key
+  const getCellKey = (boardName: string, x: number, y: number): string => {
+    return `${boardName}-${x}-${y}`
+  }
+
   // 加载元数据配置
   const loadMetadata = async (): Promise<BoardMetadata> => {
     try {
@@ -145,14 +150,18 @@ export function useGameConfig() {
     try {
       const metadataResult = await loadMetadata()
 
-      // 合并所有单元格配置
-      const allCells = [...metadataResult.cells] // 暂时只使用元数据中的单元格
+      // 合并所有单元格配置并转换为Record
+      const allCells: Record<string, CellConfig> = {}
+      for (const cell of metadataResult.cells) {
+        const key = getCellKey(cell.position.boardname, cell.position.x, cell.position.y)
+        allCells[key] = cell
+      }
 
       // 创建游戏板
       const boards = createGameBoards(metadataResult)
 
       // 应用单元格配置
-      applyCellConfigs(boards, allCells)
+      applyCellConfigs(boards, metadataResult.cells) // 这里仍然传递数组，因为applyCellConfigs可能需要数组
 
       return {
         metadata: metadataResult,

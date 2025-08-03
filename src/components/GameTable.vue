@@ -45,7 +45,7 @@ interface Props {
   rows: number[]
   cols: string[]
   boardName?: string
-  cellConfigs?: CellConfig[]
+  cellConfigs?: Record<string, CellConfig>
   showRowColLabel?: boolean
 }
 
@@ -72,15 +72,9 @@ const getCellConfig = (row: number, col: string): CellConfig | null => {
   if (!props.cellConfigs || !props.boardName) return null
 
   const { x, y } = displayCoordToIndex(row, col)
+  const key = `${props.boardName}-${x}-${y}`
 
-  return (
-    props.cellConfigs.find(
-      config =>
-        config.position.boardname === props.boardName &&
-        config.position.x === x &&
-        config.position.y === y
-    ) || null
-  )
+  return props.cellConfigs[key] || null
 }
 
 // 检查单元格是否高亮（现在通过CSS动态控制高亮）

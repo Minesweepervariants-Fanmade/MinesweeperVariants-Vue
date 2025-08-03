@@ -120,6 +120,13 @@ const {
   getAllBoardConfigs,
 } = useGameLogic()
 
+// 辅助函数：生成cellConfig的key
+const getCellKey = (boardName: string, x: number, y: number): string => {
+  return `${boardName}-${x}-${y}`
+}
+
+// 使用设置
+
 const { waitForAssets } = useAssets()
 const { setTheme, toggleTheme } = useTheme()
 
@@ -173,7 +180,11 @@ const handleHintClick = async () => {
           }
         }
       }
-      allCells.value = [...allCells.value, ...cells]
+      // 更新allCells Record
+      for (const cellUpdate of cells) {
+        const key = getCellKey(cellUpdate.position.boardname, cellUpdate.position.x, cellUpdate.position.y)
+        allCells.value[key] = cellUpdate
+      }
     }
     if (gameover) {
       isGameOver.value = true

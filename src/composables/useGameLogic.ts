@@ -13,13 +13,18 @@ export function useGameLogic() {
 
   const gameBoards = ref<Record<string, Record<string, CellState>>>({})
   const metadata = ref<BoardMetadata | null>(null)
-  const allCells = ref<CellConfig[]>([])
+  const allCells = ref<Record<string, CellConfig>>({})
   const isInitialized = ref(false)
   const isLoading = ref(false)
   const error = ref<string | null>(null)
   const isGameOver = ref(false)
   const gameOverReason = ref<string>('')
   const showGameOverDialog = ref(false)
+
+  // 辅助函数：生成cellConfig的key
+  const getCellKey = (boardName: string, x: number, y: number): string => {
+    return `${boardName}-${x}-${y}`
+  }
 
   const initializeGame = async () => {
     isLoading.value = true
@@ -104,8 +109,11 @@ export function useGameLogic() {
             }
           }
 
-          // 更新allCells数组
-          allCells.value = [...allCells.value, ...response.cells]
+          // 更新allCells Record
+          for (const cellUpdate of response.cells) {
+            const key = getCellKey(cellUpdate.position.boardname, cellUpdate.position.x, cellUpdate.position.y)
+            allCells.value[key] = cellUpdate
+          }
         }
 
         // 检查游戏是否结束
@@ -130,14 +138,8 @@ export function useGameLogic() {
   const getCellConfig = (boardName: string, x: number, y: number): CellConfig | null => {
     if (!allCells.value) return null
 
-    return (
-      allCells.value.find(
-        config =>
-          config.position.boardname === boardName &&
-          config.position.x === x &&
-          config.position.y === y
-      ) || null
-    )
+    const key = getCellKey(boardName, x, y)
+    return allCells.value[key] || null
   }
 
   // 重置游戏
