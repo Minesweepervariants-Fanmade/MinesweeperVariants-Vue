@@ -107,7 +107,7 @@ const onBackdropClick = () => {
   position: absolute;
   top: variables.scaled(8);
   right: variables.scaled(12);
-  min-width: auto;
+  font-size: variables.scaled(20);
 }
 
 .modal-content {

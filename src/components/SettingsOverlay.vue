@@ -38,7 +38,7 @@
             v-model.number="localSettings.mineCount"
             type="number"
             class="setting-input"
-            :min="0"
+            :min="-1"
             :max="maxMines"
           >
         </div>

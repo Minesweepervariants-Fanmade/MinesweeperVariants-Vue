@@ -129,6 +129,7 @@ const buttonClasses = computed(() => {
   width: auto;
   display: inline-flex;
   justify-content: center;
+  font-size: variables.scaled(12);
   @include variables.paint(white, rgba(#666, 0.8));
 
   &:hover:not(:disabled) {
