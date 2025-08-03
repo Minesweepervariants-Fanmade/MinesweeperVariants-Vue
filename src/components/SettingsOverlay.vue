@@ -59,6 +59,7 @@
                 v-for="rule in enabledRules"
                 :key="rule.code"
                 class="rule-item enabled"
+                :title="rule.description"
                 @click="disableRule(rule.code)"
               >
                 <span class="rule-code">[{{ rule.code }}]</span>
@@ -79,6 +80,7 @@
                 v-for="rule in availableRules"
                 :key="rule.code"
                 class="rule-item available"
+                :title="rule.description"
                 @click="enableRule(rule.code)"
               >
                 <span class="rule-code">[{{ rule.code }}]</span>
