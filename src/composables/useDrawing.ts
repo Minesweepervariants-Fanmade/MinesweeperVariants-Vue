@@ -80,7 +80,7 @@ function createDrawingInstance() {
   const clearCurrentColor = () => {
     let anyCleared = false
     state.paths.forEach(path => {
-      if (path.color === state.currentColor) {
+      if (path.visible && path.color === state.currentColor) {
         path.visible = false
         anyCleared = true
       }
