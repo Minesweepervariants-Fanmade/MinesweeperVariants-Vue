@@ -181,42 +181,33 @@ onUnmounted(() => {
   }
 }
 
-// 表格标题单元格（左上角空白）
-.corner-cell {
-  @include variables.square-size(0.5);
+// 通用表头单元格样式
+.header-cell {
   background: transparent;
   border: none;
-  text-align: center;
-  font-weight: bold;
-  font-size: variables.vw-vh-min(2, 2.67);
   color: var(--foreground-color);
+  font-weight: bold;
+  text-align: center;
   vertical-align: middle;
   box-sizing: border-box;
+  font-size: variables.vw-vh-min(2, 2.67);
+}
+
+// 左上角空白
+.corner-cell {
+  @extend .header-cell;
+  @include variables.square-size(0.5);
 }
 
 // 列标题
 .col-header {
+  @extend .header-cell;
   @include variables.rect-size(1, 0.5);
-  background: transparent;
-  border: none;
-  color: var(--foreground-color);
-  font-size: variables.vw-vh-min(2.5, 3.33);
-  font-weight: bold;
-  text-align: center;
-  vertical-align: middle;
-  box-sizing: border-box;
 }
 
 // 行标题
 .row-header {
+  @extend .header-cell;
   @include variables.rect-size(0.5, 1);
-  background: transparent;
-  border: none;
-  color: var(--foreground-color);
-  font-size: variables.vw-vh-min(2.5, 3.33);
-  font-weight: bold;
-  text-align: center;
-  vertical-align: middle;
-  box-sizing: border-box;
 }
 </style>
