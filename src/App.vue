@@ -99,6 +99,7 @@ import InfoOverlay from '@/components/InfoOverlay.vue'
 import SettingsOverlay from '@/components/SettingsOverlay.vue'
 import DrawingCanvas from '@/components/DrawingCanvas.vue'
 import DrawingToolbar from '@/components/DrawingToolbar.vue'
+import { getGameParams, newGame } from './utils/gameUtils'
 
 // 组件引用
 const settingsOverlayRef = ref<InstanceType<typeof SettingsOverlay>>()
@@ -207,8 +208,14 @@ const handleHintClick = async (setLoading: (_loading: boolean) => void) => {
   }
 }
 
-const handleCheckClick = () => {
-  // 实现检查功能
+const handleCheckClick = async (setLoading: (_loading: boolean) => void) => {
+  setLoading(true)
+  try {
+    await newGame(getGameParams())
+    resetGame()
+  } finally {
+    setLoading(false)
+  }
 }
 
 const handleResetClick = () => {

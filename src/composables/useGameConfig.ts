@@ -2,7 +2,7 @@ import { ref, reactive } from 'vue'
 import type { BoardMetadata, CellConfig, CellState, ClickResponse } from '@/types/game'
 import { getApiEndpoint } from '@/utils/endpointUtils'
 import { fetchWithValidation } from '@/utils/fetchUtils'
-import { createNewGame, getDefaultGameParams } from '@/utils/gameUtils'
+import { newGame, getGameParams } from '@/utils/gameUtils'
 
 export function useGameConfig() {
   const metadata = ref<BoardMetadata | null>(null)
@@ -28,7 +28,7 @@ export function useGameConfig() {
       if (!data || !data.boards || Object.keys(data.boards).length === 0) {
         // 如果metadata为空，创建新游戏
         console.log('Metadata is empty, creating new game...')
-        const newGameData = await createNewGame(getDefaultGameParams())
+        const newGameData = await newGame(getGameParams())
         metadata.value = newGameData
         return newGameData
       }

@@ -29,7 +29,10 @@
       </BaseButton>
       <BaseButton variant="square" @click="onCheckClick">
         <template #icon>
-          <div ref="checkIcon" class="icon-container" />
+          <div class="check-icon-wrapper">
+            <div ref="checkIcon" class="icon-container" :class="{ 'check-loading': isCheckLoading }" />
+            <LoadingSpinner :visible="isCheckLoading" size="small" />
+          </div>
         </template>
       </BaseButton>
       <BaseButton variant="square" @click="onResetClick">
@@ -104,6 +107,7 @@ const starIcon = ref<HTMLElement>()
 
 // 加载状态
 const isHintLoading = ref(false)
+const isCheckLoading = ref(false)
 
 // 渲染图标
 const renderIcon = async (container: HTMLElement | undefined, assetName: 'brush' | 'hint' | 'check' | 'reset' | 'menu' | 'star') => {
@@ -202,7 +206,7 @@ watch(metadata, processMetadataRules, { immediate: true })
 interface Emits {
   brushClick: []
   hintClick: [setLoading: (_loading: boolean) => void]
-  checkClick: []
+  checkClick: [setLoading: (_loading: boolean) => void]
   resetClick: []
   menuClick: []
 }
@@ -217,7 +221,12 @@ const onHintClick = () => {
   }
   emit('hintClick', setLoading)
 }
-const onCheckClick = () => emit('checkClick')
+const onCheckClick = () => {
+  const setLoading = (loading: boolean) => {
+    isCheckLoading.value = loading
+  }
+  emit('checkClick', setLoading)
+}
 const onResetClick = () => emit('resetClick')
 const onMenuClick = () => emit('menuClick')
 </script>
@@ -284,6 +293,20 @@ const onMenuClick = () => emit('menuClick')
       transition: opacity 0.2s ease;
 
       &.hint-loading {
+        opacity: 0.3;
+      }
+    }
+  }
+
+  .check-icon-wrapper {
+    position: relative;
+    @include variables.svg-icon(variables.vw-vh-min(3, 4));
+    @include variables.flex-center;
+
+    .icon-container {
+      transition: opacity 0.2s ease;
+
+      &.check-loading {
         opacity: 0.3;
       }
     }
