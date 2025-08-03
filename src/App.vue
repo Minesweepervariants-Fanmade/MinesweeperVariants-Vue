@@ -158,11 +158,18 @@ const handleBrushClick = () => {
   showDrawingToolbar.value = !showDrawingToolbar.value
 }
 
-const handleHintClick = async () => {
+const handleHintClick = async (setLoading: (_loading: boolean) => void) => {
   // 获取 hint
   try {
+    // 开始加载
+    setLoading(true)
+
     const endpoint = `${getApiEndpoint('hint')}?count=1`
     const { data, error } = await fetchWithValidation<ClickResponse>(endpoint)
+
+    // 结束加载
+    setLoading(false)
+
     if (error || !data) {
       window.alert(`获取提示失败: ${error || '未知错误'}`)
       return
@@ -194,6 +201,8 @@ const handleHintClick = async () => {
       }, 0)
     }
   } catch (e) {
+    // 确保在出错时也结束加载状态
+    setLoading(false)
     window.alert(`获取提示失败: ${e instanceof Error ? e.message : e}`)
   }
 }

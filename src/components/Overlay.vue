@@ -21,7 +21,10 @@
       </BaseButton>
       <BaseButton variant="square" @click="onHintClick">
         <template #icon>
-          <div ref="hintIcon" class="icon-container" />
+          <div class="hint-icon-wrapper">
+            <div ref="hintIcon" class="icon-container" :class="{ 'hint-loading': isHintLoading }" />
+            <LoadingSpinner :visible="isHintLoading" size="small" />
+          </div>
         </template>
       </BaseButton>
       <BaseButton variant="square" @click="onCheckClick">
@@ -57,6 +60,7 @@ import { ref, onMounted, watch } from 'vue'
 import { useAssets } from '@/composables/useAssets'
 import { useGameLogic } from '@/composables/useGameLogic'
 import BaseButton from './BaseButton.vue'
+import LoadingSpinner from './LoadingSpinner.vue'
 
 // 获取资源管理器
 const { cloneAsset } = useAssets()
@@ -97,6 +101,9 @@ const checkIcon = ref<HTMLElement>()
 const resetIcon = ref<HTMLElement>()
 const menuIcon = ref<HTMLElement>()
 const starIcon = ref<HTMLElement>()
+
+// 加载状态
+const isHintLoading = ref(false)
 
 // 渲染图标
 const renderIcon = async (container: HTMLElement | undefined, assetName: 'brush' | 'hint' | 'check' | 'reset' | 'menu' | 'star') => {
@@ -194,7 +201,7 @@ watch(metadata, processMetadataRules, { immediate: true })
 // 定义 emits
 interface Emits {
   brushClick: []
-  hintClick: []
+  hintClick: [setLoading: (_loading: boolean) => void]
   checkClick: []
   resetClick: []
   menuClick: []
@@ -204,7 +211,12 @@ const emit = defineEmits<Emits>()
 
 // 控制按钮事件处理
 const onBrushClick = () => emit('brushClick')
-const onHintClick = () => emit('hintClick')
+const onHintClick = () => {
+  const setLoading = (loading: boolean) => {
+    isHintLoading.value = loading
+  }
+  emit('hintClick', setLoading)
+}
 const onCheckClick = () => emit('checkClick')
 const onResetClick = () => emit('resetClick')
 const onMenuClick = () => emit('menuClick')
@@ -261,6 +273,20 @@ const onMenuClick = () => emit('menuClick')
   .icon-container {
     @include variables.svg-icon(variables.vw-vh-min(3, 4));
     @include variables.flex-center;
+  }
+
+  .hint-icon-wrapper {
+    position: relative;
+    @include variables.svg-icon(variables.vw-vh-min(3, 4));
+    @include variables.flex-center;
+
+    .icon-container {
+      transition: opacity 0.2s ease;
+
+      &.hint-loading {
+        opacity: 0.3;
+      }
+    }
   }
 }
 
