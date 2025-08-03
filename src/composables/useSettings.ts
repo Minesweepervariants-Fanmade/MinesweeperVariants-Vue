@@ -104,15 +104,15 @@ export const defaultSettings: GameSettings = {
     themeToggle: 't'
   },
   mouseShortcuts: {
-    toggleDrawingToolbar: 'mb4',
+    toggleDrawingToolbar: '',
     brushTool: 'left',
     eraserTool: 'right',
     markerTool: '',
     colorPalette: 'wheel',
     brushPanel: 'ctrl+wheel',
     clearCanvas: 'middle',
-    undo: 'mb5',
-    redo: '',
+    undo: 'mb4',
+    redo: 'mb5',
     resetGame: ''
   },
 }
