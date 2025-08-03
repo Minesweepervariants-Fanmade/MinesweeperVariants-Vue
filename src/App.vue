@@ -149,7 +149,7 @@ const showSettingsDialog = ref(false)
 const showDrawingToolbar = ref(false)
 
 // 游戏状态数据
-const levelCount = computed(() => '10/10')
+const levelCount = computed(() => '100/10')
 const totalMines = computed(() => undefined)
 const remainingMines = computed(() => undefined)
 const remainingCells = computed(() => 21)

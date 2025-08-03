@@ -3,11 +3,11 @@
     <!-- 规则信息 -->
     <div class="rules">
       <div class="rule-line mine-count">
-        <u><span class="rule-key">[R]</span> 总雷数</u>：{{ mineCount }} / {{ remainingMines }} (剩余雷数/格数)
+        <u>[R] 总雷数</u>: &nbsp;{{ mineCount ?? '*' }} &nbsp; (剩余雷数/格数: {{ remainingMines ?? '*' }}/{{ remainingCells ?? '*' }})
       </div>
       <template v-for="(rule, _idx) in rules" :key="_idx">
         <div class="rule-line">
-          <u><span class="rule-key">[{{ rule.code }}]</span> {{ rule.name }}</u>：{{ rule.desc }}
+          <u>[{{ rule.code }}] {{ rule.name }}</u>: &nbsp;{{ rule.desc }}
         </div>
       </template>
     </div>
@@ -210,13 +210,8 @@ const onMenuClick = () => emit('menuClick')
     margin-bottom: variables.scaled(5);
 
     u {
-      text-decoration-thickness: variables.scaled(1);
-    }
-
-    .rule-key {
-      color: var(--foreground-color);
-      font-weight: bold;
-      font-size: variables.scaled(18);
+      text-decoration-thickness: 0;
+      text-decoration-color: rgba(255,255,255, 0.5);
     }
   }
 
