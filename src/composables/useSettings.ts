@@ -246,7 +246,11 @@ const saveSettings = (settings: GameSettings): void => {
   }
 }
 
-export function useSettings() {
+// 单例实例
+let settingsInstance: ReturnType<typeof createSettingsInstance> | null = null
+
+// 创建设置实例的工厂函数
+function createSettingsInstance() {
   // 从 localStorage 加载初始设置
   const settings = ref<GameSettings>(loadSettings())
 
@@ -311,4 +315,12 @@ export function useSettings() {
     loadSettings,
     saveSettings,
   }
+}
+
+// 单例模式的 useSettings 函数
+export function useSettings() {
+  if (!settingsInstance) {
+    settingsInstance = createSettingsInstance()
+  }
+  return settingsInstance
 }
