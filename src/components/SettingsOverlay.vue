@@ -482,7 +482,6 @@ defineExpose({
 }
 
 .settings-content {
-  max-height: calc(100% - #{variables.scaled(60)});
   overflow-y: auto;
 }
 
