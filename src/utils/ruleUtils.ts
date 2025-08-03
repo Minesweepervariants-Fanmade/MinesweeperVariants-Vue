@@ -3,7 +3,7 @@ import { fetchWithValidation } from '@/utils/fetchUtils'
 import { getApiEndpoint } from '@/utils/endpointUtils'
 
 // 规则类型定义
-export type RuleType = 'lRule' | 'mRule' | 'rRule' | 'oRule'
+export type RuleType = 'lRule' | 'mRule' | 'rRule' | 'oRule' | 'dye'
 
 // 规则项类型
 export interface RuleItem {
@@ -62,6 +62,24 @@ export function applyRulesToReactive(rules: Record<string, unknown[]>) {
   }
 }
 
+type RuleData = { rules?: Record<string, unknown[]>, dye?: Record<string, string> }
+
+function parseRule(rulesData: RuleData): Record<string, unknown[]> {
+  const parsed: Record<string, unknown[]> = {}
+  if (rulesData.rules) {
+    for (const [key, value] of Object.entries(rulesData.rules)) {
+      parsed[key] = value
+    }
+  }
+  if (rulesData.dye) {
+    for (const [key, value] of Object.entries(rulesData.dye)) {
+      parsed[`@${key}`] = [ 'dye', value, value ]
+    }
+  }
+  console.log(parsed)
+  return parsed
+}
+
 /**
  * 从端点获取规则并保存到 localStorage
  */
@@ -72,12 +90,12 @@ export const fetchEndpointRules = async (): Promise<void> => {
     if (error) {
       throw new Error(`拉取规则失败: ${error}`)
     }
-    const rulesData = data as { rules?: Record<string, unknown[]> }
-    if (rulesData && rulesData.rules && typeof rulesData.rules === 'object') {
-      applyRulesToReactive(rulesData.rules)
-      // 保存到 localStorage
-      localStorage.setItem(RULES_STORAGE_KEY, JSON.stringify(rulesData.rules))
-    }
+    const rulesData = data as RuleData
+    const parsedRules = parseRule(rulesData)
+
+    applyRulesToReactive(parsedRules)
+    // 保存到 localStorage
+    localStorage.setItem(RULES_STORAGE_KEY, JSON.stringify(parsedRules))
   } catch (e) {
     throw new Error(`拉取规则失败: ${e instanceof Error ? e.message : e}`)
   }
