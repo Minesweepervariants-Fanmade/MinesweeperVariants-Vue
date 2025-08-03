@@ -891,7 +891,6 @@ onMounted(() => {
       const firstGameTable = document.querySelector('.game-table') as HTMLElement
       if (firstGameTable) {
         initialBoardRect.value = firstGameTable.getBoundingClientRect()
-        console.log('初始题板位置已记录:', initialBoardRect.value)
       } else {
         // 如果还没找到题板，继续尝试
         setTimeout(recordInitialBoardPosition, 100)
