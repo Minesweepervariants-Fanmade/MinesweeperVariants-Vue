@@ -179,14 +179,22 @@ const onClearCanvasMouse = (): boolean => {
   return true
 }
 
-const onUndoMouse = (): boolean => {
-  drawing.undo()
-  return true
+const onUndoMouse = (event: MouseEvent): boolean => {
+  if (event instanceof MouseEvent && event.type === 'mouseup') {
+    drawing.undo()
+    console.log('Undo action performed.')
+    return true
+  }
+  return false
 }
 
-const onRedoMouse = (): boolean => {
-  drawing.redo()
-  return true
+const onRedoMouse = (event: MouseEvent): boolean => {
+  if (event instanceof MouseEvent && event.type === 'mouseup') {
+    drawing.redo()
+    console.log('Redo action performed.')
+    return true
+  }
+  return false
 }
 
 // 滚轮快捷键回调函数

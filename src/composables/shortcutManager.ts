@@ -118,7 +118,7 @@ function getMatchedShortcuts<T extends { action: string; shortcut: string; compl
   return matched
 }
 
-export function handleGlobalKeyDown(event: KeyboardEvent) {
+export function handleGlobalKeyUp(event: KeyboardEvent) {
   if (event.target && (event.target as HTMLElement).tagName === 'INPUT') return
   const matchedShortcuts = getMatchedShortcuts<{ action: string; shortcut: string; complexity: number }>(keyboardShortcuts, s => isKeyboardShortcutMatch(event, s))
   for (const { action } of matchedShortcuts) {
@@ -139,7 +139,7 @@ export function handleGlobalKeyDown(event: KeyboardEvent) {
   }
 }
 
-export function handleGlobalMouseDown(event: MouseEvent) {
+export function handleGlobalMouse(event: MouseEvent) {
   const matchedShortcuts = getMatchedShortcuts<{ action: string; shortcut: string; complexity: number }>(mouseShortcuts, s => isMouseShortcutMatch(event, s))
   for (const { action } of matchedShortcuts) {
     const callbackEntries = mouseCallbacks.value[action]

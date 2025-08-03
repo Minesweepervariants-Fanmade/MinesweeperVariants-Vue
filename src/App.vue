@@ -82,8 +82,8 @@ import type { ClickResponse } from '@/types/game'
 
 import {
   setShortcuts,
-  handleGlobalKeyDown,
-  handleGlobalMouseDown,
+  handleGlobalKeyUp,
+  handleGlobalMouse,
   handleGlobalWheel,
   registerKeyboardShortcut,
   unregisterKeyboardShortcut,
@@ -257,8 +257,8 @@ const onThemeToggle = (_event: KeyboardEvent): boolean => {
   return true
 }
 
-const onThemeToggleMouse = (_event: MouseEvent | WheelEvent): boolean => {
-  if (_event instanceof MouseEvent) {
+const onThemeToggleMouse = (event: MouseEvent | WheelEvent): boolean => {
+  if (event instanceof MouseEvent && event.type === 'mouseup') {
     toggleTheme()
     return true
   }
@@ -271,8 +271,8 @@ const ontoggleDrawingToolbar = (_event: KeyboardEvent): boolean => {
   return true
 }
 
-const ontogglemouseDrawingToolbar = (_event: MouseEvent | WheelEvent): boolean => {
-  if (_event instanceof MouseEvent) {
+const ontogglemouseDrawingToolbar = (event: MouseEvent | WheelEvent): boolean => {
+  if (event instanceof MouseEvent && event.type === 'mouseup') {
     showDrawingToolbar.value = !showDrawingToolbar.value
     return true
   }
@@ -303,8 +303,9 @@ onMounted(async () => {
 
   // 设置全局快捷键监听
   setShortcuts(gameSettings.value.keyboardShortcuts, gameSettings.value.mouseShortcuts)
-  document.addEventListener('keydown', handleGlobalKeyDown)
-  document.addEventListener('mousedown', handleGlobalMouseDown)
+  document.addEventListener('keyup', handleGlobalKeyUp)
+  document.addEventListener('mousedown', handleGlobalMouse)
+  document.addEventListener('mouseup', handleGlobalMouse)
   document.addEventListener('wheel', handleGlobalWheel, { passive: false })
 })
 
@@ -313,8 +314,9 @@ onUnmounted(() => {
   unregisterKeyboardShortcut('themeToggle', onThemeToggle)
   unregisterKeyboardShortcut('toggleDrawingToolbar', ontoggleDrawingToolbar)
   if (cleanupContextMenu) cleanupContextMenu()
-  document.removeEventListener('keydown', handleGlobalKeyDown)
-  document.removeEventListener('mousedown', handleGlobalMouseDown)
+  document.removeEventListener('keyup', handleGlobalKeyUp)
+  document.removeEventListener('mousedown', handleGlobalMouse)
+  document.removeEventListener('mouseup', handleGlobalMouse)
   document.removeEventListener('wheel', handleGlobalWheel)
 })
 </script>
