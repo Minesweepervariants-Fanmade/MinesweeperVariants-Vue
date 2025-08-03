@@ -3,7 +3,7 @@
     v-if="visible"
     class="loading-spinner"
     :class="{ small: size === 'small', large: size === 'large' }"
-    :style="{ '--delay': delay + 's' }"
+    :style="{ '--delay': `${delay}s` }"
   />
 </template>
 

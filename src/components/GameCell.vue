@@ -12,7 +12,7 @@
     @mouseleave="handleMouseLeave"
   >
     <div class="cell-content">
-      <LoadingSpinner :visible="cellState?.isLoading" :delay="0" />
+      <LoadingSpinner :visible="cellState?.isLoading" :delay="settings.loadingSpinnerDelay / 1000" />
       <template v-if="cellState?.type === 'revealed'">
         <div ref="container" class="container" />
       </template>
@@ -23,6 +23,7 @@
 <script setup lang="ts">
 import { computed, ref, watch, nextTick } from 'vue'
 import { useComponentRenderer } from '@/composables/useComponentRenderer'
+import { useSettings } from '@/composables/useSettings'
 import LoadingSpinner from './LoadingSpinner.vue'
 import type { CellState, CellConfig } from '@/types/game'
 
@@ -57,6 +58,7 @@ interface Emits {
 const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
+const { settings } = useSettings()
 const { renderComponent } = useComponentRenderer()
 const container = ref<HTMLElement>()
 

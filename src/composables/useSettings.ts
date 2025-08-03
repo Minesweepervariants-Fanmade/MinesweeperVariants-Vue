@@ -61,6 +61,7 @@ export interface GameSettings {
   showRowColLabel: boolean // 显示行列标号
   touchMode: boolean // 触屏模式
   swapMouseButtons: boolean // 交换鼠标左右键
+  loadingSpinnerDelay: number // 加载动画延迟时间(毫秒)
   keyboardShortcuts: KeyboardShortcuts // 键盘快捷键配置
   mouseShortcuts: MouseShortcuts // 鼠标快捷键配置
 }
@@ -89,6 +90,7 @@ export const defaultSettings: GameSettings = {
   showRowColLabel: false,
   touchMode: false,
   swapMouseButtons: false,
+  loadingSpinnerDelay: 300, // 默认延迟300毫秒
   keyboardShortcuts: {
     toggleDrawingToolbar: 'd',
     useCurrentTool: '',

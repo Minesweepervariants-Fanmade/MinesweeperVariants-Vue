@@ -188,6 +188,18 @@
             显示行列标号
           </label>
         </div>
+        <div class="setting-item">
+          <label class="setting-label">加载动画延迟(毫秒)：</label>
+          <input
+            v-model.number="localSettings.loadingSpinnerDelay"
+            type="number"
+            class="setting-input"
+            :min="0"
+            :max="5000"
+            :step="50"
+          >
+          <span class="setting-note">加载动画显示前的延迟时间，延迟大时可调为0</span>
+        </div>
       </div>
 
       <!-- 控制设置 -->
@@ -502,6 +514,9 @@ defineExpose({
 .setting-note {
   margin-top: variables.scaled(5);
   margin-left: variables.scaled(130);
+  color: #aaa;
+  font-size: variables.scaled(12);
+  font-style: italic;
 
   small {
     color: #aaa;
@@ -526,6 +541,18 @@ defineExpose({
   color: #ddd;
   font-size: variables.scaled(16);
   font-weight: bold;
+}
+
+.setting-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: variables.scaled(6);
+}
+
+.setting-unit {
+  color: #aaa;
+  font-size: variables.scaled(12);
+  font-style: italic;
 }
 
 .setting-select {

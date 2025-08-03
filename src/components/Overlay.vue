@@ -23,7 +23,7 @@
         <template #icon>
           <div class="hint-icon-wrapper">
             <div ref="hintIcon" class="icon-container" :class="{ 'hint-loading': isHintLoading }" />
-            <LoadingSpinner :visible="isHintLoading" size="small" />
+            <LoadingSpinner :visible="isHintLoading" size="small" :delay="settings.loadingSpinnerDelay / 1000" />
           </div>
         </template>
       </BaseButton>
@@ -31,7 +31,7 @@
         <template #icon>
           <div class="check-icon-wrapper">
             <div ref="checkIcon" class="icon-container" :class="{ 'check-loading': isCheckLoading }" />
-            <LoadingSpinner :visible="isCheckLoading" size="small" />
+            <LoadingSpinner :visible="isCheckLoading" size="small" :delay="settings.loadingSpinnerDelay / 1000" />
           </div>
         </template>
       </BaseButton>
@@ -62,6 +62,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useAssets } from '@/composables/useAssets'
 import { useGameConfig } from '@/composables/useGameConfig'
+import { useSettings } from '@/composables/useSettings'
 import BaseButton from './BaseButton.vue'
 import LoadingSpinner from './LoadingSpinner.vue'
 import { useRules } from '@/utils/ruleUtils'
@@ -71,6 +72,9 @@ const { cloneAsset } = useAssets()
 
 // 获取游戏配置
 const { noFail, gameMode } = useGameConfig()
+
+// 获取设置
+const { settings } = useSettings()
 
 // 获取规则
 const { rules } = useRules()
