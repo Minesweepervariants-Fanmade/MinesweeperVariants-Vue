@@ -3,12 +3,16 @@ import type { BoardMetadata, CellConfig, CellState, ClickResponse } from '@/type
 import { getApiEndpoint } from '@/utils/endpointUtils'
 import { fetchWithValidation } from '@/utils/fetchUtils'
 import { newGame, getGameParams } from '@/utils/gameUtils'
+import { useRules } from '@/utils/ruleUtils'
 
 export function useGameConfig() {
   const metadata = ref<BoardMetadata | null>(null)
   const additionalCells = ref<CellConfig[]>([])
   const isLoading = ref(false)
   const error = ref<string | null>(null)
+
+  // 使用规则管理
+  const { rules, processMetadataRules } = useRules()
 
   // 辅助函数：生成cellConfig的key
   const getCellKey = (boardName: string, x: number, y: number): string => {
@@ -29,10 +33,12 @@ export function useGameConfig() {
         // 如果metadata为空，创建新游戏
         console.log('Metadata is empty, creating new game...')
         const newGameData = await newGame(getGameParams())
+        processMetadataRules(newGameData?.rules)
         metadata.value = newGameData
         return newGameData
       }
-
+      console.log('Loaded metadata:', data)
+      processMetadataRules(data?.rules)
       metadata.value = data
       return data
     } catch (err) {
@@ -181,6 +187,7 @@ export function useGameConfig() {
     additionalCells,
     isLoading,
     error,
+    rules,
     loadMetadata,
     postClick,
     createGameBoards,

@@ -59,43 +59,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useAssets } from '@/composables/useAssets'
-import { useGameLogic } from '@/composables/useGameLogic'
 import BaseButton from './BaseButton.vue'
 import LoadingSpinner from './LoadingSpinner.vue'
+import { useRules } from '@/utils/ruleUtils'
 
 // 获取资源管理器
 const { cloneAsset } = useAssets()
 
-// 获取游戏逻辑
-const { metadata } = useGameLogic()
-
-// 规则类型定义
-type RuleType = 'lRule' | 'mRule' | 'rRule' | 'oRule'
-
-// 获取缓存的规则定义
-const RULES_STORAGE_KEY = 'minesweeper_rules_cache'
-const getRuleDefinitions = (): Record<string, [RuleType, string, string]> => {
-  const cachedRules = localStorage.getItem(RULES_STORAGE_KEY)
-  if (cachedRules) {
-    try {
-      const parsed = JSON.parse(cachedRules)
-      if (parsed && typeof parsed === 'object') {
-        const definitions: Record<string, [RuleType, string, string]> = {}
-        for (const [code, arr] of Object.entries(parsed)) {
-          if (Array.isArray(arr) && arr.length >= 3) {
-            definitions[code] = arr as [RuleType, string, string]
-          }
-        }
-        return definitions
-      }
-    } catch {
-      // ignore JSON parse error
-    }
-  }
-  return {}
-}
+// 获取规则
+const { rules } = useRules()
 
 // 图标容器的引用
 const brushIcon = ref<HTMLElement>()
@@ -160,47 +134,6 @@ const props = withDefaults(defineProps<Props>(), {
   remainingCells: 21,
   showDrawingToolbar: false,
 })
-
-// 规则项类型
-interface RuleItem {
-  code: string
-  name: string
-  desc: string
-}
-
-// 响应式规则列表
-const rules = ref<RuleItem[]>([])
-
-// 动态添加规则函数
-function addRule(code: string, name: string, desc: string) {
-  rules.value.push({ code, name, desc })
-}
-
-// 处理metadata中的规则
-const processMetadataRules = () => {
-  if (!metadata.value?.rules) return
-
-  // 清空现有规则
-  rules.value.length = 0
-
-  // 获取规则定义
-  const ruleDefinitions = getRuleDefinitions()
-
-  // 遍历metadata中的规则列表
-  for (const ruleCode of metadata.value.rules) {
-    const definition = ruleDefinitions[ruleCode]
-    if (definition) {
-      // definition是[RuleType, string, string]格式，其中第二个是名称，第三个是描述
-      addRule(ruleCode, definition[1], definition[2])
-    }
-  }
-}
-
-// 监听metadata变化
-watch(metadata, processMetadataRules, { immediate: true })
-
-// 规则项类型
-// （已由响应式规则和addRule函数替代，见上方定义）
 
 // 定义 emits
 interface Emits {
@@ -331,12 +264,23 @@ const onMenuClick = () => emit('menuClick')
     gap: variables.scaled(10);
 
     .star-icon {
-      @include variables.svg-icon(variables.vw-vh-min(3, 4));
+      @include variables.svg-icon(variables.scaled(30));
       @include variables.flex-center;
+      overflow: visible;
+
+      > * {
+        overflow: visible;
+
+        > * {
+          stroke: var(--mode-color);
+          stroke-width: variables.scaled(30);
+          fill: var(--star) !important;
+        }
+    }
     }
 
     .game-info {
-      color: var(--hint2-color);
+      color: var(--mode-color);
       font-size: variables.scaled(16);
     }
   }

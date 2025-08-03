@@ -48,7 +48,7 @@
       <div class="setting-section">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <h4 class="section-title" style="margin-bottom: 0;">游戏规则</h4>
-          <BaseButton variant="simple" size="small" style="margin-bottom: 0;" @click="fetchEndpointRules">更新</BaseButton>
+          <BaseButton variant="simple" size="small" style="margin-bottom: 0;" @click="handleFetchRules">更新</BaseButton>
         </div>
         <div class="rules-container">
           <!-- 启用的规则 -->
@@ -230,70 +230,19 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import { fetchWithValidation } from '@/utils/fetchUtils'
-import { getApiEndpoint } from '@/utils/endpointUtils'
 import BaseModal from './BaseModal.vue'
 import BaseButton from './BaseButton.vue'
 import ShortcutSettings from './ShortcutSettings.vue'
 import type { GameSettings, GameMode, UltimateModeOptions } from '@/composables/useSettings'
 import { defaultSettings, gameModeDescriptions, ultimateModeOptionDescriptions } from '@/composables/useSettings'
 import { useTheme } from '@/composables/useTheme'
+import { RULE_DEFINITIONS, fetchEndpointRules, type RuleType } from '@/utils/ruleUtils'
 
 // 主题管理
 const { setTheme } = useTheme()
 
 // 快捷键设置组件引用
 const shortcutSettingsRef = ref<InstanceType<typeof ShortcutSettings>>()
-
-// 规则类型定义
-type RuleType = 'lRule' | 'mRule' | 'rRule' | 'oRule'
-
-// 规则映射定义
-import { reactive } from 'vue'
-const RULE_DEFINITIONS = reactive<Record<string, [RuleType, string, string]>>({})
-
-// 拉取 endpoint 规则并保存到 localStorage
-const RULES_STORAGE_KEY = 'minesweeper_rules_cache'
-function applyRulesToReactive(rules: Record<string, unknown[]>) {
-  Object.keys(RULE_DEFINITIONS).forEach(k => delete RULE_DEFINITIONS[k])
-  for (const [code, arr] of Object.entries(rules)) {
-    if (Array.isArray(arr) && arr.length >= 3) {
-      RULE_DEFINITIONS[code] = arr as [RuleType, string, string]
-    }
-  }
-}
-
-const fetchEndpointRules = async () => {
-  try {
-    const endpoint = getApiEndpoint('rules')
-    const { data, error } = await fetchWithValidation(endpoint)
-    if (error) {
-      alert(`拉取规则失败: ${error}`)
-      return
-    }
-    const rulesData = data as { rules?: Record<string, unknown[]> }
-    if (rulesData && rulesData.rules && typeof rulesData.rules === 'object') {
-      applyRulesToReactive(rulesData.rules)
-      // 保存到 localStorage
-      localStorage.setItem(RULES_STORAGE_KEY, JSON.stringify(rulesData.rules))
-    }
-  } catch (e) {
-    alert(`拉取规则失败: ${e instanceof Error ? e.message : e}`)
-  }
-}
-
-// 页面加载时自动读取本地规则
-const cachedRules = localStorage.getItem(RULES_STORAGE_KEY)
-if (cachedRules) {
-  try {
-    const parsed = JSON.parse(cachedRules)
-    if (parsed && typeof parsed === 'object') {
-      applyRulesToReactive(parsed)
-    }
-} catch {
-  // ignore JSON parse error, fallback to默认规则
-}
-}
 
 interface Props {
   visible?: boolean
@@ -385,6 +334,15 @@ const disableRule = (code: string) => {
   const index = localSettings.value.enabledRules.indexOf(code)
   if (index > -1) {
     localSettings.value.enabledRules.splice(index, 1)
+  }
+}
+
+// 处理获取规则的错误
+const handleFetchRules = async () => {
+  try {
+    await fetchEndpointRules()
+  } catch (e) {
+    alert(`拉取规则失败: ${e instanceof Error ? e.message : e}`)
   }
 }
 
