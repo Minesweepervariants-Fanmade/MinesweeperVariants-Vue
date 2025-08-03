@@ -2,7 +2,7 @@
   <table class="game-table">
     <thead>
       <tr>
-        <th class="corner-cell">{{ boardName }}</th>
+        <th class="corner-cell">{{ boardName && boardName.toUpperCase() !== 'MAIN' ? boardName : '' }}</th>
         <th v-for="col in cols" :key="col" class="col-header">
           <template v-if="showRowColLabel !== false">{{ col }}</template>
         </th>

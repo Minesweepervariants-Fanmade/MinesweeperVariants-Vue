@@ -8,7 +8,9 @@ export interface CreateGameParams {
   size: string  // 例如 "5x5"
   rules: string // 例如 "V,O"
   mode: string  // 例如 "EXPERT"
+  total: string // 总雷数
   u_mode?: string // 可选的终极模式选项
+  dye?: string // 可选的染色参数
 }
 
 /**
@@ -22,6 +24,9 @@ export async function newGame(params: CreateGameParams): Promise<BoardMetadata> 
       size: params.size,
       rules: params.rules,
       mode: params.mode,
+      total: params.total,
+      u_mode: params.u_mode || '',
+      dye: params.dye || ''
     })
     const result = await fetchWithValidation<BoardMetadata>(
       `${getApiEndpoint('new')}?${urlParams.toString()}`
@@ -58,6 +63,8 @@ export function getGameParams(): CreateGameParams {
   // 获取游戏模式
   const mode = modeMap[settings.value.gameMode]
 
+  const total = settings.value.mineCount.toString()
+
   // 构建终极模式选项字符串
   let u_mode: string | undefined
   if (settings.value.gameMode === 'ultimate') {
@@ -75,6 +82,7 @@ export function getGameParams(): CreateGameParams {
     size,
     rules,
     mode,
+    total,
     u_mode
   }
 }
