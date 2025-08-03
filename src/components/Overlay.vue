@@ -49,7 +49,7 @@
 
     <!-- 底部信息 -->
     <div class="bottom-info">
-      <div class="star-section">
+      <div class="star-section" :style="starSectionStyle">
         <div ref="starIcon" class="icon-container star-icon" />
         <span class="game-info">[Q]5x5-10-9991 (终极模式 +F +A)</span>
       </div>
@@ -59,8 +59,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useAssets } from '@/composables/useAssets'
+import { useGameConfig } from '@/composables/useGameConfig'
 import BaseButton from './BaseButton.vue'
 import LoadingSpinner from './LoadingSpinner.vue'
 import { useRules } from '@/utils/ruleUtils'
@@ -68,8 +69,29 @@ import { useRules } from '@/utils/ruleUtils'
 // 获取资源管理器
 const { cloneAsset } = useAssets()
 
+// 获取游戏配置
+const { noFail, gameMode } = useGameConfig()
+
 // 获取规则
 const { rules } = useRules()
+
+// 计算星星样式
+const starSectionStyle = computed(() => {
+  let modeColor = 'var(--foreground-color)' // 默认前景色（普通模式）
+
+  if (gameMode.value === 'expert') {
+    modeColor = 'var(--flag-color)' // 专家模式对应旗帜颜色
+  } else if (gameMode.value === 'ultimate') {
+    modeColor = 'var(--error-color)' // 终极模式对应错误颜色
+  }
+
+  const starColor = noFail.value ? modeColor : 'transparent'
+
+  return {
+    '--mode-color': modeColor,
+    '--star': starColor
+  }
+})
 
 // 图标容器的引用
 const brushIcon = ref<HTMLElement>()

@@ -11,6 +11,9 @@ export function useGameConfig() {
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
+  const noFail = ref(true)
+  const gameMode = ref<'normal' | 'expert' | 'ultimate'>('ultimate') // 游戏模式
+
   // 使用规则管理
   const { rules, processMetadataRules } = useRules()
 
@@ -188,6 +191,8 @@ export function useGameConfig() {
     isLoading,
     error,
     rules,
+    noFail,
+    gameMode,
     loadMetadata,
     postClick,
     createGameBoards,
