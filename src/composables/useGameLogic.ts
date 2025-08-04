@@ -116,6 +116,11 @@ export function useGameLogic() {
           }
         }
 
+        // 更新count信息
+        if (response.count && metadata.value) {
+          metadata.value.count = response.count
+        }
+
         // 检查游戏是否结束
         if (response.gameover) {
           isGameOver.value = true
