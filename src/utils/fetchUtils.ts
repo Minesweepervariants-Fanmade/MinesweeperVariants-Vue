@@ -1,3 +1,4 @@
+import { useSettings } from '@/composables/useSettings'
 
 export interface FetchOptions {
   method?: string
@@ -128,8 +129,6 @@ export async function fetchText(
   }
 }
 
-// 获取完整 API endpoint
-import { useSettings } from '@/composables/useSettings'
 /**
  * 获取完整 API endpoint
  * @param path 相对路径（如 'metadata' 或 'click'）
