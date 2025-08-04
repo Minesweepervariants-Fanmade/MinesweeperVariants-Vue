@@ -13,7 +13,15 @@ export interface BoardMetadata {
   rules: string[]
   boards: Record<string, [number, number]>
   cells: CellConfig[]
-  count: number
+  count: CountInfo
+}
+
+// 计数信息类型
+export interface CountInfo {
+  total: number      // 题板总雷数
+  known: number | null   // 雷数(可未知)
+  unknown: number    // 格数
+  remains: number | null // 剩余雷数(可未知)
 }
 
 export interface CellConfig {
@@ -64,4 +72,5 @@ export interface ClickResponse {
   gameover: boolean
   reason: string
   cells: CellConfig[]
+  count?: CountInfo  // 新增count字段
 }
