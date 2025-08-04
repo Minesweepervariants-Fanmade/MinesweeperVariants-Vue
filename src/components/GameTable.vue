@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import GameCell from './GameCell.vue'
+import GameCell from '@/components/GameCell.vue'
 import type { CellState, CellConfig } from '@/types/game'
 import { cellCoordToKey, displayCoordToIndex, indexToDisplayCoord } from '@/utils/columnUtils'
 

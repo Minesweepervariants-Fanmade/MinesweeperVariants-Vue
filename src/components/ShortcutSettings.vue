@@ -107,7 +107,7 @@
 
 <script setup lang="ts">
 import { ref, nextTick, onMounted, onUnmounted, watch } from 'vue'
-import BaseButton from './BaseButton.vue'
+import BaseButton from '@/components/BaseButton.vue'
 import { useAssets } from '@/composables/useAssets'
 import type { KeyboardShortcuts, MouseShortcuts } from '@/composables/useSettings'
 import { defaultSettings, shortcutDescriptions } from '@/composables/useSettings'

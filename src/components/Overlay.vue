@@ -63,8 +63,8 @@ import { ref, onMounted, computed } from 'vue'
 import { useAssets } from '@/composables/useAssets'
 import { useGameConfig } from '@/composables/useGameConfig'
 import { useSettings } from '@/composables/useSettings'
-import BaseButton from './BaseButton.vue'
-import LoadingSpinner from './LoadingSpinner.vue'
+import BaseButton from '@/components/BaseButton.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import { useRules } from '@/utils/ruleUtils'
 
 // 获取资源管理器

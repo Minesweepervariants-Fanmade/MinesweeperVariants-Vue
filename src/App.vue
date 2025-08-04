@@ -100,7 +100,7 @@ import InfoOverlay from '@/components/InfoOverlay.vue'
 import SettingsOverlay from '@/components/SettingsOverlay.vue'
 import DrawingCanvas from '@/components/DrawingCanvas.vue'
 import DrawingToolbar from '@/components/DrawingToolbar.vue'
-import { getGameParams, newGame } from './utils/gameUtils'
+import { getGameParams, newGame } from '@/utils/gameUtils'
 
 // 组件引用
 const settingsOverlayRef = ref<InstanceType<typeof SettingsOverlay>>()

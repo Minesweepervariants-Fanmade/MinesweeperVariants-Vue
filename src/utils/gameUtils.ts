@@ -1,5 +1,5 @@
 import type { BoardMetadata } from '@/types/game'
-import { fetchWithValidation, getApiEndpoint } from './fetchUtils'
+import { fetchWithValidation, getApiEndpoint } from '@/utils/fetchUtils'
 import { useSettings } from '@/composables/useSettings'
 
 // 创建新游戏的参数接口

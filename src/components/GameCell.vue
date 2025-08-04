@@ -24,7 +24,7 @@
 import { computed, ref, watch, nextTick } from 'vue'
 import { useComponentRenderer } from '@/composables/useComponentRenderer'
 import { useSettings } from '@/composables/useSettings'
-import LoadingSpinner from './LoadingSpinner.vue'
+import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import type { CellState, CellConfig } from '@/types/game'
 
 interface Props {

@@ -1,6 +1,6 @@
 import { ref, reactive } from 'vue'
 import type { CellState, BoardMetadata, CellConfig, ClickResponse } from '@/types/game'
-import { useGameConfig } from './useGameConfig'
+import { useGameConfig } from '@/composables/useGameConfig'
 import {
   generateRowLabels,
   generateColumnLabels,

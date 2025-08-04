@@ -242,9 +242,9 @@
 
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
-import BaseModal from './BaseModal.vue'
-import BaseButton from './BaseButton.vue'
-import ShortcutSettings from './ShortcutSettings.vue'
+import BaseModal from '@/components/BaseModal.vue'
+import BaseButton from '@/components/BaseButton.vue'
+import ShortcutSettings from '@/components/ShortcutSettings.vue'
 import type { GameSettings, GameMode, UltimateModeOptions } from '@/composables/useSettings'
 import { defaultSettings, gameModeDescriptions, ultimateModeOptionDescriptions } from '@/composables/useSettings'
 import { useTheme } from '@/composables/useTheme'

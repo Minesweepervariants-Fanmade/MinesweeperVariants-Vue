@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import BaseModal from './BaseModal.vue'
+import BaseModal from '@/components/BaseModal.vue'
 
 interface Props {
   visible?: boolean
