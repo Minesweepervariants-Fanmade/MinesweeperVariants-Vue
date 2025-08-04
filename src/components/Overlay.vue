@@ -3,7 +3,7 @@
     <!-- 规则信息 -->
     <div class="rules">
       <div class="rule-line mine-count">
-        <u>[R] 总雷数</u>: &nbsp;{{ mineCount ?? '*' }} &nbsp; (剩余雷数/格数: {{ remainingMines ?? '*' }}/{{ remainingCells ?? '*' }})
+        <u>[R] 总雷数</u>: &nbsp;{{ metadata?.count?.known ?? '*' }} &nbsp; (剩余雷数/格数: {{ metadata?.count?.remains ?? '*' }}/{{ metadata?.count?.unknown ?? '?' }})
       </div>
       <template v-for="(rule, _idx) in rules" :key="_idx">
         <div class="rule-line">
@@ -51,7 +51,7 @@
     <div class="bottom-info">
       <div class="star-section" :style="starSectionStyle">
         <div ref="starIcon" class="icon-container star-icon" />
-        <span class="game-info">[Q]5x5-10-9991 (终极模式 +F +A)</span>
+        <span class="game-info">{{ gameInfoText }}</span>
       </div>
       <div class="levelCount">{{ levelCount }}</div>
     </div>
@@ -71,13 +71,63 @@ import { useRules } from '@/utils/ruleUtils'
 const { cloneAsset } = useAssets()
 
 // 获取游戏配置
-const { noFail, gameMode } = useGameConfig()
+const { noFail, gameMode, metadata } = useGameConfig()
 
 // 获取设置
 const { settings } = useSettings()
 
 // 获取规则
 const { rules } = useRules()
+
+// 计算游戏信息字符串
+const gameInfoText = computed(() => {
+  // 构建规则部分：[Q][V]...
+  const gameRules = metadata.value?.rules ?? []
+  const rulesText = gameRules.map((rule: string) => `[${rule}]`).join('') || '[Q]'
+
+  // 获取题板大小
+  let boardSize = '?x?'
+  if (metadata.value?.boards) {
+    const boards = Object.values(metadata.value.boards)
+    if (boards.length > 0) {
+      const [rows, cols] = boards[0] // 取第一个board的尺寸
+      boardSize = `${rows}x${cols}`
+    }
+  }
+
+  // 获取总雷数
+  const totalMines = metadata.value?.count?.total ?? 10
+
+  // 题板ID，暂时设置为默认值114514
+  const gameId = '114514'
+
+  // 构建游戏信息：[Q][V]5x5-10-114514
+  const basicInfo = `${rulesText}${boardSize}-${totalMines}-${gameId}`
+
+  // 获取游戏模式文本
+  let modeText = ''
+  if (gameMode.value === 'normal') {
+    modeText = '普通模式'
+  } else if (gameMode.value === 'expert') {
+    modeText = '专家模式'
+  } else if (gameMode.value === 'ultimate') {
+    modeText = '终极模式'
+  }
+
+  // 获取终极模式子选项
+  let ultimateModeOptions = ''
+  if (gameMode.value === 'ultimate' && settings.value.ultimateModeOptions) {
+    const options = []
+    if (settings.value.ultimateModeOptions.forceFlag) options.push('+F')
+    if (settings.value.ultimateModeOptions.autoHint) options.push('+A')
+    if (settings.value.ultimateModeOptions.showMineCount) options.push('+R')
+    if (settings.value.ultimateModeOptions.forceSide) options.push('+S')
+    if (settings.value.ultimateModeOptions.hideRemaining) options.push('+!')
+    ultimateModeOptions = options.length > 0 ? ` ${options.join(' ')}` : ''
+  }
+
+  return `${basicInfo} (${modeText}${ultimateModeOptions})`
+})
 
 // 计算星星样式
 const starSectionStyle = computed(() => {
@@ -149,16 +199,12 @@ onMounted(async () => {
 // 定义 props
 interface Props {
   levelCount?: string
-  mineCount?: number
-  remainingMines?: number
-  remainingCells?: number
   showDrawingToolbar?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   levelCount: '10/10',
-  remainingCells: 21,
-  showDrawingToolbar: false,
+  showDrawingToolbar: false
 })
 
 // 定义 emits

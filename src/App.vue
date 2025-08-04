@@ -38,6 +38,7 @@
       v-if="isInitialized"
       :levelCount="levelCount"
       :mine-count="totalMines"
+      :known-mines="knownMines"
       :remaining-mines="remainingMines"
       :remaining-cells="remainingCells"
       :show-drawing-toolbar="showDrawingToolbar"
@@ -112,6 +113,7 @@ const {
   error,
   allCells,
   gameBoards,
+  metadata,
   isGameOver,
   gameOverReason,
   showGameOverDialog,
@@ -149,10 +151,25 @@ const showSettingsDialog = ref(false)
 const showDrawingToolbar = ref(false)
 
 // 游戏状态数据
-const levelCount = computed(() => '100/10')
-const totalMines = computed(() => undefined)
-const remainingMines = computed(() => undefined)
-const remainingCells = computed(() => 21)
+const levelCount = computed(() => {
+  return '10/10'
+})
+
+const totalMines = computed(() => {
+  return metadata.value?.count?.total ?? 0
+})
+
+const knownMines = computed(() => {
+  return metadata.value?.count?.known ?? undefined
+})
+
+const remainingMines = computed(() => {
+  return metadata.value?.count?.remains ?? undefined
+})
+
+const remainingCells = computed(() => {
+  return metadata.value?.count?.unknown ?? 0
+})
 
 // 控制按钮事件处理
 const handleBrushClick = () => {
@@ -176,7 +193,7 @@ const handleHintClick = async (setLoading: (_loading: boolean) => void) => {
       window.alert(`获取提示失败: ${error || '未知错误'}`)
       return
     }
-    const { cells, gameover, reason } = data as ClickResponse
+    const { cells, gameover, reason, count } = data as ClickResponse
     if (cells && Array.isArray(cells) && cells.length > 0) {
       for (const cellUpdate of cells) {
         const updateBoard = gameBoards.value[cellUpdate.position.boardname]
@@ -195,6 +212,12 @@ const handleHintClick = async (setLoading: (_loading: boolean) => void) => {
         allCells.value[key] = cellUpdate
       }
     }
+
+    // 更新count信息
+    if (count && metadata.value) {
+      metadata.value.count = count
+    }
+
     if (gameover) {
       isGameOver.value = true
       gameOverReason.value = reason || '游戏结束'
