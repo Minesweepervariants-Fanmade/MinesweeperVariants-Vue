@@ -1,6 +1,5 @@
 import { ref, reactive } from 'vue'
-import { fetchWithValidation } from '@/utils/fetchUtils'
-import { getApiEndpoint } from '@/utils/endpointUtils'
+import { fetchWithValidation, getApiEndpoint } from '@/utils/fetchUtils'
 
 // 规则类型定义
 export type RuleType = 'lRule' | 'mRule' | 'rRule' | 'oRule' | 'dye'

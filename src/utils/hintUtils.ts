@@ -1,5 +1,4 @@
-import { fetchWithValidation } from './fetchUtils'
-import { getApiEndpoint } from './endpointUtils'
+import { fetchWithValidation, getApiEndpoint } from './fetchUtils'
 
 export async function fetchHint(count = 1) {
   const endpoint = `${getApiEndpoint('hint')}?count=${count}`

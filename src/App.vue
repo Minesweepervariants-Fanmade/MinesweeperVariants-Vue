@@ -77,8 +77,7 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, computed, ref } from 'vue'
-import { fetchWithValidation } from '@/utils/fetchUtils'
-import { getApiEndpoint } from '@/utils/endpointUtils'
+import { fetchWithValidation, getApiEndpoint } from '@/utils/fetchUtils'
 import type { ClickResponse } from '@/types/game'
 
 import {

@@ -106,6 +106,7 @@ export async function fetchWithValidation<T = unknown>(
   }
 }
 
+
 // 专门用于获取文本内容的 fetch 函数
 export async function fetchText(
   url: string,
@@ -125,4 +126,17 @@ export async function fetchText(
   } catch {
     return { error: '返回值不合法，无法解析为文本', status: response.status }
   }
+}
+
+// 获取完整 API endpoint
+import { useSettings } from '@/composables/useSettings'
+/**
+ * 获取完整 API endpoint
+ * @param path 相对路径（如 'metadata' 或 'click'）
+ */
+export function getApiEndpoint(path: string): string {
+  const { settings } = useSettings()
+  let base = settings.value.serverUrl
+  if (!base.endsWith('/')) base += '/'
+  return base + path.replace(/^\//, '')
 }

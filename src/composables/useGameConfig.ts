@@ -1,7 +1,6 @@
 import { ref, reactive } from 'vue'
 import type { BoardMetadata, CellConfig, CellState, ClickResponse } from '@/types/game'
-import { getApiEndpoint } from '@/utils/endpointUtils'
-import { fetchWithValidation } from '@/utils/fetchUtils'
+import { fetchWithValidation, getApiEndpoint } from '@/utils/fetchUtils'
 import { newGame, getGameParams } from '@/utils/gameUtils'
 import { useRules } from '@/utils/ruleUtils'
 
