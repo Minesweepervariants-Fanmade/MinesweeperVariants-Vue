@@ -1,3 +1,5 @@
+import type { Cell } from "@/types/cell"
+
 // 单元格状态类型
 export type CellType = 'empty' | 'revealed'
 
@@ -25,15 +27,11 @@ export interface CountInfo {
 }
 
 export interface CellConfig {
-  type: string
-  position: {
-    boardname: string
-    x: number
-    y: number
-  }
-  component: ComponentConfig
-  highlight?: Record<string, [number, number][]>
-  rule?: string
+  type: string;
+  position: Cell;
+  component: ComponentConfig;
+  highlight?: Record<string, [number, number][]>;
+  rule?: string;
 }
 
 export interface ComponentConfig {

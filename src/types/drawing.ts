@@ -9,7 +9,7 @@ export interface DrawingPath {
   size: number
   tool: DrawingTool
   timestamp: number
-  visible?: boolean  // 用于魔术橡皮的撤销/重做功能
+  visible?: boolean
 }
 
 export type DrawingTool = 'brush' | 'magic-eraser' | 'circle-marker'
@@ -17,7 +17,7 @@ export type DrawingTool = 'brush' | 'magic-eraser' | 'circle-marker'
 export interface DrawingState {
   currentTool: DrawingTool
   currentColor: string
-  currentSize: number  // 当前工具的尺寸（画笔和圆形标记使用）
+  currentSize: number
   isDrawing: boolean
   paths: DrawingPath[]
   historyIndex: number

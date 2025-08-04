@@ -38,7 +38,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import GameCell from '@/components/GameCell.vue'
 import type { CellState, CellConfig } from '@/types/game'
-import { cellCoordToKey, displayCoordToIndex, indexToDisplayCoord } from '@/utils/columnUtils'
+import { Cell } from '@/types/cell'
 
 interface Props {
   GameTable: Record<string, CellState>
@@ -63,7 +63,7 @@ const dynamicStyleRef = ref<HTMLStyleElement>()
 
 // 获取单元格状态
 const getCellState = (row: number, col: string): CellState | null => {
-  const key = cellCoordToKey(row, col)
+  const key = Cell.cellCoordToKey(row, col)
   return props.GameTable[key] || null
 }
 
@@ -71,8 +71,8 @@ const getCellState = (row: number, col: string): CellState | null => {
 const getCellConfig = (row: number, col: string): CellConfig | null => {
   if (!props.cellConfigs || !props.boardName) return null
 
-  const { x, y } = displayCoordToIndex(row, col)
-  const key = `${props.boardName}-${x}-${y}`
+  const { x, y } = Cell.displayCoordToIndex(row, col)
+  const key = new Cell(props.boardName, x, y).boardKey
 
   return props.cellConfigs[key] || null
 }
@@ -118,7 +118,7 @@ const updateHighlightCSS = (
   for (const [boardName, positions] of Object.entries(highlight)) {
     for (const [x, y] of positions) {
       // 转换0-based索引为1-based索引来匹配组件的行列
-      const { row: displayRow, col: displayCol } = indexToDisplayCoord(x, y)
+      const { row: displayRow, col: displayCol } = Cell.indexToDisplayCoord(x, y)
 
       const selector = `[data-board="${boardName}"][data-row="${displayRow}"][data-col="${displayCol}"]`
 

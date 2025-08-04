@@ -123,11 +123,6 @@ const {
   getAllBoardConfigs,
 } = useGameLogic()
 
-// 辅助函数：生成cellConfig的key
-const getCellKey = (boardName: string, x: number, y: number): string => {
-  return `${boardName}-${x}-${y}`
-}
-
 // 使用设置
 
 const { waitForAssets } = useAssets()
@@ -197,7 +192,7 @@ const handleHintClick = async (setLoading: (_loading: boolean) => void) => {
       for (const cellUpdate of cells) {
         const updateBoard = gameBoards.value[cellUpdate.position.boardname]
         if (updateBoard) {
-          const updateKey = `${cellUpdate.position.x}-${cellUpdate.position.y}`
+          const updateKey = cellUpdate.position.boardKey
           const updateCell = updateBoard[updateKey]
           if (updateCell) {
             updateCell.type = 'revealed'
@@ -207,7 +202,7 @@ const handleHintClick = async (setLoading: (_loading: boolean) => void) => {
       }
       // 更新allCells Record
       for (const cellUpdate of cells) {
-        const key = getCellKey(cellUpdate.position.boardname, cellUpdate.position.x, cellUpdate.position.y)
+        const key = cellUpdate.position.boardKey
         allCells.value[key] = cellUpdate
       }
     }

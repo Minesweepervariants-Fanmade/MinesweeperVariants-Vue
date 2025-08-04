@@ -1,12 +1,7 @@
 import { ref, reactive } from 'vue'
 import type { CellState, BoardMetadata, CellConfig, ClickResponse } from '@/types/game'
 import { useGameConfig } from '@/composables/useGameConfig'
-import {
-  generateRowLabels,
-  generateColumnLabels,
-  cellCoordToKey,
-  displayCoordToIndex,
-} from '@/utils/columnUtils'
+import {  Cell } from '@/types/cell'
 
 export function useGameLogic() {
   const { loadGameConfig, postClick } = useGameConfig()
@@ -60,8 +55,8 @@ export function useGameLogic() {
     if (!boardSize) return { rows: [], cols: [] }
 
     return {
-      rows: generateRowLabels(boardSize[0]),
-      cols: generateColumnLabels(boardSize[1]),
+      rows: Cell.generateRowLabels(boardSize[0]),
+      cols: Cell.generateColumnLabels(boardSize[1]),
     }
   }
 
@@ -72,10 +67,10 @@ export function useGameLogic() {
     }
 
     const board = getGameBoard(boardName)
-    const key = cellCoordToKey(row, col)
+    const key = Cell.cellCoordToKey(row, col)
     const cellState = board[key]
 
-    const { x, y } = displayCoordToIndex(row, col)
+    const { x, y } = Cell.displayCoordToIndex(row, col)
 
     if (cellState) {
       try {
