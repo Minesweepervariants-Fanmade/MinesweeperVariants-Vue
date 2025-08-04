@@ -5,7 +5,10 @@ import { fetchWithValidation } from '@/utils/fetchUtils'
 import { newGame, getGameParams } from '@/utils/gameUtils'
 import { useRules } from '@/utils/ruleUtils'
 
-export function useGameConfig() {
+// 单例实例
+let gameConfigInstance: ReturnType<typeof createGameConfig> | null = null
+
+function createGameConfig() {
   const metadata = ref<BoardMetadata | null>(null)
   const additionalCells = ref<CellConfig[]>([])
   const isLoading = ref(false)
@@ -200,4 +203,11 @@ export function useGameConfig() {
     getCellHighlight,
     loadGameConfig,
   }
+}
+
+export function useGameConfig() {
+  if (!gameConfigInstance) {
+    gameConfigInstance = createGameConfig()
+  }
+  return gameConfigInstance
 }
