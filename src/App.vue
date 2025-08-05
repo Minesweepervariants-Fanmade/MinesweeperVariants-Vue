@@ -1,5 +1,5 @@
 <template>
-  <div class="app-container">
+  <div class="app-container" @click="handleContainerClick">
     <div v-if="isLoading" class="loading">
       正在加载游戏配置...
       <BaseButton @click="showSettingsDialog = true">设置</BaseButton>
@@ -43,7 +43,6 @@
       :remaining-cells="remainingCells"
       :show-drawing-toolbar="showDrawingToolbar"
       @brush-click="handleBrushClick"
-      @hint-click="handleHintClick"
       @check-click="handleCheckClick"
       @reset-click="handleResetClick"
       @menu-click="handleMenuClick"
@@ -77,7 +76,7 @@
 
 <script setup lang="ts">
 import { onMounted, onUnmounted, computed, ref } from 'vue'
-import { processHintResponse } from '@/utils/hintUtils'
+import { hideHints } from '@/utils/hintUtils'
 
 import {
   setShortcuts,
@@ -110,7 +109,6 @@ const {
   isLoading,
   error,
   allCells,
-  gameBoards,
   metadata,
   isGameOver,
   gameOverReason,
@@ -170,17 +168,6 @@ const handleBrushClick = () => {
   showDrawingToolbar.value = !showDrawingToolbar.value
 }
 
-const handleHintClick = async (setLoading: (_loading: boolean) => void) => {
-  await processHintResponse(setLoading, {
-    gameBoards,
-    allCells,
-    metadata,
-    isGameOver,
-    gameOverReason,
-    showGameOverDialog
-  })
-}
-
 const handleCheckClick = async (setLoading: (_loading: boolean) => void) => {
   setLoading(true)
   try {
@@ -217,6 +204,14 @@ const handleSettingsSave = (newSettings: typeof gameSettings.value) => {
 
 const handleSettingsClose = () => {
   showSettingsDialog.value = false
+}
+
+// 处理容器点击事件
+const handleContainerClick = (event: MouseEvent) => {
+  // 只有当点击的是容器本身时才隐藏提示（不是子元素）
+  if (event.target === event.currentTarget) {
+    hideHints()
+  }
 }
 
 

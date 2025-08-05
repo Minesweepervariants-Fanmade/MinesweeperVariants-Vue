@@ -20,25 +20,26 @@
       <div v-if="cellState?.hint1" class="overlay hint1-overlay">!</div>
       <div v-if="cellState?.hint2" class="overlay hint2-overlay" />
       <div v-if="cellState?.error" class="overlay error-overlay">!</div>
-      // eslint-disable-next-line vue/no-v-html
-      <div v-if="cellState?.errormine" class="overlay error-overlay mine-icon" v-html="flagSvg" />
+      <div v-if="cellState?.errormine" class="overlay error-overlay mine-icon">
+        <FlagIcon />
+      </div>
     </div>
   </td>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch, nextTick } from 'vue'
-import { renderComponent } from '@/composables/useComponentRenderer'
+import { renderComponent } from '@/composables/componentRenderer'
 import { useSettings } from '@/composables/useSettings'
+import FlagIcon from '@/assets/icons/flag.svg?component'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import type { CellState, CellConfig } from '@/types/game'
-import flagSvg from '@/assets/icons/flag.svg?raw'
 
 interface Props {
   row: number
   col: string
   cellState: CellState
-  cellConfig: CellConfig
+  cellConfig?: CellConfig
   boardName: string
   isHighlighted?: boolean
 }

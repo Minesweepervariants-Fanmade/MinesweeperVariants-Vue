@@ -44,7 +44,7 @@ interface Props {
   GameTable: Record<string, CellState>
   rows: number[]
   cols: string[]
-  boardName?: string
+  boardName: string
   cellConfigs?: Record<string, CellConfig>
   showRowColLabel?: boolean
 }
@@ -62,14 +62,14 @@ defineEmits<Emits>()
 const dynamicStyleRef = ref<HTMLStyleElement>()
 
 // 获取单元格状态
-const getCellState = (row: number, col: string): CellState | null => {
+const getCellState = (row: number, col: string): CellState => {
   const key = Cell.cellCoordToKey(row, col)
-  return props.GameTable[key] || null
+  return props.GameTable[key]
 }
 
 // 获取单元格配置
-const getCellConfig = (row: number, col: string): CellConfig | null => {
-  if (!props.cellConfigs || !props.boardName) return null
+const getCellConfig = (row: number, col: string): CellConfig | undefined => {
+  if (!props.cellConfigs || !props.boardName) return undefined
 
   const { x, y } = Cell.displayCoordToIndex(row, col)
   const key = new Cell(props.boardName, x, y).boardKey
