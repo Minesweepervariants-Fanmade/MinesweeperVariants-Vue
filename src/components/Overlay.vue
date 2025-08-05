@@ -63,6 +63,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useAssets } from '@/composables/useAssets'
 import { useGameConfig } from '@/composables/useGameConfig'
 import { useSettings } from '@/composables/useSettings'
+import { postHint, showNextHint } from '@/utils/hintUtils'
 import BaseButton from '@/components/BaseButton.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import { useRules } from '@/utils/ruleUtils'
@@ -71,7 +72,7 @@ import { useRules } from '@/utils/ruleUtils'
 const { cloneAsset } = useAssets()
 
 // 获取游戏配置
-const { noFail, gameMode, metadata } = useGameConfig()
+const { noFail, gameMode, metadata, hints } = useGameConfig()
 
 // 获取设置
 const { settings } = useSettings()
@@ -90,7 +91,7 @@ const gameInfoText = computed(() => {
   if (metadata.value?.boards) {
     const boards = Object.values(metadata.value.boards)
     if (boards.length > 0) {
-      const [rows, cols] = boards[0] // 取第一个board的尺寸
+      const [rows, cols] = boards[0].size // 取第一个board的尺寸
       boardSize = `${rows}x${cols}`
     }
   }
@@ -210,7 +211,6 @@ const props = withDefaults(defineProps<Props>(), {
 // 定义 emits
 interface Emits {
   brushClick: []
-  hintClick: [setLoading: (_loading: boolean) => void]
   checkClick: [setLoading: (_loading: boolean) => void]
   resetClick: []
   menuClick: []
@@ -220,11 +220,18 @@ const emit = defineEmits<Emits>()
 
 // 控制按钮事件处理
 const onBrushClick = () => emit('brushClick')
-const onHintClick = () => {
+const onHintClick = async () => {
   const setLoading = (loading: boolean) => {
     isHintLoading.value = loading
   }
-  emit('hintClick', setLoading)
+
+  // 如果 hints 是空的，就获取新的提示
+  if (!hints.value || hints.value.length === 0) {
+    await postHint(setLoading)
+  } else {
+    // 否则显示下一个提示
+    showNextHint()
+  }
 }
 const onCheckClick = () => {
   const setLoading = (loading: boolean) => {

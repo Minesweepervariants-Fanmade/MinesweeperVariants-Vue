@@ -4,6 +4,7 @@ import { fetchWithValidation, getApiEndpoint } from '@/utils/fetchUtils'
 import { newGame, getGameParams } from '@/utils/gameUtils'
 import { useRules } from '@/utils/ruleUtils'
 import { Cell } from '@/types/cell'
+import type { Hint } from '@/utils/hintUtils'
 
 // 单例实例
 let gameConfigInstance: ReturnType<typeof createGameConfig> | null = null
@@ -22,6 +23,10 @@ function createGameConfig() {
 
   const noFail = ref(true)
   const gameMode = ref<'normal' | 'expert' | 'ultimate'>('ultimate') // 游戏模式
+
+  // 提示相关状态
+  const hints = ref<Hint[] | null>(null)
+  const hintIndex = ref<number>(-1)
 
   // 使用规则管理
   const { rules, processMetadataRules } = useRules()
@@ -97,7 +102,7 @@ function createGameConfig() {
   const createGameBoards = (metadata: BoardMetadata) => {
     const boards: Record<string, Record<string, CellState>> = {}
 
-    for (const [boardName, [rows, cols]] of Object.entries(metadata.boards)) {
+    for (const [boardName, { size: [rows, cols] }] of Object.entries(metadata.boards)) {
       const board = reactive<Record<string, CellState>>({})
 
       // 初始化所有单元格为空状态
@@ -232,7 +237,7 @@ function createGameConfig() {
   const getBoardLabels = (boardName: string) => {
     if (!metadata.value) return { rows: [], cols: [] }
 
-    const boardSize = metadata.value.boards[boardName]
+    const boardSize = metadata.value.boards[boardName].size
     if (!boardSize) return { rows: [], cols: [] }
 
     return {
@@ -378,6 +383,8 @@ function createGameConfig() {
     isGameOver,
     gameOverReason,
     showGameOverDialog,
+    hints,
+    hintIndex,
 
     // 方法
     loadMetadata,
