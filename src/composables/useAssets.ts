@@ -2,17 +2,17 @@ import { ref, onMounted } from 'vue'
 import type { AssetTemplates } from '@/types/game'
 
 // 静态导入SVG文件，这样Vite可以自动内联
-import flagSvg from '@/assets/icons/flag.svg'
-import starSvg from '@/assets/icons/star.svg'
-import circleSvg from '@/assets/icons/circle.svg'
-import crossSvg from '@/assets/icons/cross.svg'
-import arrowSvg from '@/assets/icons/arrow.svg'
-import doubleArrowSvg from '@/assets/icons/double_arrow.svg'
-import brushSvg from '@/assets/icons/brush.svg'
-import hintSvg from '@/assets/icons/hint.svg'
-import checkSvg from '@/assets/icons/check.svg'
-import resetSvg from '@/assets/icons/reset.svg'
-import menuSvg from '@/assets/icons/menu.svg'
+import flagSvg from '@/assets/icons/flag.svg?url'
+import starSvg from '@/assets/icons/star.svg?url'
+import circleSvg from '@/assets/icons/circle.svg?url'
+import crossSvg from '@/assets/icons/cross.svg?url'
+import arrowSvg from '@/assets/icons/arrow.svg?url'
+import doubleArrowSvg from '@/assets/icons/double_arrow.svg?url'
+import brushSvg from '@/assets/icons/brush.svg?url'
+import hintSvg from '@/assets/icons/hint.svg?url'
+import checkSvg from '@/assets/icons/check.svg?url'
+import resetSvg from '@/assets/icons/reset.svg?url'
+import menuSvg from '@/assets/icons/menu.svg?url'
 
 export function useAssets() {
   const assetTemplates = ref<AssetTemplates>({})
