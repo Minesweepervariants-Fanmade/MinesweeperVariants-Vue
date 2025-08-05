@@ -182,7 +182,6 @@ const onClearCanvasMouse = (): boolean => {
 const onUndoMouse = (event: MouseEvent): boolean => {
   if (event instanceof MouseEvent && event.type === 'mouseup') {
     drawing.undo()
-    console.log('Undo action performed.')
     return true
   }
   return false
@@ -191,7 +190,6 @@ const onUndoMouse = (event: MouseEvent): boolean => {
 const onRedoMouse = (event: MouseEvent): boolean => {
   if (event instanceof MouseEvent && event.type === 'mouseup') {
     drawing.redo()
-    console.log('Redo action performed.')
     return true
   }
   return false
