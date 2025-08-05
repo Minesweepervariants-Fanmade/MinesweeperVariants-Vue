@@ -55,10 +55,19 @@ export function getGameParams(): CreateGameParams {
   // 构建游戏尺寸字符串
   const size = `${settings.value.gridWidth}x${settings.value.gridHeight}`
 
+  const rulesArray: string[] = []
+  const dyeArray: string[] = []
+
   // 构建规则字符串 - 将启用的规则数组转换为逗号分隔的字符串
-  const rules = settings.value.enabledRules.length > 0
-    ? settings.value.enabledRules.join(',')
-    : 'V,O' // 默认规则
+  for (const rule of settings.value.enabledRules) {
+    if (rule.startsWith('@')) {
+      dyeArray.push(rule.slice(1))
+    } else {
+      rulesArray.push(rule)
+    }
+  }
+  const rules = rulesArray.join(',')
+  const dye = dyeArray.length > 0 ? dyeArray.join(',') : undefined
 
   // 获取游戏模式
   const mode = modeMap[settings.value.gameMode]
@@ -83,6 +92,7 @@ export function getGameParams(): CreateGameParams {
     rules,
     mode,
     total,
-    u_mode
+    u_mode,
+    dye
   }
 }
