@@ -60,16 +60,13 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
-import { useAssets } from '@/composables/useAssets'
+import { cloneAsset } from '@/composables/useAssets'
 import { useGameConfig } from '@/composables/useGameConfig'
 import { useSettings } from '@/composables/useSettings'
 import { postHint, showNextHint } from '@/utils/hintUtils'
 import BaseButton from '@/components/BaseButton.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import { useRules } from '@/utils/ruleUtils'
-
-// 获取资源管理器
-const { cloneAsset } = useAssets()
 
 // 获取游戏配置
 const { noFail, gameMode, metadata, hints } = useGameConfig()

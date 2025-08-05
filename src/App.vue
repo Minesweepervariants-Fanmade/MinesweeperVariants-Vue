@@ -89,7 +89,7 @@ import {
 } from '@/composables/shortcutManager'
 import { useTheme } from '@/composables/useTheme'
 import { useGameConfig } from '@/composables/useGameConfig'
-import { useAssets } from '@/composables/useAssets'
+import { waitForAssets } from '@/composables/useAssets'
 import { useSettings } from '@/composables/useSettings'
 import BaseButton from '@/components/BaseButton.vue'
 import GameTable from '@/components/GameTable.vue'
@@ -121,8 +121,6 @@ const {
 } = useGameConfig()
 
 // 使用设置
-
-const { waitForAssets } = useAssets()
 const { setTheme, toggleTheme } = useTheme()
 
 const gameOverTitle = computed(() => {

@@ -1,8 +1,6 @@
-import { useAssets } from '@/composables/useAssets'
+import { cloneAsset } from '@/composables/useAssets'
 import { renderTemplate } from '@/composables/templateRenderer'
 import type { ComponentConfig, AssetTemplates, ComponentTemplate } from '@/types/game'
-
-const { cloneAsset } = useAssets()
 
 // 递归渲染组件配置到DOM元素
 export async function renderComponent(
