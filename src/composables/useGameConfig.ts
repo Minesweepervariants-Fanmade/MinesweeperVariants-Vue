@@ -4,8 +4,9 @@ import { fetchWithoutValidation, getApiEndpoint } from '@/utils/fetchUtils'
 import { newGame, getGameParams } from '@/utils/gameUtils'
 import { useRules } from '@/utils/ruleUtils'
 import { Cell } from '@/types/cell'
-import type { Hint } from '@/utils/hintUtils'
+import { clearHints, type Hint } from '@/utils/hintUtils'
 import typia from 'typia'
+import { fetchReset } from '@/composables/reset'
 
 // 单例实例
 let gameConfigInstance: ReturnType<typeof createGameConfig> | null = null
@@ -44,13 +45,14 @@ function createGameConfig() {
       if (result.error) {
         throw new Error(`Failed to load metadata: ${result.error}`)
       }
-      if (!result.data) {
+      if (typeof result.data !== 'object' || Object.keys(result.data as Object).length === 0) {
         // 如果metadata为空，创建新游戏
         const newGameData = await newGame(getGameParams())
         processMetadataRules(newGameData?.rules)
         metadata.value = newGameData
         return newGameData
       }
+      console.log('Loaded metadata:', result.data)
       const data = typia.assert<BoardMetadata>(result.data)
       processMetadataRules(data?.rules)
       metadata.value = data
@@ -244,6 +246,7 @@ function createGameConfig() {
 
   // 处理单元格点击
   const handleCellClick = async (boardName: string, row: number, col: string, button: string = 'left') => {
+    clearHints()
     if (isGameOver.value || showGameOverDialog.value) {
       console.log('Game is over or dialog is shown, click ignored')
       return
@@ -327,6 +330,7 @@ function createGameConfig() {
 
   // 重置游戏
   const resetGame = async () => {
+    await fetchReset()
     await initializeGame()
   }
 
