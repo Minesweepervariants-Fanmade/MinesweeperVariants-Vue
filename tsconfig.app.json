@@ -10,6 +10,11 @@
     "paths": {
       "@/*": ["src/*"]
     },
+    "plugins": [
+      {
+        "transform": "typia/lib/transform"
+      }
+    ],
 
     /* Linting */
     "strict": true,
