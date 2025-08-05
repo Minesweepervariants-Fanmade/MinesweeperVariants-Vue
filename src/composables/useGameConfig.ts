@@ -107,6 +107,11 @@ function createGameConfig() {
           board[key] = {
             type: 'empty',
             isRevealed: false,
+            isLoading: false,
+            hint1: false,
+            hint2: false,
+            error: false,
+            errormine: false,
           }
         }
       }

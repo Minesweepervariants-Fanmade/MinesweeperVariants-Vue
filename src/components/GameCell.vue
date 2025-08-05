@@ -16,34 +16,41 @@
       <template v-if="cellState?.type === 'revealed'">
         <div ref="container" class="container" />
       </template>
+
+      <div v-if="cellState?.hint1" class="overlay hint1-overlay">!</div>
+      <div v-if="cellState?.hint2" class="overlay hint2-overlay" />
+      <div v-if="cellState?.error" class="overlay error-overlay">!</div>
+      // eslint-disable-next-line vue/no-v-html
+      <div v-if="cellState?.errormine" class="overlay error-overlay mine-icon" v-html="flagSvg" />
     </div>
   </td>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch, nextTick } from 'vue'
-import { useComponentRenderer } from '@/composables/useComponentRenderer'
+import { renderComponent } from '@/composables/useComponentRenderer'
 import { useSettings } from '@/composables/useSettings'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import type { CellState, CellConfig } from '@/types/game'
+import flagSvg from '@/assets/icons/flag.svg?raw'
 
 interface Props {
   row: number
   col: string
-  cellState: CellState | null
-  cellConfig?: CellConfig | null
-  boardName?: string
+  cellState: CellState
+  cellConfig: CellConfig
+  boardName: string
   isHighlighted?: boolean
 }
 
 interface Emits {
-  (_e: 'click', _row: number, _col: string, _boardName?: string): void
-  (_e: 'right-click', _row: number, _col: string, _boardName?: string): void
+  (_e: 'click', _row: number, _col: string, _boardName: string): void
+  (_e: 'right-click', _row: number, _col: string, _boardName: string): void
   (
     _e: 'mouse-enter',
     _row: number,
     _col: string,
-    _boardName?: string,
+    _boardName: string,
     _cellConfig?: CellConfig | null
   ): void
   (
@@ -55,11 +62,12 @@ interface Emits {
   ): void
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  isHighlighted: false
+})
 const emit = defineEmits<Emits>()
 
 const { settings } = useSettings()
-const { renderComponent } = useComponentRenderer()
 const container = ref<HTMLElement>()
 
 const cellId = computed(() => `${props.boardName}-${props.row}-${props.col}`)
@@ -113,7 +121,12 @@ const renderCell = async () => {
 
 // 监听单元格状态变化，重新渲染内容
 watch(
-  () => [props.cellState?.type, props.cellState?.isLoading, props.cellConfig, props.isHighlighted],
+  () => [
+    props.cellState?.type,
+    props.cellState?.isLoading,
+    props.cellConfig,
+    props.isHighlighted
+  ],
   async () => {
     try {
       if (props.cellState?.type === 'revealed' && !props.cellState?.isLoading) {
@@ -193,5 +206,38 @@ watch(
   color: color-mix(var(--background-color), var(--foreground-color), 50%);
   font-weight: bold;
   pointer-events: none;
+}
+
+// 叠加层基础样式
+.overlay {
+  @include variables.absolute-position(0, null, null, 0);
+  @include variables.paint(var(--overlay-color), rgb(from var(--overlay-color) r g b / 40%));
+  @include variables.flex-center;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  font-size: variables.scaled(40);
+}
+
+.hint1-overlay {
+  --overlay-color: var(--hint-color);
+}
+
+.hint2-overlay {
+  --overlay-color: var(--hint2-color);
+}
+
+.error-overlay {
+  --overlay-color: var(--error-color);
+}
+
+.mine-icon {
+  :deep(.inner) {
+    fill: currentColor;
+  }
+
+  :deep(.outer) {
+    fill: none;
+  }
 }
 </style>
