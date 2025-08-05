@@ -51,7 +51,44 @@
     <div class="bottom-info">
       <div class="star-section" :style="starSectionStyle">
         <div ref="starIcon" class="icon-container star-icon" />
-        <span class="game-info">{{ gameInfoText }}</span>
+        <span class="game-info">
+          <!-- 规则部分 -->
+          <template v-if="metadata?.rules && metadata.rules.length > 0">
+            <template v-for="(rule, idx) in metadata.rules" :key="'rule-'+idx">[{{ rule }}]</template>
+          </template>
+
+          <!-- 题板大小 -->
+          <span>{{ (() => {
+            if (metadata?.boards) {
+              const boards = Object.values(metadata.boards)
+              if (boards.length > 0) {
+                const [rows, cols] = boards[0].size
+                return `${rows}x${cols}`
+              }
+            }
+            return '?x?'
+          })() }}</span>
+
+          <span>-</span>
+          <!-- 总雷数 -->
+          <span>{{ metadata?.count?.total ?? 10 }}</span>
+          <span>-</span>
+          <!-- 题板ID -->
+          <u>114514</u>
+          <!-- 模式和终极选项 -->
+          (<span>
+            <template v-if="gameMode === 'normal'">普通模式</template>
+            <template v-else-if="gameMode === 'expert'">专家模式</template>
+            <template v-else-if="gameMode === 'ultimate'">终极模式</template>
+            <template v-if="gameMode === 'ultimate' && settings.ultimateModeOptions">
+              <template v-if="settings.ultimateModeOptions.forceFlag"> +F</template>
+              <template v-if="settings.ultimateModeOptions.autoHint"> +A</template>
+              <template v-if="settings.ultimateModeOptions.showMineCount"> +R</template>
+              <template v-if="settings.ultimateModeOptions.forceSide"> +S</template>
+              <template v-if="settings.ultimateModeOptions.hideRemaining"> +!</template>
+            </template>
+          </span>)
+        </span>
       </div>
       <div class="levelCount">{{ levelCount }}</div>
     </div>
@@ -353,6 +390,11 @@ const onMenuClick = () => emit('menuClick')
     .game-info {
       color: var(--mode-color);
       font-size: variables.scaled(16);
+
+      u {
+      text-decoration-thickness: 0;
+      text-decoration-color: color-mix(in srgb, var(--mode-color) 50%, transparent);
+    }
     }
   }
 
