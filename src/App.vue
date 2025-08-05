@@ -89,7 +89,7 @@ import {
   registerMouseShortcut
 } from '@/composables/shortcutManager'
 import { useTheme } from '@/composables/useTheme'
-import { useGameLogic } from '@/composables/useGameLogic'
+import { useGameConfig } from '@/composables/useGameConfig'
 import { useAssets } from '@/composables/useAssets'
 import { useSettings } from '@/composables/useSettings'
 import BaseButton from '@/components/BaseButton.vue'
@@ -120,7 +120,7 @@ const {
   resetGame,
   handleGameOverConfirm,
   getAllBoardConfigs,
-} = useGameLogic()
+} = useGameConfig()
 
 // 使用设置
 
