@@ -7,13 +7,24 @@ export type CellType = 'empty' | 'revealed'
 export interface CellState {
   type: CellType
   isRevealed: boolean
-  isLoading?: boolean
+  isLoading: boolean
+  hint1: boolean
+  hint2: boolean
+  error: boolean
+  errormine: boolean
+}
+
+export interface Board {
+  name?: string
+  position: [number, number]
+  showLabel: boolean
+  size: [number, number]
 }
 
 // JSON配置相关类型定义
 export interface BoardMetadata {
   rules: string[]
-  boards: Record<string, [number, number]>
+  boards: Record<string, Board>
   cells: CellConfig[]
   count: CountInfo
 }
@@ -34,9 +45,14 @@ export interface CellConfig {
   rule?: string;
 }
 
+export interface ComponentTemplate {
+  name: string
+  value: unknown
+}
+
 export interface ComponentConfig {
-  type: 'container' | 'text' | 'assets'
-  value: ComponentConfig[] | string
+  type: 'container' | 'text' | 'assets' | 'template'
+  value: ComponentConfig[] | string | ComponentTemplate
   style: string
 }
 
