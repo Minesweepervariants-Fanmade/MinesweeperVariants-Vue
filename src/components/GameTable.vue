@@ -125,7 +125,7 @@ const updateHighlightCSS = (
       if (isHighlighted) {
         cssRules += `
           ${selector} {
-            background: var(--pointer-color, rgba(255, 255, 0, 0.3));
+            background: var(--pointer-color);
           }
         `
       }

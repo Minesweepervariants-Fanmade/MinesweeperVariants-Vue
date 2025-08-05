@@ -12,7 +12,6 @@ let gameConfigInstance: ReturnType<typeof createGameConfig> | null = null
 
 function createGameConfig() {
   const metadata = ref<BoardMetadata | null>(null)
-  const additionalCells = ref<CellConfig[]>([])
   const gameBoards = ref<Record<string, Record<string, CellState>>>({})
   const allCells = ref<Record<string, CellConfig>>({})
   const isInitialized = ref(false)
@@ -87,7 +86,6 @@ function createGameConfig() {
         throw new Error(`Failed to post click: ${result.error}`)
       }
       const data = typia.assert<ClickResponse>(result.data)
-      additionalCells.value = data.cells
       return data
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Unknown error posting click'
@@ -369,7 +367,6 @@ function createGameConfig() {
   return {
     // 状态
     metadata,
-    additionalCells,
     gameBoards,
     allCells,
     isInitialized,
