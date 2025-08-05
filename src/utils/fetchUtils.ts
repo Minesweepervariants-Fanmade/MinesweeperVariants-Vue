@@ -87,10 +87,10 @@ function handleFetchError(error: unknown, response: { ok: boolean; status: numbe
   return { error: '未知错误' }
 }
 
-export async function fetchWithValidation<T = unknown>(
+export async function fetchWithoutValidation(
   url: string,
   options: FetchOptions = {}
-): Promise<FetchResult<T>> {
+): Promise<FetchResult> {
   const { response, error } = await fetchCore(url, options)
 
   // 如果有错误或响应不正常，返回错误信息
@@ -100,7 +100,7 @@ export async function fetchWithValidation<T = unknown>(
 
   // 仅当响应正常时才尝试解析JSON
   try {
-    const data = await response.json() as T
+    const data = await response.json()
     return { data, status: response.status }
   } catch {
     return { error: '返回值不合法，无法解析为JSON', status: response.status }

@@ -26,7 +26,7 @@ export interface BoardMetadata {
   rules: string[]
   boards: Record<string, Board>
   cells: CellConfig[]
-  count: CountInfo
+  count?: CountInfo
 }
 
 // 计数信息类型

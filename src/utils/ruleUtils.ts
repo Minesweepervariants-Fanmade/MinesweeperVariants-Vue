@@ -1,5 +1,6 @@
 import { ref, reactive } from 'vue'
-import { fetchWithValidation, getApiEndpoint } from '@/utils/fetchUtils'
+import { fetchWithoutValidation, getApiEndpoint } from '@/utils/fetchUtils'
+import typia from 'typia'
 
 // 规则类型定义
 export type RuleType = 'lRule' | 'mRule' | 'rRule' | 'oRule' | 'dye'
@@ -75,7 +76,6 @@ function parseRule(rulesData: RuleData): Record<string, unknown[]> {
       parsed[`@${key}`] = [ 'dye', value, value ]
     }
   }
-  console.log(parsed)
   return parsed
 }
 
@@ -85,11 +85,11 @@ function parseRule(rulesData: RuleData): Record<string, unknown[]> {
 export const fetchEndpointRules = async (): Promise<void> => {
   try {
     const endpoint = getApiEndpoint('rules')
-    const { data, error } = await fetchWithValidation(endpoint)
+    const { data, error } = await fetchWithoutValidation(endpoint)
     if (error) {
       throw new Error(`拉取规则失败: ${error}`)
     }
-    const rulesData = data as RuleData
+    const rulesData = typia.assert<RuleData>(data)
     const parsedRules = parseRule(rulesData)
 
     applyRulesToReactive(parsedRules)

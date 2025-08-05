@@ -1,7 +1,8 @@
-import { fetchWithValidation, getApiEndpoint } from '@/utils/fetchUtils'
+import { fetchWithoutValidation, getApiEndpoint } from '@/utils/fetchUtils'
 import { Cell } from '@/types/cell'
 import { useGameConfig } from '@/composables/useGameConfig'
 import { watch } from 'vue'
+import typia from 'typia'
 
 const { hints, hintIndex, gameBoards } = useGameConfig()
 
@@ -21,7 +22,7 @@ export async function postHint(
 
   try {
     setLoading(true)
-    const { data, error } = await fetchWithValidation<{hints: Hint[]}>(getApiEndpoint('hint'))
+    const { data, error } = await fetchWithoutValidation(getApiEndpoint('hint'))
 
     setLoading(false)
 
@@ -29,7 +30,7 @@ export async function postHint(
       throw error
     }
 
-    hints.value = data.hints
+    hints.value = typia.assert<{hints: Hint[]}>(data).hints
     hintIndex.value = 0
 
   } catch (e) {

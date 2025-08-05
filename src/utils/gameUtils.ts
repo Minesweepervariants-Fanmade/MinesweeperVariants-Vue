@@ -1,6 +1,7 @@
 import type { BoardMetadata } from '@/types/game'
-import { fetchWithValidation, getApiEndpoint } from '@/utils/fetchUtils'
+import { fetchWithoutValidation, getApiEndpoint } from '@/utils/fetchUtils'
 import { useSettings } from '@/composables/useSettings'
+import typia from 'typia'
 
 // 创建新游戏的参数接口
 export interface CreateGameParams {
@@ -27,13 +28,13 @@ export async function newGame(params: CreateGameParams): Promise<BoardMetadata> 
       u_mode: params.u_mode || '',
       dye: params.dye || ''
     })
-    const result = await fetchWithValidation<BoardMetadata>(
+    const result = await fetchWithoutValidation(
       `${getApiEndpoint('new')}?${urlParams.toString()}`
     )
     if (result.error) {
       throw new Error(`Failed to create new game: ${result.error}`)
     }
-    return result.data!
+    return typia.assert<BoardMetadata>(result.data)
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error creating new game'
     throw new Error(errorMessage)

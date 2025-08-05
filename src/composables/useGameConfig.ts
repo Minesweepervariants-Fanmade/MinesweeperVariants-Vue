@@ -1,10 +1,11 @@
 import { ref, reactive } from 'vue'
 import type { BoardMetadata, CellConfig, CellState, ClickResponse } from '@/types/game'
-import { fetchWithValidation, getApiEndpoint } from '@/utils/fetchUtils'
+import { fetchWithoutValidation, getApiEndpoint } from '@/utils/fetchUtils'
 import { newGame, getGameParams } from '@/utils/gameUtils'
 import { useRules } from '@/utils/ruleUtils'
 import { Cell } from '@/types/cell'
 import type { Hint } from '@/utils/hintUtils'
+import typia from 'typia'
 
 // 单例实例
 let gameConfigInstance: ReturnType<typeof createGameConfig> | null = null
@@ -39,22 +40,19 @@ function createGameConfig() {
   // 加载元数据配置
   const loadMetadata = async (): Promise<BoardMetadata> => {
     try {
-      const result = await fetchWithValidation<BoardMetadata>(getApiEndpoint('metadata'))
+      const result = await fetchWithoutValidation(getApiEndpoint('metadata'))
+
       if (result.error) {
         throw new Error(`Failed to load metadata: ${result.error}`)
       }
-
-      // 检查返回的数据是否为空或无效
-      const data = result.data!
-      if (!data || !data.boards || Object.keys(data.boards).length === 0) {
+      if (!result.data) {
         // 如果metadata为空，创建新游戏
-        console.log('Metadata is empty, creating new game...')
         const newGameData = await newGame(getGameParams())
         processMetadataRules(newGameData?.rules)
         metadata.value = newGameData
         return newGameData
       }
-      console.log('Loaded metadata:', data)
+      const data = typia.assert<BoardMetadata>(result.data)
       processMetadataRules(data?.rules)
       metadata.value = data
       return data
@@ -73,7 +71,7 @@ function createGameConfig() {
     button: string
   ): Promise<ClickResponse> => {
     try {
-      const result = await fetchWithValidation<ClickResponse>(getApiEndpoint('click'), {
+      const result = await fetchWithoutValidation(getApiEndpoint('click'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -88,7 +86,7 @@ function createGameConfig() {
       if (result.error) {
         throw new Error(`Failed to post click: ${result.error}`)
       }
-      const data = result.data!
+      const data = typia.assert<ClickResponse>(result.data)
       additionalCells.value = data.cells
       return data
     } catch (err) {
