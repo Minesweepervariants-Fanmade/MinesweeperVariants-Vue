@@ -2,10 +2,11 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
 import svgLoader from 'vite-svg-loader'
+import UnpluginTypia from '@ryoppippi/unplugin-typia/vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [vue(), svgLoader()],
+  plugins: [vue(), svgLoader(), UnpluginTypia()],
   base: process.env.NODE_ENV === 'production' ? '/MinesweeperVariants-Vue/' : '/',
   resolve: {
     alias: {
