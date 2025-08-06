@@ -63,7 +63,7 @@ const dynamicStyleRef = ref<HTMLStyleElement>()
 
 // 获取单元格状态
 const getCellState = (row: number, col: string): CellState => {
-  const key = Cell.cellCoordToKey(row, col)
+  const key = Cell.CellCoordToKey(row, col)
   return props.GameTable[key]
 }
 
