@@ -1,7 +1,13 @@
 
-export class Cell {
+export interface CellType {
 
   boardname: string;
+  x: number;
+  y: number;
+}
+
+export class Cell implements CellType {
+    boardname: string;
   x: number;
   y: number;
   constructor(boardname: string, x: number, y: number) {
@@ -88,7 +94,7 @@ export class Cell {
   /**
    * 静态：将行列坐标转换为单元格键（用于内部存储）
    */
-  static cellCoordToKey(row: number, col: string): string {
+  static CellCoordToKey(row: number, col: string): string {
     const rowIndex = row - 1
     const colIndex = this.columnToIndex(col)
     return `${rowIndex}-${colIndex}`
@@ -101,7 +107,7 @@ export class Cell {
     const [rowStr, colStr] = key.split('-')
     const rowIndex = parseInt(rowStr, 10)
     const colIndex = parseInt(colStr, 10)
-    if (isNaN(rowIndex) || isNaN(colIndex)) throw new Error(`Invalid cell key format: ${key}`)
+    if (isNaN(rowIndex) || isNaN(colIndex)) throw new Error(`Invalid Cell key format: ${key}`)
     return {
       row: rowIndex + 1,
       col: this.indexToColumn(colIndex)
