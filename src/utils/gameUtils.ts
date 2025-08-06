@@ -11,6 +11,11 @@ export interface CreateGameParams {
   total: string // 总雷数
   u_mode?: string // 可选的终极模式选项
   dye?: string // 可选的染色参数
+  seed?: string // 可选的种子参数
+}
+
+export function generateRandomSeedString(): string {
+  return Math.floor(Math.random() * 100000).toString()
 }
 
 export interface NewGameResult {
@@ -26,7 +31,8 @@ export async function newGame(params: CreateGameParams) {
       mode: params.mode,
       total: params.total,
       u_mode: params.u_mode || '',
-      dye: params.dye || ''
+      dye: params.dye || '',
+      seed: params.seed || ''
     })
     const result = await fetchWithoutValidation(
       `${getApiEndpoint('new')}?${urlParams.toString()}`
@@ -94,12 +100,18 @@ export function getGameParams(): CreateGameParams {
     u_mode = options.length > 0 ? options.join(',') : undefined
   }
 
+  let seed = settings.value.seed
+  if (!seed) {
+    seed = generateRandomSeedString()
+  }
+
   return {
     size,
     rules,
     mode,
     total,
     u_mode,
-    dye
+    dye,
+    seed
   }
 }

@@ -261,6 +261,7 @@ import BaseButton from '@/components/BaseButton.vue'
 import ShortcutSettings from '@/components/ShortcutSettings.vue'
 import type { GameSettings, GameMode, UltimateModeOptions } from '@/composables/useSettings'
 import { defaultSettings, gameModeDescriptions, ultimateModeOptionDescriptions } from '@/composables/useSettings'
+import { generateRandomSeedString } from '@/utils/gameUtils'
 
 // 扩展 GameSettings 类型，确保包含 seed 字段
 type GameSettingsWithSeed = GameSettings & { seed?: string }
@@ -459,7 +460,7 @@ defineExpose({
 
 // 随机种子生成函数
 function generateRandomSeed() {
-  localSettings.value.seed = Math.floor(Math.random() * 100000).toString()
+  localSettings.value.seed = generateRandomSeedString()
 }
 
 // 清空种子内容
