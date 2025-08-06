@@ -63,6 +63,19 @@
       @confirm="handleGameOverConfirm"
     />
 
+    <!-- 游戏胜利信息提示 -->
+    <InfoOverlay
+      v-model:visible="showGameWinDialog"
+      :title="gameWinTitle"
+      :message="gameWinMessage"
+    >
+      <template #actions>
+        <BaseButton variant="simple" @click="handleGameWinConfirm">下一关</BaseButton>
+        <BaseButton variant="simple" @click="handleGameWinReset">重置</BaseButton>
+        <BaseButton variant="simple" @click="handleGameWinBack">返回</BaseButton>
+      </template>
+    </InfoOverlay>
+
     <!-- 设置对话框 -->
     <SettingsOverlay
       ref="settingsOverlayRef"
@@ -103,6 +116,24 @@ import { getGameParams, newGame } from '@/utils/gameUtils'
 // 组件引用
 const settingsOverlayRef = ref<InstanceType<typeof SettingsOverlay>>()
 
+// 游戏胜利弹窗相关状态
+const gameWinTitle = computed(() => '恭喜通关！')
+const gameWinMessage = computed(() => '你已成功完成本局游戏！')
+
+const handleGameWinConfirm = async () => {
+  await newGame(getGameParams())
+  showGameWinDialog.value = false
+}
+
+const handleGameWinReset = () => {
+  showGameWinDialog.value = false
+  resetGame()
+}
+
+const handleGameWinBack = () => {
+  showGameWinDialog.value = false
+}
+
 // 使用游戏逻辑
 const {
   isInitialized,
@@ -113,6 +144,7 @@ const {
   isGameOver,
   gameOverReason,
   showGameOverDialog,
+  showGameWinDialog,
   initializeGame,
   handleCellClick,
   resetGame,

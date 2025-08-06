@@ -83,6 +83,12 @@ export interface AssetTemplates {
   menu?: SVGElement
 }
 
+export interface U_Hint {
+  emptycount: number // 空格数
+  flagcount: number  // 雷数
+  markcount?: number  // 副板格数
+}
+
 // API响应类型
 export interface ClickResponse {
   success: boolean
@@ -90,4 +96,7 @@ export interface ClickResponse {
   reason: string
   cells: CellConfig[]
   count?: CountInfo  // 新增count字段
+  mines?: Cell[] // 新增 mines 字段
+  win?: boolean
+  u_hint?: U_Hint
 }

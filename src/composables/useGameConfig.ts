@@ -21,6 +21,7 @@ function createGameConfig() {
   const isGameOver = ref(false)
   const gameOverReason = ref<string>('')
   const showGameOverDialog = ref(false)
+  const showGameWinDialog = ref(false)
 
   const noFail = ref(true)
 
@@ -306,9 +307,13 @@ function createGameConfig() {
           isGameOver.value = true
           gameOverReason.value = response.reason
 
-          // 显示游戏结束对话框
+          // 根据胜负弹出不同弹窗
           window.setTimeout(() => {
-            showGameOverDialog.value = true
+            if (response.win) {
+              showGameWinDialog.value = true
+            } else {
+              showGameOverDialog.value = true
+            }
           }, 0)
         }
       } catch (error) {
@@ -380,6 +385,7 @@ function createGameConfig() {
     isGameOver,
     gameOverReason,
     showGameOverDialog,
+    showGameWinDialog,
     hints,
     hintIndex,
 

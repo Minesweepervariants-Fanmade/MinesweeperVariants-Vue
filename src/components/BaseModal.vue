@@ -8,7 +8,7 @@
 
           class="close-btn"
           @click="onClose"
-        >×</BaseButton>
+        >x</BaseButton>
         <div class="modal-content">
           <slot />
         </div>

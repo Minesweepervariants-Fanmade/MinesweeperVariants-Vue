@@ -11,6 +11,9 @@
     <div class="info-message">
       <slot>{{ message }}</slot>
     </div>
+    <template #actions>
+      <slot name="actions" />
+    </template>
   </BaseModal>
 </template>
 
