@@ -71,15 +71,16 @@
 
           <span>-</span>
           <!-- 总雷数 -->
-          <span>{{ metadata?.count?.total ?? 10 }}</span>
+          <span>{{ metadata?.count?.total ?? '??' }}</span>
           <span>-</span>
           <!-- 题板ID -->
-          <u>{{ metadata?.seed }}</u>
+          <u>{{ metadata?.seed ?? '??????' }}</u>
           <!-- 模式和终极选项 -->
           (<span>
             <template v-if="metadata?.mode === 'NORMAL'">普通模式</template>
             <template v-else-if="metadata?.mode === 'EXPERT'">专家模式</template>
             <template v-else-if="metadata?.mode === 'ULTIMATE'">终极模式</template>
+            <template v-else>????模式</template>
             <template v-if="metadata?.mode === 'ULTIMATE' && metadata.u_mode">
               <span v-for="(option, idx) in metadata.u_mode" :key="'option-'+idx">
                 {{ option }}<span v-if="idx < metadata.u_mode.length - 1">, </span>
