@@ -44,9 +44,10 @@ function createGameConfig() {
       if (result.error) {
         throw new Error(`Failed to load metadata: ${result.error}`)
       }
-      if (typeof result.data !== 'object' || Object.keys(result.data as Object).length === 0) {
+      if (typeof result.data !== 'object' || !(result.data as {cells: unknown}).cells) {
         // 如果metadata为空，创建新游戏
         await newGame(getGameParams())
+        return await loadMetadata()
       }
       console.log('Loaded metadata:', result.data)
       const data = typia.assert<BoardMetadata>(result.data)
