@@ -89,7 +89,7 @@
           </span>)
         </span>
       </div>
-      <div class="levelCount">{{ levelCount }}</div>
+      <div class="levelCount" :style="starSectionStyle">{{ levelCount }}</div>
     </div>
   </div>
 </template>
@@ -348,7 +348,7 @@ const onMenuClick = () => emit('menuClick')
   }
 
   .levelCount {
-    color: var(--error-color);
+    color: var(--mode-color);
     font-size: variables.scaled(18);
     font-weight: bold;
   }
