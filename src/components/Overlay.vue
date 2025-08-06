@@ -74,18 +74,16 @@
           <span>{{ metadata?.count?.total ?? 10 }}</span>
           <span>-</span>
           <!-- 题板ID -->
-          <u>114514</u>
+          <u>{{ metadata?.seed }}</u>
           <!-- 模式和终极选项 -->
           (<span>
-            <template v-if="gameMode === 'normal'">普通模式</template>
-            <template v-else-if="gameMode === 'expert'">专家模式</template>
-            <template v-else-if="gameMode === 'ultimate'">终极模式</template>
-            <template v-if="gameMode === 'ultimate' && settings.ultimateModeOptions">
-              <template v-if="settings.ultimateModeOptions.forceFlag"> +F</template>
-              <template v-if="settings.ultimateModeOptions.autoHint"> +A</template>
-              <template v-if="settings.ultimateModeOptions.showMineCount"> +R</template>
-              <template v-if="settings.ultimateModeOptions.forceSide"> +S</template>
-              <template v-if="settings.ultimateModeOptions.hideRemaining"> +!</template>
+            <template v-if="metadata?.mode === 'normal'">普通模式</template>
+            <template v-else-if="metadata?.mode === 'expert'">专家模式</template>
+            <template v-else-if="metadata?.mode === 'ultimate'">终极模式</template>
+            <template v-if="metadata?.mode === 'ultimate' && metadata.u_mode">
+              <span v-for="(option, idx) in metadata.u_mode" :key="'option-'+idx">
+                {{ option }}<span v-if="idx < metadata.u_mode.length - 1">, </span>
+              </span>
             </template>
           </span>)
         </span>
@@ -106,7 +104,7 @@ import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import { useRules } from '@/utils/ruleUtils'
 
 // 获取游戏配置
-const { noFail, gameMode, metadata, hints } = useGameConfig()
+const { noFail, metadata, hints } = useGameConfig()
 
 // 获取设置
 const { settings } = useSettings()
@@ -118,9 +116,9 @@ const { rules } = useRules()
 const starSectionStyle = computed(() => {
   let modeColor = 'var(--foreground-color)' // 默认前景色（普通模式）
 
-  if (gameMode.value === 'expert') {
+  if (metadata === 'expert') {
     modeColor = 'var(--flag-color)' // 专家模式对应旗帜颜色
-  } else if (gameMode.value === 'ultimate') {
+  } else if (metadata.value?.mode === 'ultimate') {
     modeColor = 'var(--error-color)' // 终极模式对应错误颜色
   }
 

@@ -27,6 +27,9 @@ export interface BoardMetadata {
   boards: Record<string, Board>
   cells: CellConfig[]
   count?: CountInfo
+  seed?: string
+  mode: string
+  u_mode?: string[]
 }
 
 // 计数信息类型

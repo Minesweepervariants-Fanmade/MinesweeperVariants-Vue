@@ -23,7 +23,6 @@ function createGameConfig() {
   const showGameOverDialog = ref(false)
 
   const noFail = ref(true)
-  const gameMode = ref<'normal' | 'expert' | 'ultimate'>('ultimate') // 游戏模式
 
   // 提示相关状态
   const hints = ref<Hint[] | null>(null)
@@ -378,7 +377,6 @@ function createGameConfig() {
     error,
     rules,
     noFail,
-    gameMode,
     isGameOver,
     gameOverReason,
     showGameOverDialog,

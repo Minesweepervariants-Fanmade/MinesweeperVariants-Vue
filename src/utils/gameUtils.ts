@@ -1,4 +1,3 @@
-import type { BoardMetadata } from '@/types/game'
 import { fetchWithoutValidation, getApiEndpoint } from '@/utils/fetchUtils'
 import { useSettings } from '@/composables/useSettings'
 import typia from 'typia'
