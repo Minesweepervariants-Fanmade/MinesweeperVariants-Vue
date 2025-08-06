@@ -1,6 +1,7 @@
 import { fetchWithoutValidation, getApiEndpoint } from '@/utils/fetchUtils'
 import { useSettings } from '@/composables/useSettings'
 import typia from 'typia'
+import { useGameConfig } from '@/composables/useGameConfig'
 
 // 创建新游戏的参数接口
 export interface CreateGameParams {
@@ -37,6 +38,10 @@ export async function newGame(params: CreateGameParams) {
     if (!data.success) {
       throw new Error(data.reason || 'Unknown error creating new game')
     }
+
+    const { initializeGame } = useGameConfig()
+    await initializeGame()
+
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error creating new game'
     window.alert(errorMessage)

@@ -116,7 +116,7 @@ const { rules } = useRules()
 const starSectionStyle = computed(() => {
   let modeColor = 'var(--foreground-color)' // 默认前景色（普通模式）
 
-  if (metadata === 'expert') {
+  if (metadata.value?.mode === 'expert') {
     modeColor = 'var(--flag-color)' // 专家模式对应旗帜颜色
   } else if (metadata.value?.mode === 'ultimate') {
     modeColor = 'var(--error-color)' // 终极模式对应错误颜色

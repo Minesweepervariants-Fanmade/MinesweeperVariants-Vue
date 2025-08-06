@@ -170,7 +170,6 @@ const handleCheckClick = async (setLoading: (_loading: boolean) => void) => {
   setLoading(true)
   try {
     await newGame(getGameParams())
-    resetGame()
   } finally {
     setLoading(false)
   }

@@ -46,10 +46,7 @@ function createGameConfig() {
       }
       if (typeof result.data !== 'object' || Object.keys(result.data as Object).length === 0) {
         // 如果metadata为空，创建新游戏
-        const newGameData = await newGame(getGameParams())
-        processMetadataRules(newGameData?.rules)
-        metadata.value = newGameData
-        return newGameData
+        await newGame(getGameParams())
       }
       console.log('Loaded metadata:', result.data)
       const data = typia.assert<BoardMetadata>(result.data)
@@ -252,7 +249,7 @@ function createGameConfig() {
     }
 
     const board = getGameBoard(boardName)
-    const key = Cell.cellCoordToKey(row, col)
+    const key = Cell.CellCoordToKey(row, col)
     const cellState = board[key]
 
     const { x, y } = Cell.displayCoordToIndex(row, col)
