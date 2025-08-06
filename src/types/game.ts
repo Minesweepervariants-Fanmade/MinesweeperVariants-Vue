@@ -28,7 +28,7 @@ export interface BoardMetadata {
   cells: CellConfig[]
   count?: CountInfo
   seed?: string
-  mode: string
+  mode: 'NORMAL' | 'EXPERT' | 'ULTIMATE'
   u_mode?: string[]
 }
 

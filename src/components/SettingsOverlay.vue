@@ -42,6 +42,20 @@
             :max="maxMines"
           >
         </div>
+        <div class="setting-item">
+          <label class="setting-label">种子：</label>
+          <div class="setting-input-wrapper">
+            <input
+              v-model="localSettings.seed"
+              type="text"
+              class="setting-input"
+              placeholder="任意字符串"
+              style="min-width: 120px;"
+            >
+            <BaseButton variant="simple" size="small" @click="generateRandomSeed">随机</BaseButton>
+            <BaseButton variant="simple" size="small" @click="clearSeed">清空</BaseButton>
+          </div>
+        </div>
       </div>
 
 
@@ -247,6 +261,9 @@ import BaseButton from '@/components/BaseButton.vue'
 import ShortcutSettings from '@/components/ShortcutSettings.vue'
 import type { GameSettings, GameMode, UltimateModeOptions } from '@/composables/useSettings'
 import { defaultSettings, gameModeDescriptions, ultimateModeOptionDescriptions } from '@/composables/useSettings'
+
+// 扩展 GameSettings 类型，确保包含 seed 字段
+type GameSettingsWithSeed = GameSettings & { seed?: string }
 import { useTheme } from '@/composables/useTheme'
 import { RULE_DEFINITIONS, fetchEndpointRules, type RuleType } from '@/utils/ruleUtils'
 
@@ -277,7 +294,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<Emits>()
 
 // 本地设置副本
-const localSettings = ref<GameSettings>({ ...props.settings })
+const localSettings = ref<GameSettingsWithSeed>({ ...props.settings, seed: props.settings.seed ?? '' })
 
 // 监听主题变化并应用到系统
 watch(
@@ -365,7 +382,8 @@ watch(
     // 确保快捷键配置存在，如果不存在则使用默认配置
     const settingsWithShortcuts = {
       ...newSettings,
-      keyboardShortcuts: newSettings.keyboardShortcuts || defaultSettings.keyboardShortcuts
+      keyboardShortcuts: newSettings.keyboardShortcuts || defaultSettings.keyboardShortcuts,
+      seed: newSettings.seed ?? ''
     }
     localSettings.value = { ...settingsWithShortcuts }
   },
@@ -438,6 +456,16 @@ defineExpose({
   onSave,
   onClose
 })
+
+// 随机种子生成函数
+function generateRandomSeed() {
+  localSettings.value.seed = Math.floor(Math.random() * 100000).toString()
+}
+
+// 清空种子内容
+function clearSeed() {
+  localSettings.value.seed = ''
+}
 </script>
 
 <style scoped lang="scss">

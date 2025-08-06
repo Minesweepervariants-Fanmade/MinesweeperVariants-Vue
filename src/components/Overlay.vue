@@ -77,10 +77,10 @@
           <u>{{ metadata?.seed }}</u>
           <!-- 模式和终极选项 -->
           (<span>
-            <template v-if="metadata?.mode === 'normal'">普通模式</template>
-            <template v-else-if="metadata?.mode === 'expert'">专家模式</template>
-            <template v-else-if="metadata?.mode === 'ultimate'">终极模式</template>
-            <template v-if="metadata?.mode === 'ultimate' && metadata.u_mode">
+            <template v-if="metadata?.mode === 'NORMAL'">普通模式</template>
+            <template v-else-if="metadata?.mode === 'EXPERT'">专家模式</template>
+            <template v-else-if="metadata?.mode === 'ULTIMATE'">终极模式</template>
+            <template v-if="metadata?.mode === 'ULTIMATE' && metadata.u_mode">
               <span v-for="(option, idx) in metadata.u_mode" :key="'option-'+idx">
                 {{ option }}<span v-if="idx < metadata.u_mode.length - 1">, </span>
               </span>
@@ -116,9 +116,9 @@ const { rules } = useRules()
 const starSectionStyle = computed(() => {
   let modeColor = 'var(--foreground-color)' // 默认前景色（普通模式）
 
-  if (metadata.value?.mode === 'expert') {
-    modeColor = 'var(--flag-color)' // 专家模式对应旗帜颜色
-  } else if (metadata.value?.mode === 'ultimate') {
+  if (metadata.value?.mode === 'EXPERT') {
+    //modeColor = 'var(--flag-color)' // 专家模式对应旗帜颜色
+  } else if (metadata.value?.mode === 'ULTIMATE') {
     modeColor = 'var(--error-color)' // 终极模式对应错误颜色
   }
 

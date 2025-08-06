@@ -64,6 +64,7 @@ export interface GameSettings {
   loadingSpinnerDelay: number // 加载动画延迟时间(毫秒)
   keyboardShortcuts: KeyboardShortcuts // 键盘快捷键配置
   mouseShortcuts: MouseShortcuts // 鼠标快捷键配置
+  seed?: string // 随机种子
 }
 
 // 默认设置
@@ -117,6 +118,7 @@ export const defaultSettings: GameSettings = {
     redo: 'mb5',
     resetGame: ''
   },
+  seed: '',
 }
 
 const STORAGE_KEY = 'minesweeper-game-settings'
