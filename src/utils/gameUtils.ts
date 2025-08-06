@@ -13,12 +13,12 @@ export interface CreateGameParams {
   dye?: string // 可选的染色参数
 }
 
-/**
- * 创建新游戏配置
- * @param params 游戏参数
- * @returns Promise<BoardMetadata> 新游戏的元数据
- */
-export async function newGame(params: CreateGameParams): Promise<BoardMetadata> {
+export interface NewGameResult {
+  success: boolean
+  reason?: string
+}
+
+export async function newGame(params: CreateGameParams) {
   try {
     const urlParams = new URLSearchParams({
       size: params.size,
@@ -34,10 +34,13 @@ export async function newGame(params: CreateGameParams): Promise<BoardMetadata> 
     if (result.error) {
       throw new Error(`Failed to create new game: ${result.error}`)
     }
-    return typia.assert<BoardMetadata>(result.data)
+    const data = typia.assert<NewGameResult>(result.data)
+    if (!data.success) {
+      throw new Error(data.reason || 'Unknown error creating new game')
+    }
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error creating new game'
-    throw new Error(errorMessage)
+    window.alert(errorMessage)
   }
 }
 
