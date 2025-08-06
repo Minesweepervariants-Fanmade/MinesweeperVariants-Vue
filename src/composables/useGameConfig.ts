@@ -211,6 +211,8 @@ function createGameConfig() {
     gameOverReason.value = ''
     showGameOverDialog.value = false
 
+    clearHints()
+
     try {
       await loadGameConfig()
     } catch (err) {
