@@ -117,7 +117,7 @@ const starSectionStyle = computed(() => {
   let modeColor = 'var(--foreground-color)' // 默认前景色（普通模式）
 
   if (metadata.value?.mode === 'EXPERT') {
-    //modeColor = 'var(--flag-color)' // 专家模式对应旗帜颜色
+    modeColor = 'var(--flag-color)' // 专家模式对应旗帜颜色
   } else if (metadata.value?.mode === 'ULTIMATE') {
     modeColor = 'var(--error-color)' // 终极模式对应错误颜色
   }
