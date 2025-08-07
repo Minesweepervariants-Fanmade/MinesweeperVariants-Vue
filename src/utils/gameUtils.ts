@@ -2,6 +2,7 @@ import { fetchWithoutValidation, getApiEndpoint } from '@/utils/fetchUtils'
 import { useSettings } from '@/composables/useSettings'
 import typia from 'typia'
 import { useGameConfig } from '@/composables/useGameConfig'
+import type { BoardMetadata } from '@/types/game'
 
 // 创建新游戏的参数接口
 export interface CreateGameParams {
@@ -23,7 +24,7 @@ export interface NewGameResult {
   reason?: string
 }
 
-export async function newGame(params: CreateGameParams) {
+export async function newGame(params: CreateGameParams): Promise<BoardMetadata | undefined> {
   try {
     const urlParams = new URLSearchParams({
       size: params.size,
@@ -46,7 +47,8 @@ export async function newGame(params: CreateGameParams) {
     }
 
     const { initializeGame } = useGameConfig()
-    await initializeGame()
+    const { metadata } = await initializeGame() || {}
+    return metadata
 
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error creating new game'

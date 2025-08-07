@@ -7,7 +7,6 @@ import { Cell } from '@/types/cell'
 import { clearHints, type Hint } from '@/utils/hintUtils'
 import typia from 'typia'
 import { fetchReset } from '@/composables/reset'
-
 // 单例实例
 let gameConfigInstance: ReturnType<typeof createGameConfig> | null = null
 
@@ -38,7 +37,7 @@ function createGameConfig() {
   }
 
   // 加载元数据配置
-  const loadMetadata = async (): Promise<BoardMetadata> => {
+  const loadMetadata = async (): Promise<BoardMetadata | undefined> => {
     try {
       const result = await fetchWithoutValidation(getApiEndpoint('metadata'))
 
@@ -47,8 +46,7 @@ function createGameConfig() {
       }
       if (typeof result.data !== 'object' || !(result.data as {cells: unknown}).cells) {
         // 如果metadata为空，创建新游戏
-        await newGame(getGameParams())
-        return await loadMetadata()
+        return await newGame(getGameParams())
       }
       console.log('Loaded metadata:', result.data)
       const data = typia.assert<BoardMetadata>(result.data)
@@ -173,6 +171,9 @@ function createGameConfig() {
 
     try {
       const metadataResult = await loadMetadata()
+      if (!metadataResult) {
+        return
+      }
 
       // 合并所有单元格配置并转换为Record
       const allCellsRecord: Record<string, CellConfig> = {}
@@ -185,7 +186,7 @@ function createGameConfig() {
       const boards = createGameBoards(metadataResult)
 
       // 应用单元格配置
-      applyCellConfigs(boards, metadataResult.cells)
+      applyCellConfigs(boards, metadataResult?.cells)
 
       // 更新状态
       gameBoards.value = boards
@@ -216,7 +217,7 @@ function createGameConfig() {
     clearHints()
 
     try {
-      await loadGameConfig()
+      return await loadGameConfig()
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to initialize game'
       error.value = errorMessage
