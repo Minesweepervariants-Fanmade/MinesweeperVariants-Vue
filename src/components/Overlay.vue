@@ -251,7 +251,7 @@ const onMenuClick = () => emit('menuClick')
 
     u {
       text-decoration-thickness: 0;
-      text-decoration-color: rgba(255,255,255, 0.5);
+      text-decoration-color: rgb(from var(--primary-color) r g b / 50%);
     }
   }
 
