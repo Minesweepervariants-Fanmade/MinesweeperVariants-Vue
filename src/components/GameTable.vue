@@ -43,7 +43,7 @@ import type { CellState, CellConfig } from '@/types/game'
 import { Cell } from '@/types/cell'
 
 interface Props {
-  GameTable: Record<string, CellState>
+  cellStates: Record<string, CellState>
   rows: number[]
   cols: string[]
   boardName: string
@@ -66,7 +66,7 @@ const dynamicStyleRef = ref<HTMLStyleElement>()
 // 获取单元格状态
 const getCellState = (row: number, col: string): CellState => {
   const key = Cell.CellCoordToKey(row, col)
-  return props.GameTable[key]
+  return props.cellStates[key]
 }
 
 // 获取单元格配置

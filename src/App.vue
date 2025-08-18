@@ -16,13 +16,13 @@
       <GameTable
         v-for="boardConfig in getAllBoardConfigs().filter(config => config !== null)"
         :key="boardConfig!.name"
-        :GameTable="boardConfig!.gameBoard"
+        :cellStates="boardConfig!.cellStates"
         :rows="boardConfig!.labels.rows"
         :cols="boardConfig!.labels.cols"
         :board-name="boardConfig!.name"
         :cell-configs="allCells"
-        :show-row-col-label="gameSettings.showRowColLabel && boardConfig!.size.showLabel"
-        :show-board-name-label="boardConfig!.size.showName"
+        :show-row-col-label="gameSettings.showRowColLabel && boardConfig!.board.showLabel"
+        :show-board-name-label="boardConfig!.board.showName"
         @cell-click="(row, col, boardName) => handleCellClick(boardName!, row, col, 'left')"
         @cell-right-click="(row, col, boardName) => handleCellClick(boardName!, row, col, 'right')"
       />

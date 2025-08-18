@@ -248,7 +248,7 @@ function createGameConfig() {
   }
 
   // 获取游戏板
-  const getGameBoard = (boardName: string) => {
+  const getCellStates = (boardName: string) => {
     return gameBoards.value[boardName] || reactive<Record<string, CellState>>({})
   }
 
@@ -273,7 +273,7 @@ function createGameConfig() {
       return
     }
 
-    const board = getGameBoard(boardName)
+    const board = getCellStates(boardName)
     const key = Cell.CellCoordToKey(row, col)
     const cellState = board[key]
 
@@ -380,8 +380,8 @@ function createGameConfig() {
     if (!metadata.value) return null
     return {
       name: boardName,
-      size: metadata.value.boards[boardName],
-      gameBoard: getGameBoard(boardName),
+      board: metadata.value.boards[boardName],
+      cellStates: getCellStates(boardName),
       labels: getBoardLabels(boardName),
     }
   }
@@ -423,7 +423,7 @@ function createGameConfig() {
     getCellHighlight,
     loadGameConfig,
     initializeGame,
-    getGameBoard,
+    getCellStates,
     getBoardLabels,
     handleCellClick,
     getCellConfig,

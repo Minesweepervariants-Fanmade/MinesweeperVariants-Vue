@@ -17,8 +17,8 @@ export interface CellState {
 export interface Board {
   name?: string
   position: [number, number]
-  showLabel: boolean
-  showName: boolean
+  showLabel?: boolean
+  showName?: boolean
   size: [number, number]
 }
 
