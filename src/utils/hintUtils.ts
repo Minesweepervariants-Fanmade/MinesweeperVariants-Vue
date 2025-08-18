@@ -4,11 +4,11 @@ import { useGameConfig } from '@/composables/useGameConfig'
 import { watch } from 'vue'
 import typia from 'typia'
 
-const { hints, hintIndex, gameBoards } = useGameConfig()
+const { hints, hintIndex, gameBoards, setRuleHint, clearRuleHints } = useGameConfig()
 
 export interface rullHint {
   rule: string
-  index?: number
+  info: string
 }
 
 export interface Hint {
@@ -33,6 +33,8 @@ export async function postHint(
     hints.value = typia.assert<{hints: Hint[]}>(data).hints
     hintIndex.value = 0
 
+    console.log((hints.value))
+
   } catch (e) {
     // 确保在出错时也结束加载状态
     setLoading(false)
@@ -41,6 +43,7 @@ export async function postHint(
 }
 
 export function clearHints() {
+  clearRuleHints()
   hints.value = null
   hintIndex.value = -1
 }
@@ -74,6 +77,7 @@ watch(hintIndex, (newIndex) => {
 
   // 如果 hintIndex 为 -1 或没有提示，直接返回
   if (newIndex === -1 || !hints.value || !hints.value[newIndex]) {
+    clearHints()
     return
   }
 
@@ -89,7 +93,13 @@ watch(hintIndex, (newIndex) => {
         board[cellKey].hint2 = true
       }
     }
-    // 对于 ruleHint 暂时不做处理
+    // 对于 ruleHint：设置对应规则的高亮和 index（如果提供）
+    else {
+      const r = item as rullHint
+      if (r && r.rule) {
+        setRuleHint(r.rule, r.info ?? '')
+      }
+    }
   })
 
   // 处理 conclusion（结论），设置 hint1 为 true

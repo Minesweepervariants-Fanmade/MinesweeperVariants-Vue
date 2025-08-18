@@ -1,16 +1,7 @@
 <template>
   <div class="game-overlay">
     <!-- 规则信息 -->
-    <div class="rules">
-      <div class="rule-line mine-count">
-        <u>[R] 总雷数</u>: &nbsp;{{ metadata?.count?.known ?? '*' }} &nbsp; (剩余雷数/格数: {{ metadata?.count?.remains ?? '*' }}/{{ metadata?.count?.unknown ?? '?' }})
-      </div>
-      <template v-for="(rule, _idx) in rules" :key="_idx">
-        <div class="rule-line">
-          <u>[{{ rule.code }}] {{ rule.name }}</u>: &nbsp;{{ rule.desc }}
-        </div>
-      </template>
-    </div>
+    <RulesPanel />
 
     <!-- 控制按钮 -->
     <div class="controls">
@@ -102,16 +93,13 @@ import { useSettings } from '@/composables/useSettings'
 import { postHint, showNextHint } from '@/utils/hintUtils'
 import BaseButton from '@/components/BaseButton.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
-import { useRules } from '@/utils/ruleUtils'
+import RulesPanel from '@/components/RulesPanel.vue'
 
 // 获取游戏配置
 const { noFail, metadata, hints } = useGameConfig()
 
 // 获取设置
 const { settings } = useSettings()
-
-// 获取规则
-const { rules } = useRules()
 
 // 计算星星样式
 const starSectionStyle = computed(() => {
@@ -246,14 +234,6 @@ const onMenuClick = () => emit('menuClick')
   color: var(--foreground-color);
   font-size: variables.scaled(20);
 
-  .rule-line {
-    margin-bottom: variables.scaled(5);
-
-    u {
-      text-decoration-thickness: 0;
-      text-decoration-color: rgb(from var(--primary-color) r g b / 50%);
-    }
-  }
 
   .mine-count,
   .remaining {

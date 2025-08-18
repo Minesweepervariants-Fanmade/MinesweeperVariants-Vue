@@ -1,6 +1,7 @@
 import { ref, reactive } from 'vue'
 import { fetchWithoutValidation, getApiEndpoint } from '@/utils/fetchUtils'
 import typia from 'typia'
+import { useGameConfig } from '@/composables/useGameConfig'
 
 // 规则类型定义
 export type RuleType = 'lRule' | 'mRule' | 'rRule' | 'oRule' | 'dye'
@@ -158,3 +159,25 @@ export function useRules() {
 
 // 自动初始化规则
 initializeRules()
+
+export function get_name(code: string): string {
+  if (code === 'R') return '总雷数'
+  const def = RULE_DEFINITIONS[code]
+  if (def && def.length >= 2) return def[1]
+  return `未知规则 ${code}`
+}
+
+export function get_desc(code: string): string {
+  if (code === 'R') {
+    // 使用 game config 中的 metadata 构造描述字符串
+    const { metadata } = useGameConfig()
+    const known = metadata.value?.count?.known ?? '*'
+    const remains = metadata.value?.count?.remains ?? '*'
+    const unknown = metadata.value?.count?.unknown ?? '?'
+    return `${known} (剩余雷数/格数: ${remains}/${unknown})`
+  }
+
+  const def = RULE_DEFINITIONS[code]
+  if (def && def.length >= 3) return def[2]
+  return ''
+}

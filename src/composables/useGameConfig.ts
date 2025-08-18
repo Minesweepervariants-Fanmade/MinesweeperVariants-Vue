@@ -1,4 +1,5 @@
 import { ref, reactive } from 'vue'
+import type { Ref } from 'vue'
 import type { BoardMetadata, CellConfig, CellState, ClickResponse } from '@/types/game'
 import { fetchWithoutValidation, getApiEndpoint } from '@/utils/fetchUtils'
 import { newGame, getGameParams } from '@/utils/gameUtils'
@@ -27,6 +28,25 @@ function createGameConfig() {
   // 提示相关状态
   const hints = ref<Hint[] | null>(null)
   const hintIndex = ref<number>(-1)
+
+  // 规则高亮共享状态：key -> { lit, info }
+  const ruleHints: Record<string, { lit: Ref<boolean>; info: Ref<string> }> = {}
+
+  const setRuleHint = (ruleCode: string, info: string = '') => {
+    if (!ruleHints[ruleCode]) {
+      ruleHints[ruleCode] = { lit: ref<boolean>(true), info: ref<string>(info) }
+    } else {
+      ruleHints[ruleCode].lit.value = true
+      ruleHints[ruleCode].info.value = info
+    }
+  }
+
+  const clearRuleHints = () => {
+    for (const k of Object.keys(ruleHints)) {
+      ruleHints[k].lit.value = false
+      ruleHints[k].info.value = ''
+    }
+  }
 
   // 使用规则管理
   const { rules, processMetadataRules } = useRules()
@@ -389,6 +409,11 @@ function createGameConfig() {
     showGameWinDialog,
     hints,
     hintIndex,
+
+    // rule hint API
+    ruleHints,
+    setRuleHint,
+    clearRuleHints,
 
     // 方法
     loadMetadata,
