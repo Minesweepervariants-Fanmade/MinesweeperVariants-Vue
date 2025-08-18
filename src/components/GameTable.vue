@@ -2,9 +2,11 @@
   <table class="game-table">
     <thead>
       <tr>
-        <th class="corner-cell">{{ boardName && boardName.toUpperCase() !== 'MAIN' ? boardName : '' }}</th>
+        <th class="corner-cell">
+          <template v-if="showBoardNameLabel">{{ boardName && boardName.toUpperCase() !== 'MAIN' ? boardName : '' }}</template>
+        </th>
         <th v-for="col in cols" :key="col" class="col-header">
-          <template v-if="showRowColLabel !== false">{{ col }}</template>
+          <template v-if="showRowColLabel">{{ col }}</template>
         </th>
       </tr>
     </thead>
@@ -12,7 +14,7 @@
     <tbody>
       <tr v-for="row in rows" :key="row">
         <th class="row-header">
-          <template v-if="showRowColLabel !== false">{{ row }}</template>
+          <template v-if="showRowColLabel">{{ row }}</template>
         </th>
 
         <GameCell
@@ -47,6 +49,7 @@ interface Props {
   boardName: string
   cellConfigs?: Record<string, CellConfig>
   showRowColLabel?: boolean
+  showBoardNameLabel?: boolean
 }
 
 interface Emits {
@@ -55,7 +58,6 @@ interface Emits {
 }
 
 const props = defineProps<Props>()
-const showRowColLabel = props.showRowColLabel
 defineEmits<Emits>()
 
 // 动态样式元素引用

@@ -18,6 +18,7 @@ export interface Board {
   name?: string
   position: [number, number]
   showLabel: boolean
+  showName: boolean
   size: [number, number]
 }
 

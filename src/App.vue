@@ -21,7 +21,8 @@
         :cols="boardConfig!.labels.cols"
         :board-name="boardConfig!.name"
         :cell-configs="allCells"
-        :show-row-col-label="gameSettings.showRowColLabel"
+        :show-row-col-label="gameSettings.showRowColLabel && boardConfig!.size.showLabel"
+        :show-board-name-label="boardConfig!.size.showName"
         @cell-click="(row, col, boardName) => handleCellClick(boardName!, row, col, 'left')"
         @cell-right-click="(row, col, boardName) => handleCellClick(boardName!, row, col, 'right')"
       />
