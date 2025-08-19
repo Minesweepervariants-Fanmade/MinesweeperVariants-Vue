@@ -328,16 +328,15 @@ function createGameConfig() {
         if (response.gameover) {
           isGameOver.value = true
           gameOverReason.value = response.reason
-          mines.value = response.mines ?? []
 
           // 根据胜负弹出不同弹窗
-          window.setTimeout(() => {
-            if (response.win) {
-              showGameWinDialog.value = true
-            } else {
-              showGameOverDialog.value = true
-            }
-          }, 0)
+          if (response.win) {
+            showGameWinDialog.value = true
+          } else {
+            mines.value = response.mines ?? []
+            cellState.error = true
+            showGameOverDialog.value = true
+          }
         }
       } catch (error) {
         // 清除加载状态

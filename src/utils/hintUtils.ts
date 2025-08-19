@@ -42,14 +42,32 @@ export async function postHint(
   }
 }
 
+export function resetHints() {
+  // 重置所有格子的 hint1 和 hint2
+  Object.values(gameBoards.value).forEach(board => {
+    Object.values(board).forEach(cellState => {
+      if (cellState) {
+        cellState.hint1 = false
+        cellState.hint2 = false
+        cellState.error = false
+        cellState.errormine = false
+      }
+    })
+  })
+}
+
 export function clearHints() {
   clearRuleHints()
   hints.value = null
-  hintIndex.value = -1
+  hideHints()
 }
 
 export function hideHints() {
-  hintIndex.value = -1
+  if (hintIndex.value !== -1) {
+    hintIndex.value = -1
+  } else {
+    resetHints()
+  }
 }
 
 export function showNextHint() {
@@ -64,17 +82,7 @@ export function showNextHint() {
 // 监听 hintIndex 变化，更新单元格的提示状态
 watch(hintIndex, (newIndex) => {
   clearRuleHints()
-  // 重置所有格子的 hint1 和 hint2
-  if (gameBoards.value) {
-    Object.values(gameBoards.value).forEach(board => {
-      Object.values(board).forEach(cellState => {
-        if (cellState) {
-          cellState.hint1 = false
-          cellState.hint2 = false
-        }
-      })
-    })
-  }
+  resetHints()
 
   // 如果 hintIndex 为 -1 或没有提示，直接返回
   if (newIndex === -1 || !hints.value || !hints.value[newIndex]) {
