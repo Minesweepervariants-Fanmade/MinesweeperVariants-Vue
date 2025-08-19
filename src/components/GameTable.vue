@@ -25,7 +25,6 @@
           :cell-state="getCellState(row, col)"
           :cell-config="getCellConfig(row, col)"
           :board-name="boardName"
-          :is-highlighted="_isCellHighlighted(row, col)"
           :dye="getCellDye(row, col)"
           :mask="getCellMask(row, col)"
           @click="(row, col, boardName) => $emit('cell-click', row, col, boardName)"
@@ -96,11 +95,6 @@ const getCellMask = (row: number, col: string): boolean | false => {
 
   const { x, y } = Cell.displayCoordToIndex(row, col)
   return props.mask[x][y]
-}
-
-// 检查单元格是否高亮（现在通过CSS动态控制高亮）
-const _isCellHighlighted = (_row: number, _col: string): boolean => {
-  return false // 现在通过CSS动态控制高亮
 }
 
 // 处理单元格鼠标进入事件

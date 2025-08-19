@@ -278,6 +278,10 @@ function createGameConfig() {
 
     const { x, y } = Cell.displayCoordToIndex(row, col)
 
+    if (getBoardConfig(boardName)?.board.mask?.[x][y] === true) {
+      return
+    }
+
     if (cellState) {
       try {
         // 设置加载状态

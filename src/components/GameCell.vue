@@ -42,7 +42,6 @@ interface Props {
   cellState: CellState
   cellConfig?: CellConfig
   boardName: string
-  isHighlighted?: boolean
   dye?: boolean
   mask?: boolean
 }
@@ -67,7 +66,6 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  isHighlighted: false,
   dye: false,
   mask: false
 })
@@ -84,10 +82,6 @@ const cellClasses = computed(() => {
 
   if (props.cellState?.type === 'revealed') {
     classes.push('revealed')
-  }
-
-  if (props.isHighlighted) {
-    classes.push('highlighted')
   }
 
   if (props.mask) {
@@ -134,8 +128,7 @@ watch(
   () => [
     props.cellState?.type,
     props.cellState?.isLoading,
-    props.cellConfig,
-    props.isHighlighted
+    props.cellConfig
   ],
   async () => {
     try {
@@ -165,16 +158,13 @@ watch(
   overflow: hidden;
   box-sizing: border-box;
 
-  &:hover {
-    background: var(--pointer-color);
-  }
-
   &.highlighted {
     background: var(--pointer-color);
   }
 
   &.hole {
     border-width: 0;
+    cursor: inherit;
   }
 }
 
