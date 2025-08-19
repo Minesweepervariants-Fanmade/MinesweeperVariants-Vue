@@ -62,7 +62,7 @@ export interface ComponentConfig {
   style: string
 }
 
-export type Theme = '' | 'theme-blue' | 'theme-amber'
+export type Theme = '' | 'theme-blue' | 'theme-amber' | 'theme-forest' | 'theme-ocean' | 'theme-sunset' | 'theme-lavender' | 'theme-emerald' | 'theme-slate' | 'theme-rose' | 'theme-midnight' | 'theme-solar' | 'theme-raspberry' | 'theme-sky' | 'theme-cafe'
 
 // 信息提示组件配置
 export interface InfoOverlayConfig {

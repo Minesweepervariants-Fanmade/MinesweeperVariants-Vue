@@ -182,9 +182,11 @@
         <div class="setting-item">
           <label class="setting-label">主题：</label>
           <select v-model="localSettings.theme" class="setting-select">
-            <option value="dark">深色</option>
-            <option value="blue">蓝色</option>
-            <option value="amber">琥珀色</option>
+            <option
+              v-for="opt in themeOptions"
+              :key="opt.value"
+              :value="opt.value"
+            >{{ opt.label }}</option>
           </select>
         </div>
         <div class="setting-item">
@@ -269,7 +271,7 @@ import { useTheme } from '@/composables/useTheme'
 import { RULE_DEFINITIONS, fetchEndpointRules, type RuleType } from '@/utils/ruleUtils'
 
 // 主题管理
-const { setTheme } = useTheme()
+const { setTheme, themeOptions } = useTheme()
 
 // 快捷键设置组件引用
 const shortcutSettingsRef = ref<InstanceType<typeof ShortcutSettings>>()

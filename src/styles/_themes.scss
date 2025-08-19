@@ -34,3 +34,133 @@
   --flag-color: #f00;
   --pointer-color: rgba(0, 0, 0, 0.15);
 }
+
+.theme-forest {
+  --background-color: #0b1d12;
+  --foreground-color: #d6f5e3;
+  --error-color: #ef4444;
+  --hint-color: #34d399;
+  --hint2-color: #facc15;
+  --flag-color: #f59e0b;
+  --pointer-color: rgba(255, 255, 255, 0.15);
+}
+
+.theme-ocean {
+  --background-color: #0a1b2a;
+  --foreground-color: #d7f0ff;
+  --error-color: #ef4444;
+  --hint-color: #22c55e;
+  --hint2-color: #fde047;
+  --flag-color: #f59e0b;
+  --pointer-color: rgba(255, 255, 255, 0.15);
+}
+
+.theme-sunset {
+  --background-color: #241018;
+  --foreground-color: #ffe7d6;
+  --error-color: #ff4d6d;
+  --hint-color: #22c55e;
+  --hint2-color: #fde047;
+  --flag-color: #f59e0b;
+  --pointer-color: rgba(255, 255, 255, 0.15);
+}
+
+.theme-lavender {
+  --background-color: #f6f3ff;
+  --foreground-color: #3a2a5e;
+  --error-color: #dc2626;
+  --hint-color: #16a34a;
+  --hint2-color: #facc15;
+  --flag-color: #f59e0b;
+  --pointer-color: rgba(0, 0, 0, 0.15);
+}
+
+.theme-emerald {
+  --background-color: #f0fdf4;
+  --foreground-color: #064e3b;
+  --error-color: #dc2626;
+  --hint-color: #10b981;
+  --hint2-color: #84cc16;
+  --flag-color: #f59e0b;
+  --pointer-color: rgba(0, 0, 0, 0.15);
+}
+
+.theme-slate {
+  --background-color: #0f172a;
+  --foreground-color: #e2e8f0;
+  --error-color: #f87171;
+  --hint-color: #22c55e;
+  --hint2-color: #eab308;
+  --flag-color: #f59e0b;
+  --pointer-color: rgba(255, 255, 255, 0.15);
+}
+
+.theme-rose {
+  --background-color: #fff1f2;
+  --foreground-color: #881337;
+  --error-color: #be123c;
+  --hint-color: #22c55e;
+  --hint2-color: #facc15;
+  --flag-color: #dc2626;
+  --pointer-color: rgba(0, 0, 0, 0.15);
+}
+
+.theme-midnight {
+  --background-color: #0b0f14;
+  --foreground-color: #cbd5e1;
+  --error-color: #ff6b6b;
+  --hint-color: #22c55e;
+  --hint2-color: #facc15;
+  --flag-color: #facc15;
+  --pointer-color: rgba(255, 255, 255, 0.15);
+}
+
+.theme-solar {
+  --background-color: #fdf6e3;
+  --foreground-color: #073642;
+  --error-color: #dc322f;
+  --hint-color: #859900;
+  --hint2-color: #b58900;
+  --flag-color: #cb4b16;
+  --pointer-color: rgba(0, 0, 0, 0.15);
+}
+
+.theme-raspberry {
+  --background-color: #1a0b14;
+  --foreground-color: #ffd6f0;
+  --error-color: #ff4d8d;
+  --hint-color: #22c55e;
+  --hint2-color: #facc15;
+  --flag-color: #fcd34d;
+  --pointer-color: rgba(255, 255, 255, 0.15);
+}
+
+.theme-sky {
+  --background-color: #eff6ff;
+  --foreground-color: #0f172a;
+  --error-color: #ef4444;
+  --hint-color: #22c55e;
+  --hint2-color: #f59e0b;
+  --flag-color: #f59e0b;
+  --pointer-color: rgba(0, 0, 0, 0.15);
+}
+
+.theme-cafe {
+  --background-color: #f8f1e7;
+  --foreground-color: #3f2d20;
+  --error-color: #b91c1c;
+  --hint-color: #16a34a;
+  --hint2-color: #eab308;
+  --flag-color: #b45309;
+  --pointer-color: rgba(0, 0, 0, 0.15);
+}
+
+.theme-trans {
+  --background-color: #ffffff;
+  --foreground-color: #174b6b;
+  --error-color: #e11d48;
+  --hint-color: #f5a9b8;
+  --hint2-color: #5bcefa;
+  --flag-color: #f5a9b8;
+  --pointer-color: rgba(0, 0, 0, 0.15);
+}
