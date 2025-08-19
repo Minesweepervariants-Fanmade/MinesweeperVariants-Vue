@@ -12,7 +12,6 @@
     @mouseleave="handleMouseLeave"
   >
     <div class="cell-content">
-      <LoadingSpinner :visible="cellState?.isLoading" :delay="settings.loadingSpinnerDelay / 1000" />
       <div v-if="dye" class="dye-overlay" />
       <template v-if="cellState?.type === 'revealed'">
         <div ref="container" class="container" />
@@ -24,6 +23,7 @@
       <div v-if="cellState?.errormine" class="overlay error-overlay mine-icon">
         <FlagIcon />
       </div>
+      <LoadingSpinner :visible="cellState?.isLoading" :delay="settings.loadingSpinnerDelay / 1000" />
     </div>
   </td>
 </template>
@@ -90,6 +90,10 @@ const cellClasses = computed(() => {
     classes.push('highlighted')
   }
 
+  if (props.mask) {
+    classes.push('hole')
+  }
+
   return classes
 })
 
@@ -153,7 +157,9 @@ watch(
 // 游戏单元格
 .cell {
   @include variables.square-size(1);
-  border: variables.$border-width solid var(--foreground-color);
+  border-style: solid;
+  border-width: calc(2 * var(--scale));
+  border-color: var(--foreground-color);
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -165,6 +171,10 @@ watch(
 
   &.highlighted {
     background: var(--pointer-color);
+  }
+
+  &.hole {
+    border-width: 0;
   }
 }
 

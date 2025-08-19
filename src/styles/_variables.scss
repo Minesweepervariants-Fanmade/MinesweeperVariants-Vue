@@ -1,6 +1,4 @@
 $cell-base-size: 60;
-$border-width: calc(2 * var(--scale));
-$border-radius: 0;
 
 @function cell-size($scale: 1) {
   @return calc(#{$scale} * var(--cell-size));
@@ -64,8 +62,7 @@ $border-radius: 0;
 
 @mixin button-base {
   background: transparent;
-  border: $border-width solid var(--foreground-color);
-  border-radius: $border-radius;
+  border: calc(2 * var(--scale)) solid var(--foreground-color);
   cursor: pointer;
   @include flex-center;
   box-sizing: border-box;
