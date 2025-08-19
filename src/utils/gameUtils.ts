@@ -12,6 +12,7 @@ export interface CreateGameParams {
   total: string // 总雷数
   u_mode?: string // 可选的终极模式选项
   dye?: string // 可选的染色参数
+  mask?: string // 可选的掩码参数
   seed?: string // 可选的种子参数
 }
 
@@ -33,6 +34,7 @@ export async function newGame(params: CreateGameParams): Promise<BoardMetadata |
       total: params.total,
       u_mode: params.u_mode || '',
       dye: params.dye || '',
+      mask: params.mask || '',
       seed: params.seed || ''
     })
     const result = await fetchWithoutValidation(
@@ -72,17 +74,21 @@ export function getGameParams(): CreateGameParams {
 
   const rulesArray: string[] = []
   const dyeArray: string[] = []
+  const maskArray: string[] = []
 
   // 构建规则字符串 - 将启用的规则数组转换为逗号分隔的字符串
   for (const rule of settings.value.enabledRules) {
     if (rule.startsWith('@')) {
       dyeArray.push(rule.slice(1))
+    } else if (rule.startsWith('&')) {
+      maskArray.push(rule.slice(1))
     } else {
       rulesArray.push(rule)
     }
   }
   const rules = rulesArray.join(',')
   const dye = dyeArray.length > 0 ? dyeArray.join(',') : undefined
+  const mask = maskArray.length > 0 ? maskArray.join(',') : undefined
 
   // 获取游戏模式
   const mode = modeMap[settings.value.gameMode]
@@ -114,6 +120,7 @@ export function getGameParams(): CreateGameParams {
     total,
     u_mode,
     dye,
+    mask,
     seed
   }
 }
