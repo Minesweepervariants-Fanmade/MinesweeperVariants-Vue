@@ -96,7 +96,7 @@ import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import RulesPanel from '@/components/RulesPanel.vue'
 
 // 获取游戏配置
-const { noFail, metadata, hints } = useGameConfig()
+const { metadata, hints } = useGameConfig()
 
 // 获取设置
 const { settings } = useSettings()
@@ -111,8 +111,8 @@ const starSectionStyle = computed(() => {
     modeColor = 'var(--error-color)' // 终极模式对应错误颜色
   }
 
-  const starColor = noFail.value ? modeColor : 'transparent'
-
+  const starColor = (metadata.value?.noFail && metadata.value?.noHint) ? modeColor : 'transparent'
+  console.log("freshing", metadata.value)
   return {
     '--mode-color': modeColor,
     '--star': starColor

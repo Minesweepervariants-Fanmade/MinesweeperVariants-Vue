@@ -29,6 +29,8 @@ export interface BoardMetadata {
   cells: CellConfig[]
   count?: CountInfo
   seed?: string
+  noFail?: boolean
+  noHint?: boolean
   mode: 'NORMAL' | 'EXPERT' | 'ULTIMATE'
   u_mode?: string[]
 }
@@ -96,8 +98,10 @@ export interface ClickResponse {
   gameover: boolean
   reason: string
   cells: CellConfig[]
-  count?: CountInfo  // 新增count字段
-  mines?: Cell[] // 新增 mines 字段
+  count?: CountInfo
+  noFail?: boolean
+  noHint?: boolean
+  mines?: Cell[]
   win?: boolean
   u_hint?: U_Hint
 }

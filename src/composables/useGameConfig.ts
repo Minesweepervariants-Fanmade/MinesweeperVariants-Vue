@@ -24,8 +24,6 @@ function createGameConfig() {
   const showGameWinDialog = ref(false)
   const mines = ref<Cell[]>([])
 
-  const noFail = ref(true)
-
   // 提示相关状态
   const hints = ref<Hint[] | null>(null)
   const hintIndex = ref<number>(-1)
@@ -324,6 +322,14 @@ function createGameConfig() {
           metadata.value.count = response.count
         }
 
+        if (response.noFail !== undefined && metadata.value) {
+          metadata.value.noFail = response.noFail
+        }
+
+        if (response.noHint !== undefined && metadata.value) {
+          metadata.value.noHint = response.noHint
+        }
+
         // 检查游戏是否结束
         if (response.gameover) {
           isGameOver.value = true
@@ -424,7 +430,6 @@ function createGameConfig() {
     isLoading,
     error,
     rules,
-    noFail,
     mines,
     isGameOver,
     gameOverReason,

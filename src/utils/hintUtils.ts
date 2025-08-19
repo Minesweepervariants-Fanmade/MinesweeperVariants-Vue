@@ -4,7 +4,7 @@ import { useGameConfig } from '@/composables/useGameConfig'
 import { watch } from 'vue'
 import typia from 'typia'
 
-const { hints, hintIndex, gameBoards, setRuleHint, clearRuleHints } = useGameConfig()
+const { hints, hintIndex, gameBoards, metadata, setRuleHint, clearRuleHints } = useGameConfig()
 
 export interface rullHint {
   rule: string
@@ -33,7 +33,7 @@ export async function postHint(
     hints.value = typia.assert<{hints: Hint[]}>(data).hints
     hintIndex.value = 0
 
-    console.log((hints.value))
+    metadata.value!.noHint = false
 
   } catch (e) {
     // 确保在出错时也结束加载状态
