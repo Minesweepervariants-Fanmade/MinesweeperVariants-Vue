@@ -15,7 +15,7 @@
 
           class="close-btn"
           @click="onClose"
-        >×</BaseButton>
+        >x</BaseButton>
       </div>
 
       <!-- 面板内容 -->

@@ -60,9 +60,14 @@
       v-model:visible="showGameOverDialog"
       :title="gameOverTitle"
       :message="gameOverMessage"
-      confirm-text="重新开始"
-      @confirm="handleGameOverConfirm"
-    />
+    >
+      <template #actions>
+        <BaseButton variant="simple" @click="handleGameOverExample">我不信</BaseButton>
+        <BaseButton variant="simple" @click="handleGameOverHint">提示</BaseButton>
+        <BaseButton variant="simple" @click="handleGameOverReset">重置</BaseButton>
+        <BaseButton variant="simple" @click="handleGameOverUndo">撤销</BaseButton>
+      </template>
+    </InfoOverlay>
 
     <!-- 游戏胜利信息提示 -->
     <InfoOverlay
@@ -149,7 +154,10 @@ const {
   initializeGame,
   handleCellClick,
   resetGame,
-  handleGameOverConfirm,
+  handleGameOverExample,
+  handleGameOverHint,
+  handleGameOverReset,
+  handleGameOverUndo,
   getAllBoardConfigs,
 } = useGameConfig()
 

@@ -5,7 +5,7 @@ import { fetchWithoutValidation, getApiEndpoint } from '@/utils/fetchUtils'
 import { newGame, getGameParams } from '@/utils/gameUtils'
 import { useRules } from '@/utils/ruleUtils'
 import { Cell } from '@/types/cell'
-import { clearHints, type Hint } from '@/utils/hintUtils'
+import { clearHints, postHint, type Hint } from '@/utils/hintUtils'
 import typia from 'typia'
 import { fetchReset } from '@/composables/reset'
 // 单例实例
@@ -22,6 +22,7 @@ function createGameConfig() {
   const gameOverReason = ref<string>('')
   const showGameOverDialog = ref(false)
   const showGameWinDialog = ref(false)
+  const mines = ref<Cell[]>([])
 
   const noFail = ref(true)
 
@@ -268,8 +269,8 @@ function createGameConfig() {
   // 处理单元格点击
   const handleCellClick = async (boardName: string, row: number, col: string, button: string = 'left') => {
     clearHints()
-    if (isGameOver.value || showGameOverDialog.value) {
-      console.log('Game is over or dialog is shown, click ignored')
+    if (showGameOverDialog.value) {
+      console.log('Dialog is shown, click ignored')
       return
     }
 
@@ -327,6 +328,7 @@ function createGameConfig() {
         if (response.gameover) {
           isGameOver.value = true
           gameOverReason.value = response.reason
+          mines.value = response.mines ?? []
 
           // 根据胜负弹出不同弹窗
           window.setTimeout(() => {
@@ -359,10 +361,24 @@ function createGameConfig() {
     await initializeGame()
   }
 
-  // 关闭游戏结束对话框并重置游戏
-  const handleGameOverConfirm = async () => {
+  const handleGameOverExample = async () => {
     showGameOverDialog.value = false
     await resetGame()
+  }
+
+  const handleGameOverHint = async () => {
+    showGameOverDialog.value = false
+    await postHint(() => {})
+  }
+
+  // 关闭游戏结束对话框并重置游戏
+  const handleGameOverReset = async () => {
+    showGameOverDialog.value = false
+    await resetGame()
+  }
+
+  const handleGameOverUndo = async () => {
+    showGameOverDialog.value = false
   }
 
   // 获取游戏规则
@@ -403,6 +419,7 @@ function createGameConfig() {
     error,
     rules,
     noFail,
+    mines,
     isGameOver,
     gameOverReason,
     showGameOverDialog,
@@ -428,7 +445,10 @@ function createGameConfig() {
     handleCellClick,
     getCellConfig,
     resetGame,
-    handleGameOverConfirm,
+    handleGameOverExample,
+    handleGameOverHint,
+    handleGameOverReset,
+    handleGameOverUndo,
     getGameRules,
     getBoardNames,
     getBoardConfig,
