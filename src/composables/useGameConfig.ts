@@ -1,7 +1,7 @@
 import { ref, reactive } from 'vue'
 import type { Ref } from 'vue'
 import type { BoardMetadata, CellConfig, CellState, ClickResponse } from '@/types/game'
-import { fetchWithoutValidation, getApiEndpoint } from '@/utils/fetchUtils'
+import { fetchWithoutValidation, getApiEndpoint, test_connect_fail_reason } from '@/utils/fetchUtils'
 import { newGame, getGameParams } from '@/utils/gameUtils'
 import { useRules } from '@/utils/ruleUtils'
 import { Cell } from '@/types/cell'
@@ -61,7 +61,8 @@ function createGameConfig() {
       const result = await fetchWithoutValidation(getApiEndpoint('metadata'))
 
       if (result.error) {
-        throw new Error(`Failed to load metadata: ${result.error}`)
+        const errormsg = `Failed to load metadata: ${result.error} ${test_connect_fail_reason()}`
+        throw new Error(errormsg)
       }
       if (typeof result.data !== 'object' || !(result.data as {cells: unknown}).cells) {
         // 如果metadata为空，创建新游戏

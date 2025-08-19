@@ -48,6 +48,29 @@ async function fetchCore(
   return { response, error }
 }
 
+export function test_connect_fail_reason(): string {
+  const { settings } = useSettings()
+
+  // 如果页面不是通过 HTTPS 访问，则无需检查
+  const pageProtocol = typeof window !== 'undefined' && window.location && window.location.protocol
+  if (pageProtocol !== 'https:') return ''
+
+  const serverUrl = settings.value?.serverUrl?.toString()?.trim() ?? ''
+  if (!serverUrl) return ''
+
+  // 处理几种常见的 serverUrl 写法：
+  // - 以 http:// 或 https:// 开头
+  // - 以 // 开头（协议相对） -> 与页面协议一致，故安全
+  // - 以 / 开头 或 不带协议（相对地址） -> 使用当前页面协议，故安全
+  const lower = serverUrl.toLowerCase()
+  if (lower.startsWith('http://')) {
+    return '\n警告：页面通过 HTTPS 加载，但配置的服务器地址使用 HTTP（http://），这会导致浏览器阻止或混合内容被屏蔽。请将服务器地址改为 HTTPS 或使用相对/协议相同的地址。'
+  }
+
+  // 其它情况（https://, //, /path, relative）视为安全
+  return ''
+}
+
 // 通用的错误处理函数
 function handleFetchError(error: unknown, response: { ok: boolean; status: number; json: () => Promise<unknown>; text: () => Promise<string> } | null): FetchResult<never> {
   // 处理异常错误
