@@ -50,7 +50,6 @@
               type="text"
               class="setting-input"
               placeholder="任意字符串"
-              style="min-width: 120px;"
             >
             <BaseButton variant="simple" size="small" @click="generateRandomSeed">随机</BaseButton>
             <BaseButton variant="simple" size="small" @click="clearSeed">清空</BaseButton>
@@ -62,7 +61,17 @@
       <div class="setting-section">
         <div style="display: flex; justify-content: space-between; align-items: center;">
           <h4 class="section-title" style="margin-bottom: 0;">游戏规则</h4>
-          <BaseButton variant="simple" size="small" style="margin-bottom: 0;" @click="handleFetchRules">更新</BaseButton>
+          <div class="rule-input">
+            <input
+              v-model="newRuleInput"
+              type="text"
+              class="setting-input"
+              placeholder="输入规则代码"
+              @keyup.enter="handleAddRule"
+            >
+            <BaseButton variant="simple" size="small" @click="handleAddRule">添加</BaseButton>
+            <BaseButton variant="simple" size="small" style="margin-bottom: 0;" @click="handleFetchRules">更新</BaseButton>
+          </div>
         </div>
         <div class="rules-container">
           <!-- 启用的规则 -->
@@ -378,6 +387,19 @@ const handleFetchRules = async () => {
   }
 }
 
+// 手动添加/启用规则输入
+const newRuleInput = ref('')
+
+const handleAddRule = () => {
+  const raw = (newRuleInput.value || '').trim()
+  if (!raw) return
+  const code = raw
+
+  enableRule(code)
+  newRuleInput.value = ''
+  return
+}
+
 // 监听外部设置变化
 watch(
   () => props.settings,
@@ -588,6 +610,13 @@ function clearSeed() {
 
 .setting-select {
   cursor: pointer;
+}
+
+.rule-input {
+  min-width: variables.scaled(160);
+  display: flex;
+  align-items: center;
+  gap: variables.scaled(10);
 }
 
 .rules-container {
