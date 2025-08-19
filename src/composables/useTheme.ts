@@ -18,7 +18,8 @@ const THEME_MAPPING: Record<string, string> = {
   'raspberry': 'theme-raspberry',
   'sky': 'theme-sky',
   'cafe': 'theme-cafe',
-  'trans': 'theme-trans'
+  'trans': 'theme-trans',
+  'image': 'theme-image'
 }
 
 // 导出可供 UI 使用的主题选项（label 为显示名，value 为设置中使用的 key）
@@ -40,7 +41,8 @@ export const THEME_OPTIONS: { label: string; value: string }[] = Object.entries(
     raspberry: '覆盆子',
     sky: '天空',
     cafe: '咖啡',
-    trans: '🏳️‍⚧️跨性别'
+    trans: '🏳️‍⚧️跨性别',
+    image: '背景图片测试'
   }
 
   return {

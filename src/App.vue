@@ -1,5 +1,6 @@
 <template>
   <div class="app-container" @click="handleContainerClick">
+    <div class="background-image" />
     <div v-if="isLoading" class="loading">
       正在加载游戏配置...
       <BaseButton @click="showSettingsDialog = true">设置</BaseButton>
@@ -376,6 +377,25 @@ onUnmounted(() => {
   gap: calc(40 * var(--scale));
   padding: calc(20 * var(--scale));
   position: relative;
+}
+
+/* 背景图片覆盖层 */
+.background-image {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* 深色主题时稍微提高对比度 */
+:root[data-theme='dark'] .background-image {
+  opacity: 0.14;
+  filter: blur(2px) saturate(1.05) brightness(0.9);
+}
+
+/* 当需要隐藏背景（例如专注模式）时可加上 .hidden */
+.background-image.hidden {
+  opacity: 0 !important;
+  transform: scale(1);
 }
 
 </style>

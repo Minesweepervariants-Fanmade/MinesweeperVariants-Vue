@@ -164,3 +164,23 @@
   --flag-color: #f5a9b8;
   --pointer-color: rgba(0, 0, 0, 0.15);
 }
+
+.theme-image {
+  --background-color: #ffffff;
+  --foreground-color: #503834;
+  --error-color: #f6c349;
+  --hint-color: #ef8da0;
+  --hint2-color: #138186;
+  --flag-color: #ef8da0;
+  --pointer-color: rgba(0, 0, 0, 0.15);
+
+  .background-image {
+    background-image: url('./background.png');
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+    opacity: 0.12;
+    filter: blur(2px) saturate(0.95);
+    transition: opacity 250ms ease, transform 400ms ease, filter 250ms ease;
+  }
+}

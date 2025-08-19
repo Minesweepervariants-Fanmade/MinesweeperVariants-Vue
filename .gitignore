@@ -24,3 +24,5 @@ public/api/*
 *.njsproj
 *.sln
 *.sw?
+
+public/background.png
