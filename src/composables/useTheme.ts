@@ -1,5 +1,4 @@
 import { ref } from 'vue'
-import type { Theme } from '@/types/game'
 
 // 主题映射（key 为主题名，value 为 body 上使用的 CSS 类名）
 const THEME_MAPPING: Record<string, string> = {
@@ -52,14 +51,14 @@ export const THEME_OPTIONS: { label: string; value: string }[] = Object.entries(
 })
 
 export function useTheme() {
-  const currentTheme = ref<Theme>('')
-  const themes: Theme[] = ['', 'theme-blue', 'theme-amber', 'theme-forest', 'theme-ocean', 'theme-sunset', 'theme-lavender', 'theme-emerald', 'theme-slate', 'theme-rose', 'theme-midnight', 'theme-solar', 'theme-raspberry', 'theme-sky', 'theme-cafe']
+  const currentTheme = ref<string>('')
+  const themes: string[] = Object.values(THEME_MAPPING)
   let currentThemeIndex = 0
 
   // 设置主题
   const setTheme = (themeName: string) => {
     const themeClass = THEME_MAPPING[themeName] || ''
-    currentTheme.value = themeClass as Theme
+    currentTheme.value = themeClass
     document.body.className = currentTheme.value
 
     // 更新当前主题索引
