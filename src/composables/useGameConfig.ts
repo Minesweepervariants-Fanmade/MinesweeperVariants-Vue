@@ -5,7 +5,7 @@ import { fetchWithoutValidation, getApiEndpoint } from '@/utils/fetchUtils'
 import { newGame, getGameParams } from '@/utils/gameUtils'
 import { useRules } from '@/utils/ruleUtils'
 import { Cell } from '@/types/cell'
-import { clearHints, postHint, type Hint } from '@/utils/hintUtils'
+import { clearHints, postHint, resetHints, type Hint } from '@/utils/hintUtils'
 import typia from 'typia'
 import { fetchReset } from '@/composables/reset'
 // 单例实例
@@ -362,7 +362,14 @@ function createGameConfig() {
 
   const handleGameOverExample = async () => {
     showGameOverDialog.value = false
-    await resetGame()
+    resetHints()
+    mines.value.forEach(element => {
+      const board = getCellStates(element.boardname)
+      console.log(element)
+      const key = new Cell(element.boardname, element.x, element.y).key
+      const cellState = board[key]
+      cellState.errormine = true
+    });
   }
 
   const handleGameOverHint = async () => {

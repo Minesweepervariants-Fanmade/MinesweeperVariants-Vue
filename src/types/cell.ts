@@ -8,8 +8,8 @@ export interface CellType {
 
 export class Cell implements CellType {
     boardname: string;
-  x: number;
-  y: number;
+    x: number;
+    y: number;
   constructor(boardname: string, x: number, y: number) {
     this.boardname = boardname;
     this.x = x;
