@@ -63,6 +63,7 @@ export function showNextHint() {
 
 // 监听 hintIndex 变化，更新单元格的提示状态
 watch(hintIndex, (newIndex) => {
+  clearRuleHints()
   // 重置所有格子的 hint1 和 hint2
   if (gameBoards.value) {
     Object.values(gameBoards.value).forEach(board => {
