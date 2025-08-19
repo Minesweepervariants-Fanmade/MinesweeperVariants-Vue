@@ -3,7 +3,7 @@
     <thead>
       <tr>
         <th class="corner-cell">
-          <template v-if="showBoardNameLabel">{{ boardName && boardName.toUpperCase() !== 'MAIN' ? boardName : '' }}</template>
+          <template v-if="showBoardNameLabel">{{ boardName }}</template>
         </th>
         <th v-for="col in cols" :key="col" class="col-header">
           <template v-if="showRowColLabel">{{ col }}</template>
@@ -26,6 +26,8 @@
           :cell-config="getCellConfig(row, col)"
           :board-name="boardName"
           :is-highlighted="_isCellHighlighted(row, col)"
+          :dye="getCellDye(row, col)"
+          :mask="getCellMask(row, col)"
           @click="(row, col, boardName) => $emit('cell-click', row, col, boardName)"
           @right-click="(row, col, boardName) => $emit('cell-right-click', row, col, boardName)"
           @mouse-enter="handleCellMouseEnter"
@@ -48,6 +50,8 @@ interface Props {
   cols: string[]
   boardName: string
   cellConfigs?: Record<string, CellConfig>
+  dye?: boolean[][]
+  mask?: boolean[][]
   showRowColLabel?: boolean
   showBoardNameLabel?: boolean
 }
@@ -77,6 +81,21 @@ const getCellConfig = (row: number, col: string): CellConfig | undefined => {
   const key = new Cell(props.boardName, x, y).boardKey
 
   return props.cellConfigs[key] || null
+}
+
+// 获取单元格染色
+const getCellDye = (row: number, col: string): boolean | false => {
+  if (!props.dye || !props.boardName) return false
+
+  const { x, y } = Cell.displayCoordToIndex(row, col)
+  return props.dye[x][y]
+}
+
+const getCellMask = (row: number, col: string): boolean | false => {
+  if (!props.mask || !props.boardName) return false
+
+  const { x, y } = Cell.displayCoordToIndex(row, col)
+  return props.mask[x][y]
 }
 
 // 检查单元格是否高亮（现在通过CSS动态控制高亮）

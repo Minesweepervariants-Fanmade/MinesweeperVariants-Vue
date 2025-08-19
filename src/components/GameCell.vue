@@ -13,6 +13,7 @@
   >
     <div class="cell-content">
       <LoadingSpinner :visible="cellState?.isLoading" :delay="settings.loadingSpinnerDelay / 1000" />
+      <div v-if="dye" class="dye-overlay" />
       <template v-if="cellState?.type === 'revealed'">
         <div ref="container" class="container" />
       </template>
@@ -42,6 +43,8 @@ interface Props {
   cellConfig?: CellConfig
   boardName: string
   isHighlighted?: boolean
+  dye?: boolean
+  mask?: boolean
 }
 
 interface Emits {
@@ -64,7 +67,9 @@ interface Emits {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  isHighlighted: false
+  isHighlighted: false,
+  dye: false,
+  mask: false
 })
 const emit = defineEmits<Emits>()
 
@@ -149,7 +154,6 @@ watch(
 .cell {
   @include variables.square-size(1);
   border: variables.$border-width solid var(--foreground-color);
-  background: transparent;
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -218,6 +222,14 @@ watch(
   height: 100%;
   pointer-events: none;
   font-size: variables.scaled(40);
+}
+
+.dye-overlay {
+  @include variables.absolute-position(0, null, null, 0);
+  background-color: rgb(from var(--foreground-color) r g b / 29%);
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
 .hint1-overlay {

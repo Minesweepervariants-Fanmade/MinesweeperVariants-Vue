@@ -19,6 +19,8 @@ export interface Board {
   position: [number, number]
   showLabel?: boolean
   showName?: boolean
+  dye?: boolean[][]
+  mask?: boolean[][]
   size: [number, number]
 }
 
