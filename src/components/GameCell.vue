@@ -113,10 +113,10 @@ const renderCell = async () => {
   if (props.cellState?.type === 'revealed' && container.value) {
     if (props.cellConfig && props.cellConfig.component) {
       await renderComponent(container.value, props.cellConfig.component, true)
-      if (props.cellConfig.rule) {
+      if (props.cellConfig.overlayText) {
         const overlayDiv = document.createElement('div')
         overlayDiv.className = 'cell-overlay'
-        overlayDiv.textContent = props.cellConfig.rule
+        overlayDiv.textContent = props.cellConfig.overlayText
         container.value!.appendChild(overlayDiv)
       }
     }

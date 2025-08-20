@@ -46,11 +46,10 @@ export interface CountInfo {
 }
 
 export interface CellConfig {
-  type: string;
+  overlayText: string;
   position: Cell;
   component: ComponentConfig;
   highlight?: Record<string, [number, number][]>;
-  rule?: string;
 }
 
 export interface ComponentTemplate {
