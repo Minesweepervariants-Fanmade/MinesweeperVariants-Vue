@@ -7,7 +7,7 @@ import UnpluginTypia from '@ryoppippi/unplugin-typia/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [vue(), svgLoader(), UnpluginTypia()],
-  base: process.env.NODE_ENV === 'production' ? '/MinesweeperVariants-Vue/' : '/',
+  base: process.env.NODE_ENV === 'production' ? './' : '/',
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
