@@ -24,7 +24,7 @@
         :cell-configs="allCells"
         :dye="boardConfig!.board.dye"
         :mask="boardConfig!.board.mask"
-        :show-row-col-label="gameSettings.showRowColLabel && boardConfig!.board.showLabel"
+        :show-row-col-label="settings.showRowColLabel && boardConfig!.board.showLabel"
         :show-board-name-label="boardConfig!.board.showName"
         @cell-click="(row, col, boardName) => handleCellClick(boardName!, row, col, 'left')"
         @cell-right-click="(row, col, boardName) => handleCellClick(boardName!, row, col, 'right')"
@@ -33,7 +33,7 @@
 
     <!-- 绘画覆盖层 -->
     <DrawingCanvas
-      :style="{ opacity: gameSettings.drawTransparent ? (showDrawingToolbar ? '100%' : '50%') : '100%' }"
+      :style="{ opacity: settings.drawTransparent ? (showDrawingToolbar ? '100%' : '50%') : '100%' }"
       :pointer-events-enabled="showDrawingToolbar"
     />
 
@@ -89,8 +89,7 @@
     <SettingsOverlay
       ref="settingsOverlayRef"
       v-model:visible="showSettingsDialog"
-      :settings="gameSettings"
-      @save="handleSettingsSave"
+      :settings="settings"
       @close="handleSettingsClose"
     />
   </div>
@@ -177,7 +176,7 @@ const gameOverMessage = computed(() => {
 })
 
 // 使用持久化设置
-const { settings: gameSettings, updateSettings } = useSettings()
+const { settings } = useSettings()
 
 // 设置相关状态
 const showSettingsDialog = ref(false)
@@ -229,20 +228,6 @@ const handleMenuClick = () => {
   showSettingsDialog.value = true
 }
 
-// 设置处理方法
-const handleSettingsSave = (newSettings: typeof gameSettings.value) => {
-  const oldServerUrl = gameSettings.value.serverUrl
-
-  // 使用 updateSettings 来更新设置，这会自动触发 localStorage 保存
-  updateSettings(newSettings)
-  // 不自动关闭设置对话框，让用户可以继续调整
-
-  // 如果服务器地址改变了，重新初始化游戏
-  if (oldServerUrl !== newSettings.serverUrl) {
-    initializeGame()
-  }
-}
-
 const handleSettingsClose = () => {
   showSettingsDialog.value = false
 }
@@ -292,7 +277,7 @@ onMounted(async () => {
   await waitForAssets()
 
   // 从设置中初始化主题
-  setTheme(gameSettings.value.theme)
+  setTheme(settings.value.theme)
 
   // 初始化游戏
   await initializeGame()
@@ -310,7 +295,7 @@ onMounted(async () => {
   cleanupContextMenu = () => document.removeEventListener('contextmenu', contextMenuHandler)
 
   // 设置全局快捷键监听
-  setShortcuts(gameSettings.value.keyboardShortcuts, gameSettings.value.mouseShortcuts)
+  setShortcuts(settings.value.keyboardShortcuts, settings.value.mouseShortcuts)
   document.addEventListener('keyup', handleGlobalKeyUp)
   document.addEventListener('mousedown', handleGlobalMouse)
   document.addEventListener('mouseup', handleGlobalMouse)

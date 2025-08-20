@@ -272,13 +272,13 @@ import BaseModal from '@/components/BaseModal.vue'
 import BaseButton from '@/components/BaseButton.vue'
 import ShortcutSettings from '@/components/ShortcutSettings.vue'
 import type { GameSettings, GameMode, UltimateModeOptions } from '@/composables/useSettings'
-import { defaultSettings, gameModeDescriptions, ultimateModeOptionDescriptions } from '@/composables/useSettings'
+import { defaultSettings, gameModeDescriptions, ultimateModeOptionDescriptions, useSettings } from '@/composables/useSettings'
 import { generateRandomSeedString } from '@/utils/gameUtils'
 
-// 扩展 GameSettings 类型，确保包含 seed 字段
-type GameSettingsWithSeed = GameSettings & { seed?: string }
 import { useTheme } from '@/composables/useTheme'
 import { RULE_DEFINITIONS, fetchEndpointRules, type RuleType } from '@/utils/ruleUtils'
+
+const { updateSettings } = useSettings()
 
 // 主题管理
 const { setTheme, themeOptions } = useTheme()
@@ -293,7 +293,6 @@ interface Props {
 }
 
 interface Emits {
-  (_e: 'save', _settings: GameSettings): void
   (_e: 'close'): void
   (_e: 'update:visible', _value: boolean): void
 }
@@ -307,7 +306,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<Emits>()
 
 // 本地设置副本
-const localSettings = ref<GameSettingsWithSeed>({ ...props.settings, seed: props.settings.seed ?? '' })
+const localSettings = ref({ ...props.settings })
 
 // 监听主题变化并应用到系统
 watch(
@@ -455,7 +454,7 @@ watch(
 )
 
 const onSave = () => {
-  emit('save', { ...localSettings.value })
+  updateSettings(localSettings.value)
 }
 
 const onClose = () => {
@@ -466,10 +465,10 @@ const onClose = () => {
 
 const selectGameMode = (mode: GameMode) => {
   localSettings.value.gameMode = mode
-  // 如果不是终极模式，重置终极模式选项
-  if (mode !== 'ultimate') {
-    localSettings.value.ultimateModeOptions = { ...defaultSettings.ultimateModeOptions }
-  }
+  // // 如果不是终极模式，重置终极模式选项
+  // if (mode !== 'ultimate') {
+  //   localSettings.value.ultimateModeOptions = { ...defaultSettings.ultimateModeOptions }
+  // }
 }
 
 const onReset = () => {
