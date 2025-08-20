@@ -168,6 +168,7 @@
                   v-for="(option, key) in ultimateModeOptionDescriptions"
                   :key="key"
                   class="ultimate-option-item"
+                  @click.stop
                 >
                   <label class="setting-checkbox ultimate-checkbox">
                     <input
@@ -400,20 +401,20 @@ const handleAddRule = () => {
   return
 }
 
-// 监听外部设置变化
-watch(
-  () => props.settings,
-  newSettings => {
-    // 确保快捷键配置存在，如果不存在则使用默认配置
-    const settingsWithShortcuts = {
-      ...newSettings,
-      keyboardShortcuts: newSettings.keyboardShortcuts || defaultSettings.keyboardShortcuts,
-      seed: newSettings.seed ?? ''
-    }
-    localSettings.value = { ...settingsWithShortcuts }
-  },
-  { deep: true }
-)
+// // 监听外部设置变化
+// watch(
+//   () => props.settings,
+//   newSettings => {
+//     // 确保快捷键配置存在，如果不存在则使用默认配置
+//     const settingsWithShortcuts = {
+//       ...newSettings,
+//       keyboardShortcuts: newSettings.keyboardShortcuts || defaultSettings.keyboardShortcuts,
+//       seed: newSettings.seed ?? ''
+//     }
+//     localSettings.value = { ...settingsWithShortcuts }
+//   },
+//   { deep: true }
+// )
 
 // 监听网格宽度变化，确保约束条件并调整雷数
 watch(
