@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+// Vue 的组合式 API 在此文件中通过编译指令使用，无需显式导入
 import GameCell from '@/components/GameCell.vue'
 import type { CellState, CellConfig } from '@/types/game'
 import { Cell } from '@/types/cell'
@@ -63,8 +63,7 @@ interface Emits {
 const props = defineProps<Props>()
 defineEmits<Emits>()
 
-// 动态样式元素引用
-const dynamicStyleRef = ref<HTMLStyleElement>()
+// 不再使用动态样式元素，直接通过类名切换高亮
 
 // 获取单元格状态
 const getCellState = (row: number, col: string): CellState => {
@@ -105,7 +104,7 @@ const handleCellMouseEnter = (
   cellConfig?: CellConfig | null
 ) => {
   if (cellConfig && cellConfig.highlight) {
-    updateHighlightCSS(cellConfig.highlight, true)
+    updateHighlight(cellConfig.highlight, true)
   }
 }
 
@@ -117,19 +116,14 @@ const handleCellMouseLeave = (
   cellConfig?: CellConfig | null
 ) => {
   if (cellConfig && cellConfig.highlight) {
-    updateHighlightCSS(cellConfig.highlight, false)
+    updateHighlight(cellConfig.highlight, false)
   }
 }
 
-// 更新高亮CSS
-const updateHighlightCSS = (
+const updateHighlight = (
   highlight: Record<string, [number, number][]>,
   isHighlighted: boolean
 ) => {
-  if (!dynamicStyleRef.value) return
-
-  let cssRules = ''
-
   for (const [boardName, positions] of Object.entries(highlight)) {
     for (const [x, y] of positions) {
       // 转换0-based索引为1-based索引来匹配组件的行列
@@ -137,32 +131,15 @@ const updateHighlightCSS = (
 
       const selector = `[data-board="${boardName}"][data-row="${displayRow}"][data-col="${displayCol}"]`
 
-      if (isHighlighted) {
-        cssRules += `
-          ${selector} {
-            background: var(--pointer-color);
-          }
-        `
-      }
+      const nodes = document.querySelectorAll<HTMLElement>(selector)
+      nodes.forEach((el) => {
+        if (isHighlighted) el.classList.add('highlighted')
+        else el.classList.remove('highlighted')
+      })
     }
   }
-
-  dynamicStyleRef.value.textContent = cssRules
 }
 
-// 组件挂载时创建动态样式元素
-onMounted(() => {
-  dynamicStyleRef.value = document.createElement('style')
-  dynamicStyleRef.value.type = 'text/css'
-  document.head.appendChild(dynamicStyleRef.value)
-})
-
-// 组件卸载时清理动态样式元素
-onUnmounted(() => {
-  if (dynamicStyleRef.value && dynamicStyleRef.value.parentNode) {
-    dynamicStyleRef.value.parentNode.removeChild(dynamicStyleRef.value)
-  }
-})
 </script>
 
 <style scoped lang="scss">
@@ -224,5 +201,12 @@ onUnmounted(() => {
 .row-header {
   @extend .header-cell;
   @include variables.rect-size(0.5, 1);
+}
+</style>
+
+/* 全局高亮类：使用 deep 选择器确保 scoped 样式能覆盖 GameCell 元素 */
+<style scoped lang="scss">
+:deep(.highlighted) {
+  background: var(--pointer-color) !important;
 }
 </style>

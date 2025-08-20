@@ -158,7 +158,7 @@ watch(
   overflow: hidden;
   box-sizing: border-box;
 
-  &.highlighted {
+  &.highlighted, &:hover {
     background: var(--pointer-color);
   }
 
