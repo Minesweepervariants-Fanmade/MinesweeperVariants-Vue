@@ -186,13 +186,6 @@ watch(
   position: relative;
 }
 
-/* 为动态创建的元素定义全局样式 */
-:deep(.cell-number) {
-  font-size: variables.vw-vh-min(4, 5.33);
-  font-weight: bold;
-  color: var(--foreground-color);
-}
-
 :deep(.component-text) {
   font-size: variables.vw-vh-min(4, 5.33);
   font-weight: bold;

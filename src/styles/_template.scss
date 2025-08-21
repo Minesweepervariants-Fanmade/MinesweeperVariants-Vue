@@ -1,0 +1,10 @@
+@use 'variables';
+@use 'fonts';
+
+.container {
+
+.component-text.template-number {
+    font-size: variables.scaled(30);
+}
+
+}

@@ -22,6 +22,10 @@ export async function renderComponent(
       subContainer.style.cssText = component.style
     }
 
+    if (component.class) {
+      subContainer.className += ` template-${component.class}`
+    }
+
     for (const subComponent of component.value) {
       await renderComponent(subContainer, subComponent, false)
     }
@@ -33,6 +37,10 @@ export async function renderComponent(
     textSpan.textContent = component.value as string
     if (component.style) {
       textSpan.style.cssText = component.style
+    }
+
+    if (component.class) {
+      textSpan.className += ` template-${component.class}`
     }
     container.appendChild(textSpan)
   } else if (component.type === 'template') {
@@ -59,6 +67,7 @@ export async function renderComponent(
         if (component.style) {
           iconSvg.style.cssText += `; ${component.style}`
         }
+
         innerElements.forEach((innerElement: Element) => {
           ;(innerElement as HTMLElement).style.cssText += `; ${component.style}`
         })

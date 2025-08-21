@@ -120,6 +120,7 @@ import SettingsOverlay from '@/components/SettingsOverlay.vue'
 import DrawingCanvas from '@/components/DrawingCanvas.vue'
 import DrawingToolbar from '@/components/DrawingToolbar.vue'
 import { getGameParams, newGame } from '@/utils/gameUtils'
+import { startAutoFit } from './utils/fitter'
 
 // 组件引用
 const settingsOverlayRef = ref<InstanceType<typeof SettingsOverlay>>()
@@ -300,6 +301,9 @@ onMounted(async () => {
   document.addEventListener('mousedown', handleGlobalMouse)
   document.addEventListener('mouseup', handleGlobalMouse)
   document.addEventListener('wheel', handleGlobalWheel, { passive: false })
+
+  // 启动自动适应
+  startAutoFit()
 })
 
 onUnmounted(() => {

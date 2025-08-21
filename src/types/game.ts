@@ -60,7 +60,8 @@ export interface ComponentTemplate {
 export interface ComponentConfig {
   type: 'container' | 'text' | 'assets' | 'template'
   value: ComponentConfig[] | string | ComponentTemplate
-  style: string
+  style?: string
+  class?: string
 }
 
 // 信息提示组件配置
