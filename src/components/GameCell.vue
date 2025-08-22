@@ -186,7 +186,7 @@ watch(
   position: relative;
 }
 
-:deep(.component-text) {
+:deep(.container) {
   font-size: variables.vw-vh-min(4, 5.33);
   font-weight: bold;
   color: var(--foreground-color);
