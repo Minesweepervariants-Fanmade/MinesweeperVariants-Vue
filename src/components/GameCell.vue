@@ -23,7 +23,7 @@
       <div v-if="cellState?.errormine" class="overlay error-overlay mine-icon">
         <FlagIcon />
       </div>
-      <LoadingSpinner :visible="cellState?.isLoading" :delay="settings.loadingSpinnerDelay / 1000" />
+      <LoadingSpinner :visible="cellState?.isLoading" />
     </div>
   </td>
 </template>
@@ -31,7 +31,6 @@
 <script setup lang="ts">
 import { computed, ref, watch, nextTick } from 'vue'
 import { renderComponent } from '@/composables/componentRenderer'
-import { useSettings } from '@/composables/useSettings'
 import FlagIcon from '@/assets/icons/flag.svg?component'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import type { CellState, CellConfig } from '@/types/game'
@@ -71,7 +70,6 @@ const props = withDefaults(defineProps<Props>(), {
 })
 const emit = defineEmits<Emits>()
 
-const { settings } = useSettings()
 const container = ref<HTMLElement>()
 
 const cellId = computed(() => `${props.boardName}-${props.row}-${props.col}`)

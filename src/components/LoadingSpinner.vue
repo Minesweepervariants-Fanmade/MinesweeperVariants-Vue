@@ -2,11 +2,15 @@
   <div
     v-if="visible"
     class="loading-spinner"
-    :style="{ '--delay': `${delay}s` }"
+    :style="{ '--delay': `${delay ?? settings.loadingSpinnerDelay / 1000}s` }"
   />
 </template>
 
 <script setup lang="ts">
+import { useSettings } from '@/composables/useSettings'
+
+const { settings } = useSettings()
+
 interface Props {
   visible?: boolean
   delay?: number
@@ -14,8 +18,7 @@ interface Props {
 
 withDefaults(defineProps<Props>(), {
   visible: false,
-  size: 'medium',
-  delay: 0
+  size: 'medium'
 })
 </script>
 

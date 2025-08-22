@@ -14,7 +14,7 @@
         <template #icon>
           <div class="hint-icon-wrapper">
             <div ref="hintIcon" class="icon-container" :class="{ 'hint-loading': isHintLoading }" />
-            <LoadingSpinner :visible="isHintLoading" size="small" :delay="settings.loadingSpinnerDelay / 1000" />
+            <LoadingSpinner :visible="isHintLoading" />
           </div>
         </template>
       </BaseButton>
@@ -22,7 +22,7 @@
         <template #icon>
           <div class="check-icon-wrapper">
             <div ref="checkIcon" class="icon-container" :class="{ 'check-loading': isCheckLoading }" />
-            <LoadingSpinner :visible="isCheckLoading" size="small" :delay="settings.loadingSpinnerDelay / 1000" />
+            <LoadingSpinner :visible="isCheckLoading" />
           </div>
         </template>
       </BaseButton>
@@ -89,7 +89,6 @@
 import { ref, onMounted, computed } from 'vue'
 import { cloneAsset } from '@/composables/useAssets'
 import { useGameConfig } from '@/composables/useGameConfig'
-import { useSettings } from '@/composables/useSettings'
 import { postHint, showNextHint } from '@/utils/hintUtils'
 import BaseButton from '@/components/BaseButton.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
@@ -97,9 +96,6 @@ import RulesPanel from '@/components/RulesPanel.vue'
 
 // 获取游戏配置
 const { metadata, hints } = useGameConfig()
-
-// 获取设置
-const { settings } = useSettings()
 
 // 计算星星样式
 const starSectionStyle = computed(() => {
