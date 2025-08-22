@@ -41,7 +41,7 @@ function renderMultiNumber(values: number[]): ComponentConfig {
   return {
     type: 'container',
     value: values.map((value, i) => {
-      const phi = Math.PI / [1, 1, 1, 6, 4, -10, 1, 1, 1, 1][count];
+      const phi = 2 * Math.PI / [1, 1, 1, 12, 8, -20, 1, 1, 1, 1][count];
       const r = [0, 0, 18, 25, 30, 30, 35, 35, 40, 40][count];
       const dy = [0, 0, 0, 10, 0, 5, 0, 0, 0, 0][count];
       const angle = (2 * Math.PI / count) * i + phi;
