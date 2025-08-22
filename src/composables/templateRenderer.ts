@@ -37,28 +37,39 @@ function renderLatex(value: string): ComponentConfig {
 }
 
 function renderMultiNumber(values: number[]): ComponentConfig {
-  values.push(10)
   const count = values.length;
   return {
     type: 'container',
     value: values.map((value, i) => {
       const phi = Math.PI / [1, 1, 1, 6, 4, -10, 1, 1, 1, 1][count];
-      const r = [0, 0, 18, 25, 30, 30, 20, 20, 20, 20][count];
+      const r = [0, 0, 18, 25, 30, 30, 35, 35, 40, 40][count];
       const dy = [0, 0, 0, 10, 0, 5, 0, 0, 0, 0][count];
       const angle = (2 * Math.PI / count) * i + phi;
       const x = r * Math.cos(angle);
       const y = r * Math.sin(angle) + dy;
+      const size = [100, 75, 45, 35, 35, 30, 30, 25, 25, 20][count];
 
       const target = renderNumber(value);
       target.style = `
           position: absolute;
+          text-align: center;
+          left: 50%;
+          top:  50%;
+          transform: translate(-50%, -50%);
+          line-height: 0.8;
+        `
+      return {
+        type: 'container',
+        value: [target],
+        style: `
+          position: absolute;
           left: calc(${x}% + 50%);
           top:  calc(${y}% + 50%);
-          color: #FF9800;
-          text-align: center;
           transform: translate(-50%, -50%);
+          width: ${size}%;
+          height: ${size}%;
         `
-      return target;
+      } as ComponentConfig;
     }),
     style: `
       position: relative;
