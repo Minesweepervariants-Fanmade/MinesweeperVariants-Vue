@@ -2,7 +2,6 @@
   <div
     v-if="visible"
     class="loading-spinner"
-    :class="{ small: size === 'small', large: size === 'large' }"
     :style="{ '--delay': `${delay}s` }"
   />
 </template>
@@ -10,7 +9,6 @@
 <script setup lang="ts">
 interface Props {
   visible?: boolean
-  size?: 'small' | 'medium' | 'large'
   delay?: number
 }
 
@@ -37,41 +35,12 @@ withDefaults(defineProps<Props>(), {
     transparent 240deg,
     transparent 360deg
   );
+  mask-image: radial-gradient(circle at center, transparent 45%, black 46%);
   opacity: 0;
   animation:
     delayed-show 0s linear var(--delay, 0s) forwards,
     spin 1s ease-in-out var(--delay, 0s) infinite;
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 70%;
-    height: 70%;
-    background: var(--background-color);
-    border-radius: 50%;
-    box-shadow: 0 0 variables.vw-vh-min(0.5, 0.7) rgba(0, 0, 0, 0.1);
-  }
-
-  &.small {
-    width: variables.vw-vh-min(2, 2.5);
-    height: variables.vw-vh-min(2, 2.5);
-
-    &::before {
-      box-shadow: 0 0 variables.vw-vh-min(0.3, 0.4) rgba(0, 0, 0, 0.1);
-    }
-  }
-
-  &.large {
-    width: variables.vw-vh-min(5, 6);
-    height: variables.vw-vh-min(5, 6);
-
-    &::before {
-      box-shadow: 0 0 variables.vw-vh-min(0.8, 1) rgba(0, 0, 0, 0.1);
-    }
-  }
 }
 
 @keyframes delayed-show {
