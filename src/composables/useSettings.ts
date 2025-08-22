@@ -65,6 +65,7 @@ export interface GameSettings {
   keyboardShortcuts: KeyboardShortcuts // 键盘快捷键配置
   mouseShortcuts: MouseShortcuts // 鼠标快捷键配置
   seed?: string // 随机种子
+  showDescription: boolean
 }
 
 // 默认设置
@@ -119,6 +120,7 @@ export const defaultSettings: GameSettings = {
     resetGame: ''
   },
   seed: '',
+  showDescription: true
 }
 
 const STORAGE_KEY = 'minesweeper-game-settings'

@@ -215,6 +215,14 @@
           </label>
         </div>
         <div class="setting-item">
+          <label class="setting-checkbox">
+            <input v-model="localSettings.showDescription" type="checkbox">
+            <span class="checkmark" />
+            显示描述
+          </label>
+          <span class="setting-note">控制规则位置是否显示描述文本</span>
+        </div>
+        <div class="setting-item">
           <label class="setting-label">加载动画延迟(毫秒)：</label>
           <input
             v-model.number="localSettings.loadingSpinnerDelay"
