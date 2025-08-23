@@ -98,10 +98,16 @@ export interface ClickResponse {
   gameover: boolean
   reason: string
   cells: CellConfig[]
-  count?: CountInfo
-  noFail?: boolean
-  noHint?: boolean
+  count: CountInfo
+  noFail: boolean
+  noHint: boolean
   mines?: Cell[]
   win?: boolean
   u_hint?: U_Hint
+}
+
+export interface NewGameResponse {
+  success: boolean
+  reason: string
+  token?: string
 }

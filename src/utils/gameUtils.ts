@@ -2,7 +2,7 @@ import { fetchWithoutValidation, getApiEndpoint } from '@/utils/fetchUtils'
 import { useSettings } from '@/composables/useSettings'
 import typia from 'typia'
 import { useGameConfig } from '@/composables/useGameConfig'
-import type { BoardMetadata } from '@/types/game'
+import type { BoardMetadata, NewGameResponse } from '@/types/game'
 
 // 创建新游戏的参数接口
 export interface CreateGameParams {
@@ -20,11 +20,6 @@ export function generateRandomSeedString(): string {
   return Math.floor(Math.random() * 100000).toString()
 }
 
-export interface NewGameResult {
-  success: boolean
-  reason?: string
-}
-
 export async function newGame(params: CreateGameParams): Promise<BoardMetadata | undefined> {
   try {
     const urlParams = new URLSearchParams({
@@ -40,12 +35,18 @@ export async function newGame(params: CreateGameParams): Promise<BoardMetadata |
     const result = await fetchWithoutValidation(
       `${getApiEndpoint('new')}?${urlParams.toString()}`
     )
+
     if (result.error) {
       throw new Error(`Failed to create new game: ${result.error}`)
     }
-    const data = typia.assert<NewGameResult>(result.data)
+    const data = typia.assert<NewGameResponse>(result.data)
     if (!data.success) {
       throw new Error(data.reason || 'Unknown error creating new game')
+    }
+
+    if (data.token) {
+      window.localStorage.setItem('token', data.token)
+      console.log(`Received new token ${data.token}`)
     }
 
     const { initializeGame } = useGameConfig()

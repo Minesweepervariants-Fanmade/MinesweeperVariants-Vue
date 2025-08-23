@@ -19,7 +19,6 @@ async function fetchCore(
   options: FetchOptions = {}
 ): Promise<{ response: { ok: boolean; status: number; json: () => Promise<unknown>; text: () => Promise<string> } | null; error: unknown | null }> {
   const { timeout = 10000, ...rest } = options
-
   let timeoutId: number | undefined
   let response: { ok: boolean; status: number; json: () => Promise<unknown>; text: () => Promise<string> } | null = null
   let error: unknown = null
@@ -31,9 +30,18 @@ async function fetchCore(
     }, timeout)
   })
 
+  // 将 token 加入 url 参数
+  const token = window.localStorage.getItem('token')
+  let urlWithToken = url
+  if (token) {
+    const urlObj = new URL(url, window.location.origin)
+    urlObj.searchParams.set('token', token)
+    urlWithToken = urlObj.toString()
+  }
+
   try {
     response = await Promise.race([
-      fetch(url, rest),
+      fetch(urlWithToken, rest),
       timeoutPromise
     ])
   } catch (e: unknown) {
