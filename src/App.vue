@@ -1,6 +1,6 @@
 <template>
   <div class="app-container" @click="handleContainerClick">
-    <div class="background-image" />
+    <div class="background-image" :style="backgroundImageStyle" />
     <div v-if="isLoading" class="loading">
       正在加载游戏配置...
       <BaseButton @click="showSettingsDialog = true">设置</BaseButton>
@@ -178,6 +178,19 @@ const gameOverMessage = computed(() => {
 
 // 使用持久化设置
 const { settings } = useSettings()
+
+const backgroundImageStyle = computed(() => {
+  const img = settings.value.backgroundImage
+  const css = settings.value.backgroundImageCss || ''
+  const style: Record<string, string> = img ? { backgroundImage: `url(${img})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}
+  if (css && img) {
+    css.split(';').forEach(pair => {
+      const [key, value] = pair.split(':').map(s => s && s.trim())
+      if (key && value) style[key] = value
+    })
+  }
+  return style
+})
 
 // 设置相关状态
 const showSettingsDialog = ref(false)

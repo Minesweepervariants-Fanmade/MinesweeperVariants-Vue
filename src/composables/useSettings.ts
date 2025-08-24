@@ -66,6 +66,8 @@ export interface GameSettings {
   mouseShortcuts: MouseShortcuts // 鼠标快捷键配置
   seed?: string // 随机种子
   showDescription: boolean
+  backgroundImage?: string // base64图片数据
+  backgroundImageCss?: string // 背景图片自定义CSS
 }
 
 // 默认设置
@@ -120,7 +122,9 @@ export const defaultSettings: GameSettings = {
     resetGame: ''
   },
   seed: '',
-  showDescription: true
+  showDescription: true,
+  backgroundImage: '',
+  backgroundImageCss: 'opacity:0.2; filter:blur(2px);'
 }
 
 const STORAGE_KEY = 'minesweeper-game-settings'

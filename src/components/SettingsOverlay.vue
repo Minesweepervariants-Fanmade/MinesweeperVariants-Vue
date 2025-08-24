@@ -200,6 +200,25 @@
           </select>
         </div>
         <div class="setting-item">
+          <label class="setting-label">背景图片：</label>
+          <input v-if="!localSettings.backgroundImage" type="file" accept="image/*" class="setting-input" @change="onBackgroundImageChange">
+          <div v-if="localSettings.backgroundImage" class="background-image-preview-wrapper" @click="clearBackgroundImage">
+            <img :src="localSettings.backgroundImage" class="background-image-preview">
+            <span class="background-image-clear">✖</span>
+          </div>
+        </div>
+        <div v-if="localSettings.backgroundImage" class="setting-item">
+          <label class="setting-label">背景图片CSS：</label>
+          <textarea
+            v-model="localSettings.backgroundImageCss"
+            class="setting-input"
+            placeholder="输入css"
+            rows="2"
+            style="resize: both;"
+          />
+          <span class="setting-note" />
+        </div>
+        <div class="setting-item">
           <label class="setting-checkbox">
             <input v-model="localSettings.drawTransparent" type="checkbox">
             <span class="checkmark" />
@@ -315,6 +334,21 @@ const emit = defineEmits<Emits>()
 
 // 本地设置副本
 const localSettings = ref({ ...props.settings })
+
+// 背景图片上传处理
+function onBackgroundImageChange(e: Event) {
+  const file = (e.target as HTMLInputElement).files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = () => {
+    localSettings.value.backgroundImage = reader.result as string
+  }
+  reader.readAsDataURL(file)
+}
+
+function clearBackgroundImage() {
+  localSettings.value.backgroundImage = ''
+}
 
 // 监听主题变化并应用到系统
 watch(
@@ -1097,4 +1131,41 @@ kbd {
     font-size: variables.scaled(12);
   }
 }
+.background-image-preview-wrapper {
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+
+  &:hover .background-image-preview {
+    filter: brightness(0.6);
+  }
+
+  &:hover .background-image-clear {
+    display: block;
+  }
+}
+
+.background-image-preview {
+  max-width: variables.scaled(120);
+  max-height: variables.scaled(90);
+  object-fit: cover;
+  border-radius: variables.scaled(4);
+  transition: filter 0.1s;
+  display: block;
+}
+
+.background-image-clear {
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: variables.scaled(32);
+  height: variables.scaled(32);
+  color: #fff;
+  font-size: variables.scaled(20);
+  text-shadow: 0 0 variables.scaled(2) #000, 0 0 variables.scaled(4) #000;
+  text-align: center;
+}
+
 </style>
