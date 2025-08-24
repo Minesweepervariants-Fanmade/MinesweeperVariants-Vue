@@ -141,7 +141,7 @@ export const gameModeDescriptions = {
   },
   puzzle: {
     title: '纸笔模式',
-    description: '所有线索在一开始即给出,不需要猜测'
+    description: '所有线索在一开始即给出,不需要猜测.允许修改答案,并且没有答案校验.'
   }
 } as const
 
