@@ -184,3 +184,13 @@
     transition: opacity 250ms ease, transform 400ms ease, filter 250ms ease;
   }
 }
+
+.theme-custom {
+  --background-color: var(--custom-background-color, #000);
+  --foreground-color: var(--custom-foreground-color, #fff);
+  --error-color: var(--custom-error-color, #f00);
+  --hint-color: var(--custom-hint-color, #0f0);
+  --hint2-color: var(--custom-hint2-color, #ff0);
+  --flag-color: var(--custom-flag-color, #ff0);
+  --pointer-color: var(--custom-pointer-color, rgba(255, 255, 255, 0.15));
+}

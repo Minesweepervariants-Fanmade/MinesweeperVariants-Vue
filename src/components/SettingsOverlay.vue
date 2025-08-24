@@ -199,6 +199,44 @@
             >{{ opt.label }}</option>
           </select>
         </div>
+        <div v-if="localSettings.theme === 'custom'" class="setting-item">
+          <label class="setting-label">自定义主题：</label>
+          <table class="custom-theme-table">
+            <tbody>
+              <tr>
+                <td>背景颜色</td>
+                <td><input v-model="localSettings.customTheme.backgroundColor" type="color"></td>
+                <td>前景颜色</td>
+                <td><input v-model="localSettings.customTheme.foregroundColor" type="color"></td>
+              </tr>
+              <tr>
+                <td>错误颜色</td>
+                <td><input v-model="localSettings.customTheme.errorColor" type="color"></td>
+                <td>提示颜色</td>
+                <td><input v-model="localSettings.customTheme.hintColor" type="color"></td>
+              </tr>
+              <tr>
+                <td>第二提示颜色</td>
+                <td><input v-model="localSettings.customTheme.hint2Color" type="color"></td>
+                <td>旗帜颜色</td>
+                <td><input v-model="localSettings.customTheme.flagColor" type="color"></td>
+              </tr>
+              <tr>
+                <td>指针颜色</td>
+                <td><input v-model="localSettings.customTheme.pointerColorBase" type="color"></td>
+                <td>指针不透明度</td>
+                <td><input
+                  v-model.number="localSettings.customTheme.pointerAlpha"
+                  class="setting-input"
+                  type="number"
+                  min="0"
+                  max="1"
+                  step="0.01"
+                ></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <div class="setting-item">
           <label class="setting-label">背景图片：</label>
           <input v-if="!localSettings.backgroundImage" type="file" accept="image/*" class="setting-input" @change="onBackgroundImageChange">
@@ -308,7 +346,7 @@ import { RULE_DEFINITIONS, fetchEndpointRules, type RuleType } from '@/utils/rul
 const { updateSettings } = useSettings()
 
 // 主题管理
-const { setTheme, themeOptions } = useTheme()
+const { setTheme, setCustomTheme, themeOptions } = useTheme()
 
 // 快捷键设置组件引用
 const shortcutSettingsRef = ref<InstanceType<typeof ShortcutSettings>>()
@@ -356,8 +394,35 @@ watch(
   (newTheme) => {
     if (newTheme) {
       setTheme(newTheme)
+      // 如果是自定义主题，应用自定义变量
+      if (newTheme === 'custom' && localSettings.value.customTheme) {
+        setCustomTheme(localSettings.value.customTheme)
+      }
     }
   }
+)
+
+// 监听自定义主题字段变化，实时更新 CSS 变量
+watch(
+  () => localSettings.value.customTheme,
+  (customTheme) => {
+    if (localSettings.value.theme === 'custom' && customTheme) {
+      // 自动拼接 pointerColor
+      if (customTheme.pointerColorBase && typeof customTheme.pointerAlpha === 'number') {
+        // 解析 hex 或 rgb
+        let r = 255, g = 255, b = 255;
+        const hex = customTheme.pointerColorBase;
+        if (/^#([\da-fA-F]{6})$/.test(hex)) {
+          r = parseInt(hex.slice(1,3),16);
+          g = parseInt(hex.slice(3,5),16);
+          b = parseInt(hex.slice(5,7),16);
+        }
+        customTheme.pointerColor = `rgba(${r},${g},${b},${customTheme.pointerAlpha})`;
+      }
+      setCustomTheme(customTheme)
+    }
+  },
+  { deep: true }
 )
 
 // 根据网格大小计算最大地雷数
@@ -537,6 +602,38 @@ function clearSeed() {
 
 <style scoped lang="scss">
 @use '@/styles/variables';
+
+.custom-theme-table {
+  border-collapse: separate;
+  border-spacing: 0 variables.scaled(6);
+  width: auto;
+  td {
+    padding: 0 variables.scaled(8);
+    font-size: variables.scaled(14);
+    color: #ddd;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+  td:nth-child(2), td:nth-child(4) {
+    min-width: variables.scaled(120);
+    width: variables.scaled(160);
+    max-width: variables.scaled(200);
+  }
+  input[type="color"] {
+    width: variables.scaled(32);
+    height: variables.scaled(32);
+    background-color: transparent;
+    border: 0;
+    inline-size: variables.scaled(32);
+    block-size: variables.scaled(32);
+  }
+  input[type="number"] {
+    width: variables.scaled(60);
+    min-width: variables.scaled(40);
+    max-width: variables.scaled(80);
+    text-align: center;
+  }
+}
 
 .settings-title {
   margin: 0 0 variables.scaled(20) 0;
@@ -1166,6 +1263,15 @@ kbd {
   font-size: variables.scaled(20);
   text-shadow: 0 0 variables.scaled(2) #000, 0 0 variables.scaled(4) #000;
   text-align: center;
+}
+
+input[type="color"] {
+  width: variables.scaled(32);
+  height: variables.scaled(32);
+  background-color: transparent;
+  border: 0;
+  inline-size: variables.scaled(32);
+  block-size: variables.scaled(32);
 }
 
 </style>

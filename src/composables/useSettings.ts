@@ -68,6 +68,17 @@ export interface GameSettings {
   showDescription: boolean
   backgroundImage?: string // base64图片数据
   backgroundImageCss?: string // 背景图片自定义CSS
+  customTheme: {
+    backgroundColor: string
+    foregroundColor: string
+    errorColor: string
+    hintColor: string
+    hint2Color: string
+    flagColor: string
+    pointerColor: string
+    pointerColorBase: string
+    pointerAlpha: number
+  }
 }
 
 // 默认设置
@@ -125,6 +136,18 @@ export const defaultSettings: GameSettings = {
   showDescription: true,
   backgroundImage: '',
   backgroundImageCss: 'opacity:0.2; filter:blur(2px);'
+  ,
+  customTheme: {
+    backgroundColor: '#000',
+    foregroundColor: '#fff',
+    errorColor: '#f00',
+    hintColor: '#0f0',
+    hint2Color: '#ff0',
+    flagColor: '#ff0',
+    pointerColor: 'rgba(255,255,255,0.15)',
+    pointerColorBase: '#ffffff',
+    pointerAlpha: 0.15
+  }
 }
 
 const STORAGE_KEY = 'minesweeper-game-settings'

@@ -18,7 +18,8 @@ const THEME_MAPPING: Record<string, string> = {
   'sky': 'theme-sky',
   'cafe': 'theme-cafe',
   'trans': 'theme-trans',
-  'image': 'theme-image'
+  'image': 'theme-image',
+  'custom': 'theme-custom'
 }
 
 // 导出可供 UI 使用的主题选项（label 为显示名，value 为设置中使用的 key）
@@ -41,7 +42,8 @@ export const THEME_OPTIONS: { label: string; value: string }[] = Object.entries(
     sky: '天空',
     cafe: '咖啡',
     trans: '🏳️‍⚧️跨性别',
-    image: '背景图片测试'
+    image: '背景图片测试',
+    custom: '自定义'
   }
 
   return {
@@ -51,6 +53,23 @@ export const THEME_OPTIONS: { label: string; value: string }[] = Object.entries(
 })
 
 export function useTheme() {
+  function setCustomTheme(customTheme: {
+    backgroundColor: string;
+    foregroundColor: string;
+    errorColor: string;
+    hintColor: string;
+    hint2Color: string;
+    flagColor: string;
+    pointerColor: string;
+  }) {
+    document.body.style.setProperty('--custom-background-color', customTheme.backgroundColor)
+    document.body.style.setProperty('--custom-foreground-color', customTheme.foregroundColor)
+    document.body.style.setProperty('--custom-error-color', customTheme.errorColor)
+    document.body.style.setProperty('--custom-hint-color', customTheme.hintColor)
+    document.body.style.setProperty('--custom-hint2-color', customTheme.hint2Color)
+    document.body.style.setProperty('--custom-flag-color', customTheme.flagColor)
+    document.body.style.setProperty('--custom-pointer-color', customTheme.pointerColor)
+  }
   const currentTheme = ref<string>('')
   const themes: string[] = Object.values(THEME_MAPPING)
   let currentThemeIndex = 0
@@ -99,6 +118,7 @@ export function useTheme() {
   return {
     currentTheme,
     setTheme,
+    setCustomTheme,
     toggleTheme,
     getCurrentThemeName,
     setupThemeToggle,
