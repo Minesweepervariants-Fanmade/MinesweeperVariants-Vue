@@ -33,7 +33,7 @@ export interface BoardMetadata {
   seed?: string
   noFail?: boolean
   noHint?: boolean
-  mode: 'NORMAL' | 'EXPERT' | 'ULTIMATE'
+  mode: 'NORMAL' | 'EXPERT' | 'ULTIMATE' | 'PUZZLE'
   u_mode?: string[]
 }
 

@@ -140,7 +140,7 @@
         <div class="setting-item">
           <div class="game-mode-container">
             <div
-              v-for="mode in (['normal', 'expert', 'ultimate'] as const)"
+              v-for="mode in (['normal', 'expert', 'ultimate', 'puzzle'] as const)"
               :key="mode"
               class="game-mode-item"
               :class="{ active: localSettings.gameMode === mode }"

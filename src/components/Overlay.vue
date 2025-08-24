@@ -71,6 +71,7 @@
             <template v-if="metadata?.mode === 'NORMAL'">普通模式</template>
             <template v-else-if="metadata?.mode === 'EXPERT'">专家模式</template>
             <template v-else-if="metadata?.mode === 'ULTIMATE'">终极模式</template>
+            <template v-else-if="metadata?.mode === 'PUZZLE'">纸笔模式</template>
             <template v-else>????模式</template>
             <template v-if="metadata?.mode === 'ULTIMATE' && metadata.u_mode">
               <span v-for="(option, idx) in metadata.u_mode" :key="'option-'+idx">

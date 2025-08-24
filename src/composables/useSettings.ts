@@ -1,7 +1,7 @@
 import { ref, watch } from 'vue'
 
 // 游戏模式类型
-export type GameMode = 'normal' | 'expert' | 'ultimate'
+export type GameMode = 'normal' | 'expert' | 'ultimate' | 'puzzle'
 
 // 快捷键配置类型
 export interface KeyboardShortcuts {
@@ -138,6 +138,10 @@ export const gameModeDescriptions = {
   ultimate: {
     title: '终极模式',
     description: '终极的逻辑挑战。新翻开的线索格都会显示为星号,直到场上没有任何新非雷格可以无猜推出。此时你需要点击提示按钮。如果场上的确没有格子可以无猜推出时,星号格会变成线索,游戏继续。否则,游戏会提示一组可以继续推理的格子。注意:该模式下难度控制将不再适用,你将会在原本的简单题组里遇到极其困难的推理。此模式下,游戏前期将隐藏总雷数(部分机制除外)。'
+  },
+  puzzle: {
+    title: '纸笔模式',
+    description: '所有线索在一开始即给出,不需要猜测'
   }
 } as const
 

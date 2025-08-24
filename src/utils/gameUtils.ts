@@ -67,7 +67,8 @@ export function getGameParams(): CreateGameParams {
   const modeMap = {
     'normal': 'NORMAL',
     'expert': 'EXPERT',
-    'ultimate': 'ULTIMATE'
+    'ultimate': 'ULTIMATE',
+    'puzzle': 'PUZZLE'
   } as const
 
   // 构建游戏尺寸字符串
