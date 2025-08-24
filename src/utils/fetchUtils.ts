@@ -1,4 +1,5 @@
 import { useSettings } from '@/composables/useSettings'
+import typia from 'typia'
 
 export interface FetchOptions {
   method?: string
@@ -33,6 +34,7 @@ async function fetchCore(
   // 将 token 加入 url 参数
   const token = window.localStorage.getItem('token')
   let urlWithToken = url
+
   if (token) {
     const urlObj = new URL(url, window.location.origin)
     urlObj.searchParams.set('token', token)
@@ -80,9 +82,24 @@ export function test_connect_fail_reason(): string {
 }
 
 // 通用的错误处理函数
-function handleFetchError(error: unknown, response: { ok: boolean; status: number; json: () => Promise<unknown>; text: () => Promise<string> } | null): FetchResult<never> {
+async function handleFetchError(error: unknown, response: { ok: boolean; status: number; json: () => Promise<unknown>; text: () => Promise<string> } | null) {
+  if (response?.status === 401) {
+    window.localStorage.removeItem('token')
+    const result = await fetchWithoutValidation(getApiEndpoint('new_token'))
+    const data = typia.assert<{ token: string }>(result.data)
+    const token = data.token
+
+    if (token) {
+      window.localStorage.setItem('token', token)
+    } else {
+      return { error: '未授权访问 (401), 未能成功获取token', status: 401 }
+    }
+    return
+  }
   // 处理异常错误
   if (error) {
+
+
     if (
       typeof error === 'object' && error !== null &&
       'message' in error &&
@@ -120,13 +137,23 @@ function handleFetchError(error: unknown, response: { ok: boolean; status: numbe
 
 export async function fetchWithoutValidation(
   url: string,
-  options: FetchOptions = {}
+  options: FetchOptions = {},
+  retries: number = 3
 ): Promise<FetchResult> {
   const { response, error } = await fetchCore(url, options)
 
   // 如果有错误或响应不正常，返回错误信息
   if (error || !response || !response.ok) {
-    return handleFetchError(error, response)
+    const result = await handleFetchError(error, response)
+    if (result) {
+      return result
+    }
+
+    if (retries > 0) {
+      return fetchWithoutValidation(url, options, retries - 1)
+    }
+
+    return { error: '请求失败', status: 400 }
   }
 
   // 仅当响应正常时才尝试解析JSON
@@ -142,13 +169,22 @@ export async function fetchWithoutValidation(
 // 专门用于获取文本内容的 fetch 函数
 export async function fetchText(
   url: string,
-  options: FetchOptions = {}
+  options: FetchOptions = {},
+  retries: number = 3
 ): Promise<FetchResult<string>> {
   const { response, error } = await fetchCore(url, options)
 
   // 如果有错误或响应不正常，返回错误信息
   if (error || !response || !response.ok) {
-    return handleFetchError(error, response)
+    const result = await handleFetchError(error, response)
+    if (result) {
+      return result
+    }
+    if (retries > 0) {
+      return fetchText(url, options, retries - 1)
+    }
+
+    return { error: '请求失败', status: 400 }
   }
 
   // 仅当响应正常时才尝试获取文本内容
