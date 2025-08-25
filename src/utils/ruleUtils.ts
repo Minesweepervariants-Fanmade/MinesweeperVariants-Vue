@@ -138,10 +138,21 @@ const processMetadataRules = (metadataRules?: string[]) => {
 
   // 遍历metadata中的规则列表
   for (const ruleCode of metadataRules) {
-    const definition = ruleDefinitions[ruleCode]
+    const end = ruleCode.indexOf(':')
+    const key = end !== -1 ? ruleCode.slice(0, end) : ruleCode
+    const definition = ruleDefinitions[key]
+
+
+    if (key === 'R') {
+      addRule(ruleCode, '总雷数', '')
+      return
+    }
+
     if (definition) {
-      // definition是[RuleType, string, string]格式，其中第二个是名称，第三个是描述
       addRule(ruleCode, definition[1], definition[2])
+    } else {
+      addRule(ruleCode, '未知规则', '')
+
     }
   }
 }
@@ -161,14 +172,20 @@ export function useRules() {
 initializeRules()
 
 export function get_name(code: string): string {
-  if (code === 'R') return '总雷数'
-  const def = RULE_DEFINITIONS[code]
+  const end = code.indexOf(':')
+  const key = end !== -1 ? code.slice(0, end) : code
+
+  if (key === 'R') return '总雷数'
+  const def = RULE_DEFINITIONS[key]
   if (def && def.length >= 2) return def[1]
-  return `未知规则 ${code}`
+  return '未知规则'
 }
 
 export function get_desc(code: string): string {
-  if (code === 'R') {
+  const end = code.indexOf(':')
+  const key = end !== -1 ? code.slice(0, end) : code
+
+  if (key === 'R') {
     // 使用 game config 中的 metadata 构造描述字符串
     const { metadata } = useGameConfig()
     const known = metadata.value?.count?.known ?? '*'
@@ -177,7 +194,7 @@ export function get_desc(code: string): string {
     return `${known} (剩余雷数/格数: ${remains}/${unknown})`
   }
 
-  const def = RULE_DEFINITIONS[code]
+  const def = RULE_DEFINITIONS[key]
   if (def && def.length >= 3) return def[2]
   return ''
 }
