@@ -138,7 +138,7 @@ function renderStrWithArrow(templateValue: { text: string, arrow: Arrow }): Comp
       align-items: center;
       justify-content: center;
       text-align: left;
-      line-height: 0;
+      line-height: 1;
       `
   };
 
@@ -155,7 +155,7 @@ function renderStrWithArrow(templateValue: { text: string, arrow: Arrow }): Comp
       height: 70%;
     `;
     (textComp.value as ComponentConfig[])[0].style = `
-      padding: 10% 5% 15% 5% ;
+      padding: 0% 5% 0 5% ;
     `;
   } else {
     arrowComp.style += `
@@ -170,7 +170,7 @@ function renderStrWithArrow(templateValue: { text: string, arrow: Arrow }): Comp
       height: 100%;
     `;
     (textComp.value as ComponentConfig[])[0].style = `
-      padding: 10% 5% 10% 10%;
+      padding: 5% 5% 0% 5%;
     `;
   }
 

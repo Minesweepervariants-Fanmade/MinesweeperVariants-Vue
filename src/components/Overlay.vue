@@ -251,13 +251,13 @@ const onMenuClick = () => emit('menuClick')
   align-items: center;
 
   .icon-container {
-    @include variables.svg-icon(variables.vw-vh-min(3, 4));
+    @include variables.svg-icon(variables.scaled(30));
     @include variables.flex-center;
   }
 
   .hint-icon-wrapper {
     position: relative;
-    @include variables.svg-icon(variables.vw-vh-min(3, 4));
+    @include variables.svg-icon(variables.scaled(30));
     @include variables.flex-center;
 
     .icon-container {
@@ -271,7 +271,7 @@ const onMenuClick = () => emit('menuClick')
 
   .check-icon-wrapper {
     position: relative;
-    @include variables.svg-icon(variables.vw-vh-min(3, 4));
+    @include variables.svg-icon(variables.scaled(30));
     @include variables.flex-center;
 
     .icon-container {

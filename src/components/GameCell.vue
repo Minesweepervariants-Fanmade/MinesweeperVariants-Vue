@@ -185,23 +185,24 @@ watch(
 }
 
 :deep(.container) {
-  font-size: variables.vw-vh-min(4, 5.33);
+  font-size: variables.scaled(30);
   font-weight: bold;
   color: var(--foreground-color);
 }
 
 :deep(.asset-placeholder) {
-  font-size: variables.vw-vh-min(2, 2.67);
+  font-size: variables.scaled(20);
   color: var(--secondary);
   font-style: italic;
 }
 
 :deep(.cell-overlay) {
   @include variables.absolute-position(null, variables.scaled(2), variables.scaled(1), null);
-  font-size: variables.vw-vh-min(1.5, 2);
-  color: color-mix(var(--background-color), var(--foreground-color), 50%);
+  font-size: variables.scaled(15);
   font-weight: bold;
   pointer-events: none;
+  opacity: 0.5;
+  line-height: 1;
 }
 
 // 叠加层基础样式

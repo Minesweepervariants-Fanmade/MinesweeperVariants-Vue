@@ -9,11 +9,6 @@ $cell-base-size: 60;
   @return calc(#{$value} * var(--scale));
 }
 
-// 计算最小视口宽度和高度
-@function vw-vh-min($vw, $vh) {
-  @return min(#{$vw}vw, #{$vh}vh);
-}
-
 // mixins
 
 @mixin square-size($scale: 1) {

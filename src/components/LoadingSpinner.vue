@@ -27,8 +27,8 @@ withDefaults(defineProps<Props>(), {
 
 .loading-spinner {
   position: absolute;
-  width: variables.vw-vh-min(3.5, 4.5);
-  height: variables.vw-vh-min(3.5, 4.5);
+  width: variables.scaled(25);
+  height: variables.scaled(25);
   border-radius: 50%;
   background: conic-gradient(
     transparent 0deg,

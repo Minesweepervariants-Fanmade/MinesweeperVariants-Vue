@@ -182,7 +182,7 @@ const updateHighlight = (
   text-align: center;
   vertical-align: middle;
   box-sizing: border-box;
-  font-size: variables.vw-vh-min(2, 2.67);
+  font-size: variables.scaled(20);
 }
 
 // 左上角空白
