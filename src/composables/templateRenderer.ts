@@ -13,7 +13,7 @@ export function renderTemplate(template: ComponentTemplate): ComponentConfig {
     case 'multiStr':
       return renderMultiStr(templateValue as string[])
     case 'backgroundText':
-      return renderBackgroundText(templateValue as string)
+      return renderBackgroundStr(templateValue as string)
   }
   return {
     type: 'text',
@@ -81,10 +81,10 @@ function renderMultiStr(values: string[]): ComponentConfig {
   };
 }
 
-function renderBackgroundText(value: string): ComponentConfig {
+function renderBackgroundStr(value: string): ComponentConfig {
   return {
     type: 'text',
     value,
-    class: 'background-text'
+    class: 'background-str'
   };
 }
