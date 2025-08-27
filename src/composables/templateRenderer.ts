@@ -12,7 +12,7 @@ export function renderTemplate(template: ComponentTemplate): ComponentConfig {
       return renderLatex(templateValue as string)
     case 'multiStr':
       return renderMultiStr(templateValue as string[])
-    case 'backgroundText':
+    case 'backgroundStr':
       return renderBackgroundStr(templateValue as string)
   }
   return {
@@ -85,6 +85,12 @@ function renderBackgroundStr(value: string): ComponentConfig {
   return {
     type: 'text',
     value,
-    class: 'background-str'
+    class: 'background-str fitting',
+    style: `
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    `
   };
 }
