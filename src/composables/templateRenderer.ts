@@ -1,5 +1,7 @@
 import type { ComponentConfig, ComponentTemplate } from '@/types/game'
 
+type Arrow = 'up' | 'down' | 'left' | 'right' | 'up_down' | 'left_right'
+
 // 模板渲染函数
 export function renderTemplate(template: ComponentTemplate): ComponentConfig {
   const templateName = template.name
@@ -14,6 +16,8 @@ export function renderTemplate(template: ComponentTemplate): ComponentConfig {
       return renderMultiStr(templateValue as string[])
     case 'backgroundStr':
       return renderBackgroundStr(templateValue as string)
+    case 'strWithArrow':
+      return renderStrWithArrow(templateValue as { text: string, arrow: Arrow })
   }
   return {
     type: 'text',
@@ -92,5 +96,87 @@ function renderBackgroundStr(value: string): ComponentConfig {
       top: 50%;
       transform: translate(-50%, -50%);
     `
+  };
+}
+
+
+
+function renderStrWithArrow(templateValue: { text: string, arrow: Arrow }): ComponentConfig {
+  const { text, arrow } = templateValue;
+  const arrowMap: Record<Arrow, string> = {
+    up: '↑',
+    down: '↓',
+    left: '←',
+    right: '→',
+    up_down: '↕',
+    left_right: '↔'
+  };
+  const arrowSymbol = arrowMap[arrow] || '';
+
+  const arrowComp: ComponentConfig = {
+    type: 'text',
+    value: arrowSymbol,
+    class: 'arrow',
+    style: `
+      position: absolute;
+      `
+  };
+
+  const textComp: ComponentConfig = {
+    type: 'container',
+    value: [
+      {
+        type: 'text',
+        value: text,
+        class: 'fitting',
+        style: ''
+      }
+    ],
+    style: `
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: left;
+      line-height: 0;
+      `
+  };
+
+  if (arrow === 'left' || arrow === 'right' || arrow === 'left_right') {
+    arrowComp.style += `
+      top: 5%;
+      left: 50%;
+      transform: translate(-50%, 0);
+      `;
+    textComp.style += `
+      top: 30%;
+      left: 0;
+      width: 100%;
+      height: 70%;
+    `;
+    (textComp.value as ComponentConfig[])[0].style = `
+      padding: 10% 5% 15% 5% ;
+    `;
+  } else {
+    arrowComp.style += `
+      right: 0;
+      top: 30%;
+      transform: translate(20%, 0);
+    `;
+    textComp.style += `
+      left: 0;
+      top: 0;
+      width: 85%;
+      height: 100%;
+    `;
+    (textComp.value as ComponentConfig[])[0].style = `
+      padding: 10% 5% 10% 10%;
+    `;
+  }
+
+  return {
+    type: 'container',
+    value: [arrowComp, textComp],
+    style: ''
   };
 }

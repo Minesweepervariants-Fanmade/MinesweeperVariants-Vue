@@ -40,7 +40,10 @@ export async function renderComponent(
     }
 
     if (component.class) {
-      textSpan.className += ` template-${component.class}`
+      const classes = component.class.split(' ')
+        .map(cls => cls === 'fitting' ? cls : `template-${cls}`)
+        .join(' ');
+      textSpan.className += ` ${classes}`;
     }
     container.appendChild(textSpan)
   } else if (component.type === 'template') {

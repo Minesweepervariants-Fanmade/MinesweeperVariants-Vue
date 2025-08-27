@@ -5,13 +5,19 @@
 
 .component-text.template-str {
     font-size: variables.scaled(30);
-    padding: 6%;
+    padding: 8%;
+    line-height: 0;
 }
 
 .template-background-str {
     font-size: variables.scaled(24);
     padding: 15%;
     opacity: 0.4;
+}
+
+.template-arrow {
+    font-size: variables.scaled(60);
+    line-height: 0;
 }
 
 }
