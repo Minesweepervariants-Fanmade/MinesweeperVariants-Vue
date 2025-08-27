@@ -20,7 +20,6 @@
               type="number"
               class="setting-input grid-size-input"
               :min="1"
-              :max="999"
             >
             <span class="grid-separator">×</span>
             <input
@@ -28,7 +27,6 @@
               type="number"
               class="setting-input grid-size-input"
               :min="1"
-              :max="999"
             >
           </div>
         </div>
@@ -39,7 +37,6 @@
             type="number"
             class="setting-input"
             :min="-1"
-            :max="99999"
           >
         </div>
         <div class="setting-item">
