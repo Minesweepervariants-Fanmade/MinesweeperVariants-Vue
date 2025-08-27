@@ -584,7 +584,7 @@ function clearSeed() {
   font-size: variables.scaled(18);
   font-weight: bold;
   color: #fff;
-  border-bottom: calc(1 * var(--scale)) solid rgba(#666, 0.6);
+  border-bottom: calc(variables.scaled(1)) solid rgba(#666, 0.6);
   padding-bottom: variables.scaled(5);
 }
 
@@ -608,11 +608,11 @@ function clearSeed() {
 .setting-input,
 .setting-select {
   background: rgba(#444, 0.8);
-  border: calc(1 * var(--scale)) solid rgba(#666, 0.6);
+  border: calc(variables.scaled(1)) solid rgba(#666, 0.6);
   color: white;
   padding: variables.scaled(6) variables.scaled(10);
   font-size: variables.scaled(14);
-  border-radius: calc(2 * var(--scale));
+  border-radius: calc(variables.scaled(2));
   min-width: variables.scaled(80);
 
 }
@@ -700,12 +700,12 @@ function clearSeed() {
   color: #ccc;
   text-align: center;
   padding-bottom: variables.scaled(5);
-  border-bottom: calc(1 * var(--scale)) solid rgba(#666, 0.4);
+  border-bottom: calc(variables.scaled(1)) solid rgba(#666, 0.4);
 }
 
 .rules-list {
-  border: calc(1 * var(--scale)) solid rgba(#666, 0.6);
-  border-radius: calc(4 * var(--scale));
+  border: calc(variables.scaled(1)) solid rgba(#666, 0.6);
+  border-radius: calc(variables.scaled(4));
   background: rgba(#333, 0.8);
   height: variables.scaled(200);
   padding: variables.scaled(8);
@@ -717,7 +717,7 @@ function clearSeed() {
 
 .rule-item {
   padding: variables.scaled(8) variables.scaled(12);
-  border-radius: calc(3 * var(--scale));
+  border-radius: calc(variables.scaled(3));
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -726,7 +726,7 @@ function clearSeed() {
 
   &.enabled {
     background: rgba(#555, 0.8);
-    border: calc(1 * var(--scale)) solid rgba(#777, 0.6);
+    border: calc(variables.scaled(1)) solid rgba(#777, 0.6);
 
     &:hover {
       background: rgba(#666, 0.8);
@@ -736,7 +736,7 @@ function clearSeed() {
 
   &.available {
     background: rgba(#444, 0.6);
-    border: calc(1 * var(--scale)) solid rgba(#666, 0.4);
+    border: calc(variables.scaled(1)) solid rgba(#666, 0.4);
 
     &:hover {
       background: rgba(#555, 0.8);
@@ -789,8 +789,8 @@ function clearSeed() {
     width: variables.scaled(16);
     height: variables.scaled(16);
     background: rgba(#444, 0.8);
-    border: calc(1 * var(--scale)) solid rgba(#666, 0.6);
-    border-radius: calc(2 * var(--scale));
+    border: calc(variables.scaled(1)) solid rgba(#666, 0.6);
+    border-radius: calc(variables.scaled(2));
     margin-right: variables.scaled(8);
     position: relative;
 
@@ -803,7 +803,7 @@ function clearSeed() {
       width: variables.scaled(4);
       height: variables.scaled(8);
       border: solid white;
-      border-width: 0 calc(2 * var(--scale)) calc(2 * var(--scale)) 0;
+      border-width: 0 calc(variables.scaled(2)) calc(variables.scaled(2)) 0;
       transform: rotate(45deg);
     }
   }
@@ -829,7 +829,7 @@ function clearSeed() {
 }
 
 .game-mode-item {
-  border: calc(2 * var(--scale)) solid rgba(#666, 0.4);
+  border: calc(variables.scaled(2)) solid rgba(#666, 0.4);
   border-radius: variables.scaled(8);
   padding: variables.scaled(12);
   margin-bottom: variables.scaled(12);
@@ -882,7 +882,7 @@ function clearSeed() {
 .ultimate-options {
   margin-top: variables.scaled(12);
   padding-top: variables.scaled(12);
-  border-top: calc(1 * var(--scale)) solid rgba(#666, 0.3);
+  border-top: calc(variables.scaled(1)) solid rgba(#666, 0.3);
   margin-left: variables.scaled(24);
 }
 
@@ -926,8 +926,8 @@ function clearSeed() {
 
 // 快捷键表格样式
 .shortcut-table {
-  border: calc(1 * var(--scale)) solid rgba(#666, 0.6);
-  border-radius: calc(4 * var(--scale));
+  border: calc(variables.scaled(1)) solid rgba(#666, 0.6);
+  border-radius: calc(variables.scaled(4));
   background: rgba(#333, 0.8);
   overflow: hidden;
 }
@@ -939,7 +939,7 @@ function clearSeed() {
 
 .shortcut-row {
   display: flex;
-  border-bottom: calc(1 * var(--scale)) solid rgba(#555, 0.4);
+  border-bottom: calc(variables.scaled(1)) solid rgba(#555, 0.4);
 
   &:last-child {
     border-bottom: none;
@@ -961,7 +961,7 @@ function clearSeed() {
   color: #ddd;
   display: flex;
   align-items: center;
-  border-right: calc(1 * var(--scale)) solid rgba(#555, 0.4);
+  border-right: calc(variables.scaled(1)) solid rgba(#555, 0.4);
 
   &:last-child {
     border-right: none;
@@ -983,7 +983,7 @@ function clearSeed() {
   border: none;
   padding: variables.scaled(4);
   cursor: pointer;
-  border-radius: calc(4 * var(--scale));
+  border-radius: calc(variables.scaled(4));
   color: #ddd;
   opacity: 0.7;
   transition: all 0.2s ease;
@@ -1012,8 +1012,8 @@ function clearSeed() {
 .shortcut-editable {
   cursor: pointer;
   padding: variables.scaled(8) variables.scaled(12);
-  border-radius: calc(4 * var(--scale));
-  border: calc(1 * var(--scale)) solid transparent;
+  border-radius: calc(variables.scaled(4));
+  border: calc(variables.scaled(1)) solid transparent;
   transition: all 0.2s ease;
   position: relative;
   min-height: variables.scaled(20);
@@ -1064,9 +1064,9 @@ kbd {
   font-family: monospace;
   color: #fff;
   background: rgba(#555, 0.8);
-  border: calc(1 * var(--scale)) solid rgba(#777, 0.6);
-  border-radius: calc(3 * var(--scale));
-  box-shadow: 0 calc(1 * var(--scale)) calc(2 * var(--scale)) rgba(#000, 0.3);
+  border: calc(variables.scaled(1)) solid rgba(#777, 0.6);
+  border-radius: calc(variables.scaled(3));
+  box-shadow: 0 calc(variables.scaled(1)) calc(variables.scaled(2)) rgba(#000, 0.3);
 }
 
 // 快捷键编辑相关样式
@@ -1080,16 +1080,16 @@ kbd {
 .shortcut-input {
   width: 100%;
   background: rgba(#333, 0.9);
-  border: calc(1 * var(--scale)) solid rgba(#555, 0.8);
+  border: calc(variables.scaled(1)) solid rgba(#555, 0.8);
   color: white;
   padding: variables.scaled(6) variables.scaled(10);
   font-size: variables.scaled(12);
-  border-radius: calc(2 * var(--scale));
+  border-radius: calc(variables.scaled(2));
   outline: none;
 
   &:focus {
     border-color: var(--accent-color);
-    box-shadow: 0 0 calc(4 * var(--scale)) rgba(var(--accent-color-rgb), 0.3);
+    box-shadow: 0 0 calc(variables.scaled(4)) rgba(var(--accent-color-rgb), 0.3);
   }
 }
 
@@ -1133,7 +1133,7 @@ kbd {
   margin-top: variables.scaled(12);
   padding: variables.scaled(10);
   background: rgba(#333, 0.5);
-  border-radius: calc(4 * var(--scale));
+  border-radius: calc(variables.scaled(4));
 
   p {
     margin: variables.scaled(4) 0;

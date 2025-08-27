@@ -476,9 +476,9 @@ watch(() => [editingShortcut.value, editingMouseShortcut.value], () => {
 
 .shortcut-table {
   background: rgba(#333, 0.6);
-  border-radius: calc(8 * var(--scale));
+  border-radius: calc(variables.scaled(8));
   overflow: hidden;
-  border: calc(1 * var(--scale)) solid rgba(#555, 0.4);
+  border: calc(variables.scaled(1)) solid rgba(#555, 0.4);
   margin-bottom: variables.scaled(15);
 }
 
@@ -489,7 +489,7 @@ watch(() => [editingShortcut.value, editingMouseShortcut.value], () => {
   align-items: center;
 
   &:not(:last-child) {
-    border-bottom: calc(1 * var(--scale)) solid rgba(#555, 0.4);
+    border-bottom: calc(variables.scaled(1)) solid rgba(#555, 0.4);
   }
 
   &:hover {
@@ -513,7 +513,7 @@ watch(() => [editingShortcut.value, editingMouseShortcut.value], () => {
   color: #ddd;
   display: flex;
   align-items: center;
-  border-right: calc(1 * var(--scale)) solid rgba(#555, 0.4);
+  border-right: calc(variables.scaled(1)) solid rgba(#555, 0.4);
 
   &:last-child {
     border-right: none;
@@ -533,8 +533,8 @@ watch(() => [editingShortcut.value, editingMouseShortcut.value], () => {
 .shortcut-editable {
   cursor: pointer;
   padding: variables.scaled(8) variables.scaled(12);
-  border-radius: calc(4 * var(--scale));
-  border: calc(1 * var(--scale)) solid transparent;
+  border-radius: calc(variables.scaled(4));
+  border: calc(variables.scaled(1)) solid transparent;
   transition: all 0.2s ease;
   position: relative;
   min-height: variables.scaled(20);
@@ -585,25 +585,25 @@ kbd {
   font-family: monospace;
   color: #fff;
   background: rgba(#555, 0.8);
-  border: calc(1 * var(--scale)) solid rgba(#777, 0.6);
-  border-radius: calc(3 * var(--scale));
-  box-shadow: 0 calc(1 * var(--scale)) calc(2 * var(--scale)) rgba(#000, 0.3);
+  border: calc(variables.scaled(1)) solid rgba(#777, 0.6);
+  border-radius: calc(variables.scaled(3));
+  box-shadow: 0 calc(variables.scaled(1)) calc(variables.scaled(2)) rgba(#000, 0.3);
 }
 
 // 快捷键编辑相关样式
 .shortcut-input {
   width: 100%;
   background: rgba(#333, 0.9);
-  border: calc(1 * var(--scale)) solid rgba(#555, 0.8);
+  border: calc(variables.scaled(1)) solid rgba(#555, 0.8);
   color: white;
   padding: variables.scaled(6) variables.scaled(10);
   font-size: variables.scaled(12);
-  border-radius: calc(2 * var(--scale));
+  border-radius: calc(variables.scaled(2));
   outline: none;
 
   &:focus {
     border-color: var(--accent-color);
-    box-shadow: 0 0 calc(4 * var(--scale)) rgba(var(--accent-color-rgb), 0.3);
+    box-shadow: 0 0 calc(variables.scaled(4)) rgba(var(--accent-color-rgb), 0.3);
   }
 }
 
@@ -630,7 +630,7 @@ kbd {
   border: none;
   padding: variables.scaled(4);
   cursor: pointer;
-  border-radius: calc(4 * var(--scale));
+  border-radius: calc(variables.scaled(4));
   color: #ddd;
   opacity: 0.7;
   transition: all 0.2s ease;

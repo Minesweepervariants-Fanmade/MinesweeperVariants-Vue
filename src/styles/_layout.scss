@@ -16,7 +16,7 @@ body {
   color: var(--foreground-color);
   fill: var(--foreground-color);
   font-family: var(--font-family);
-  font-size: calc(14 * var(--scale));
+  font-size: calc(variables.scaled(14));
   line-height: 1.4;
   overflow: hidden;
   @include variables.user-select(none);

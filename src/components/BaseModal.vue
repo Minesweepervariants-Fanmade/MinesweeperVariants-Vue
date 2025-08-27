@@ -92,7 +92,7 @@ const onBackdropClick = () => {
 
 .modal-container {
   background: rgba(#333, 0.8);
-  border: calc(4 * var(--scale)) solid rgba(#666, 0.8);
+  border: calc(variables.scaled(4)) solid rgba(#666, 0.8);
   min-width: 80%;
   max-width: 80%;
   width: 80%;

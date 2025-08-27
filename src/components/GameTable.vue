@@ -38,7 +38,6 @@
 </template>
 
 <script setup lang="ts">
-// Vue 的组合式 API 在此文件中通过编译指令使用，无需显式导入
 import GameCell from '@/components/GameCell.vue'
 import type { CellState, CellConfig } from '@/types/game'
 import { Cell } from '@/types/cell'

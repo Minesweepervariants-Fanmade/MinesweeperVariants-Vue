@@ -149,7 +149,7 @@ watch(
 .cell {
   @include variables.square-size(1);
   border-style: solid;
-  border-width: calc(2 * var(--scale));
+  border-width: calc(variables.scaled(2));
   border-color: var(--foreground-color);
   cursor: pointer;
   position: relative;

@@ -331,7 +331,9 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@use '@/styles/variables';
+
 .app-container {
   /* 合并了原来的 .game-container 和 .game-board 样式 */
   min-width: 100vw;
@@ -349,27 +351,27 @@ onUnmounted(() => {
 .loading,
 .error {
   text-align: center;
-  padding: calc(20 * var(--scale));
+  padding: calc(variables.scaled(20));
   color: var(--foreground-color);
-  font-size: calc(16 * var(--scale));
+  font-size: calc(variables.scaled(16));
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: calc(15 * var(--scale));
+  gap: calc(variables.scaled(15));
 }
 
 .error button,
 .loading button {
-  padding: calc(10 * var(--scale)) calc(20 * var(--scale));
+  padding: calc(variables.scaled(10)) calc(variables.scaled(20));
   background: var(--foreground-color);
   color: var(--background-color);
   border: none;
-  border-radius: calc(100 * var(--scale));
-  font-size: calc(14 * var(--scale));
+  border-radius: calc(variables.scaled(100));
+  font-size: calc(variables.scaled(14));
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: calc(5 * var(--scale));
+  gap: calc(variables.scaled(5));
 }
 
 .game-container {
@@ -378,8 +380,8 @@ onUnmounted(() => {
   flex-direction: row;
   justify-content: center;
   align-items: center;
-  gap: calc(40 * var(--scale));
-  padding: calc(20 * var(--scale));
+  gap: calc(variables.scaled(40));
+  padding: calc(variables.scaled(20));
   position: relative;
 }
 

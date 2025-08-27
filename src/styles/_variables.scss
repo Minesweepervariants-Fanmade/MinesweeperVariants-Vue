@@ -57,7 +57,7 @@ $cell-base-size: 60;
 
 @mixin button-base {
   background: transparent;
-  border: calc(2 * var(--scale)) solid var(--foreground-color);
+  border: calc(scaled(2)) solid var(--foreground-color);
   cursor: pointer;
   @include flex-center;
   box-sizing: border-box;
