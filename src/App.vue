@@ -198,7 +198,7 @@ const showDrawingToolbar = ref(false)
 
 // 游戏状态数据
 const levelCount = computed(() => {
-  return '10/10'
+  return '100/10'
 })
 
 const totalMines = computed(() => {

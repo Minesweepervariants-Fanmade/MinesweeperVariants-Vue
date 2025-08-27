@@ -154,6 +154,7 @@ const updateHighlight = (
   min-height: auto;
   width: auto;
   height: auto;
+  border-width: 1;
 
   font-family: var(--table-font-family);
 
@@ -202,11 +203,5 @@ const updateHighlight = (
   @extend .header-cell;
   @include variables.rect-size(0.5, 1);
 }
-</style>
 
-/* 全局高亮类：使用 deep 选择器确保 scoped 样式能覆盖 GameCell 元素 */
-<style scoped lang="scss">
-:deep(.highlighted) {
-  background: var(--pointer-color) !important;
-}
 </style>

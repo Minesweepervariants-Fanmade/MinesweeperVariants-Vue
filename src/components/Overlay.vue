@@ -176,7 +176,7 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  levelCount: '10/10',
+  levelCount: '100/10',
   showDrawingToolbar: false
 })
 
@@ -297,7 +297,7 @@ const onMenuClick = () => emit('menuClick')
   @include variables.absolute-position(
     null,
     variables.scaled(20),
-    variables.scaled(20),
+    variables.scaled(15),
     variables.scaled(20)
   );
   display: flex;
@@ -327,7 +327,7 @@ const onMenuClick = () => emit('menuClick')
 
     .game-info {
       color: var(--mode-color);
-      font-size: variables.scaled(16);
+      font-size: variables.scaled(20);
 
       u {
       text-decoration-thickness: 0;
