@@ -35,7 +35,7 @@ export interface BoardMetadata {
   noFail?: boolean
   noHint?: boolean
   mode: 'NORMAL' | 'EXPERT' | 'ULTIMATE' | 'PUZZLE'
-  u_mode?: string[]
+  u_mode?: ('+A' | '+F' | '+R' | '+S' | '+!')[]
 }
 
 // 计数信息类型

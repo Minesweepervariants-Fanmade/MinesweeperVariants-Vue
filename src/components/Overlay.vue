@@ -37,7 +37,8 @@
         </template>
       </BaseButton>
     </div>
-    <UHint />
+
+    <UHint v-if="metadata?.mode === 'ULTIMATE' && !metadata.u_mode?.includes('+!')" />
 
     <!-- 底部信息 -->
     <div class="bottom-info">
@@ -75,8 +76,9 @@
             <template v-else-if="metadata?.mode === 'PUZZLE'">纸笔模式</template>
             <template v-else>????模式</template>
             <template v-if="metadata?.mode === 'ULTIMATE' && metadata.u_mode">
+              <span v-if="metadata.u_mode.includes('+!')">!</span>
               <span v-for="(option, idx) in metadata.u_mode" :key="'option-'+idx">
-                {{ option }}<span v-if="idx < metadata.u_mode.length - 1">, </span>
+                {{ option !== '+!' ? ' ' + option : '' }}
               </span>
             </template>
           </span>)
