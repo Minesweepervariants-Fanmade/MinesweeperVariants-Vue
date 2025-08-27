@@ -3,9 +3,14 @@
 
 .container {
 
-.component-text.template-number {
+.component-text.template-str {
     font-size: variables.scaled(30);
     padding: 6%;
+}
+
+.template-background-text {
+    font-size: variables.scaled(24);
+    padding: 4%;
 }
 
 }

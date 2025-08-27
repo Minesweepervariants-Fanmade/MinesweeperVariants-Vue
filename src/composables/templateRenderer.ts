@@ -6,12 +6,14 @@ export function renderTemplate(template: ComponentTemplate): ComponentConfig {
   const templateValue = template.value
 
   switch (templateName) {
-    case 'number':
-      return renderNumber(templateValue as string)
+    case 'str':
+      return renderStr(templateValue as string)
     case 'latex':
       return renderLatex(templateValue as string)
-    case 'multiNumber':
-      return renderMultiNumber(templateValue as string[])
+    case 'multiStr':
+      return renderMultiStr(templateValue as string[])
+    case 'backgroundText':
+      return renderBackgroundText(templateValue as string)
   }
   return {
     type: 'text',
@@ -20,11 +22,11 @@ export function renderTemplate(template: ComponentTemplate): ComponentConfig {
   }
 }
 
-function renderNumber(value: string): ComponentConfig {
+function renderStr(value: string): ComponentConfig {
   return {
     type: 'text',
     value,
-    class: 'number fitting'
+    class: 'str fitting'
   }
 }
 function renderLatex(value: string): ComponentConfig {
@@ -36,7 +38,7 @@ function renderLatex(value: string): ComponentConfig {
   }
 }
 
-function renderMultiNumber(values: string[]): ComponentConfig {
+function renderMultiStr(values: string[]): ComponentConfig {
   const count = values.length;
   return {
     type: 'container',
@@ -49,7 +51,7 @@ function renderMultiNumber(values: string[]): ComponentConfig {
       const y = r * Math.sin(angle) + dy;
       const size = [100, 75, 45, 35, 35, 30, 30, 25, 25, 20][count];
 
-      const target = renderNumber(value);
+      const target = renderStr(value);
       target.style = `
           position: absolute;
           text-align: center;
@@ -76,5 +78,13 @@ function renderMultiNumber(values: string[]): ComponentConfig {
       width: 100%;
       height: 100%;
     `
+  };
+}
+
+function renderBackgroundText(value: string): ComponentConfig {
+  return {
+    type: 'text',
+    value,
+    class: 'background-text'
   };
 }
