@@ -7,11 +7,11 @@ export function renderTemplate(template: ComponentTemplate): ComponentConfig {
 
   switch (templateName) {
     case 'number':
-      return renderNumber(templateValue as number)
+      return renderNumber(templateValue as string)
     case 'latex':
       return renderLatex(templateValue as string)
     case 'multiNumber':
-      return renderMultiNumber(templateValue as number[])
+      return renderMultiNumber(templateValue as string[])
   }
   return {
     type: 'text',
@@ -20,10 +20,10 @@ export function renderTemplate(template: ComponentTemplate): ComponentConfig {
   }
 }
 
-function renderNumber(value: number): ComponentConfig {
+function renderNumber(value: string): ComponentConfig {
   return {
     type: 'text',
-    value: value.toString(),
+    value,
     class: 'number fitting'
   }
 }
@@ -36,7 +36,7 @@ function renderLatex(value: string): ComponentConfig {
   }
 }
 
-function renderMultiNumber(values: number[]): ComponentConfig {
+function renderMultiNumber(values: string[]): ComponentConfig {
   const count = values.length;
   return {
     type: 'container',
