@@ -19,16 +19,16 @@
               v-model.number="localSettings.gridWidth"
               type="number"
               class="setting-input grid-size-input"
-              :min="minWidth"
-              :max="200"
+              :min="1"
+              :max="999"
             >
             <span class="grid-separator">×</span>
             <input
               v-model.number="localSettings.gridHeight"
               type="number"
               class="setting-input grid-size-input"
-              :min="minHeight"
-              :max="200"
+              :min="1"
+              :max="999"
             >
           </div>
         </div>
@@ -39,7 +39,7 @@
             type="number"
             class="setting-input"
             :min="-1"
-            :max="maxMines"
+            :max="99999"
           >
         </div>
         <div class="setting-item">
@@ -432,16 +432,6 @@ const maxMines = computed(() => {
   return width * height // 最大值为宽*高
 })
 
-// 计算宽度的最小值
-const minWidth = computed(() => {
-  return localSettings.value.gridHeight <= 2 ? 3 : 1
-})
-
-// 计算高度的最小值
-const minHeight = computed(() => {
-  return localSettings.value.gridWidth <= 2 ? 3 : 1
-})
-
 // 启用的规则列表
 const enabledRules = computed(() => {
   return localSettings.value.enabledRules.map(code => ({
@@ -507,59 +497,6 @@ const handleAddRule = () => {
   return
 }
 
-// // 监听外部设置变化
-// watch(
-//   () => props.settings,
-//   newSettings => {
-//     // 确保快捷键配置存在，如果不存在则使用默认配置
-//     const settingsWithShortcuts = {
-//       ...newSettings,
-//       keyboardShortcuts: newSettings.keyboardShortcuts || defaultSettings.keyboardShortcuts,
-//       seed: newSettings.seed ?? ''
-//     }
-//     localSettings.value = { ...settingsWithShortcuts }
-//   },
-//   { deep: true }
-// )
-
-// 监听网格宽度变化，确保约束条件并调整雷数
-watch(
-  () => localSettings.value.gridWidth,
-  (newWidth) => {
-    if (newWidth <= 2 && localSettings.value.gridHeight <= 2) {
-      localSettings.value.gridHeight = 3
-    }
-
-    // 检查雷数是否在合法范围内
-    const maxMines = newWidth * localSettings.value.gridHeight
-    if (localSettings.value.mineCount > maxMines) {
-      localSettings.value.mineCount = maxMines
-    }
-    if (localSettings.value.mineCount < 1) {
-      localSettings.value.mineCount = 1
-    }
-  }
-)
-
-// 监听网格高度变化，确保约束条件并调整雷数
-watch(
-  () => localSettings.value.gridHeight,
-  (newHeight) => {
-    if (newHeight <= 2 && localSettings.value.gridWidth <= 2) {
-      localSettings.value.gridWidth = 3
-    }
-
-    // 检查雷数是否在合法范围内
-    const maxMines = localSettings.value.gridWidth * newHeight
-    if (localSettings.value.mineCount > maxMines) {
-      localSettings.value.mineCount = maxMines
-    }
-    if (localSettings.value.mineCount < 1) {
-      localSettings.value.mineCount = 1
-    }
-  }
-)
-
 const onSave = () => {
   updateSettings(localSettings.value)
 }
@@ -572,10 +509,6 @@ const onClose = () => {
 
 const selectGameMode = (mode: GameMode) => {
   localSettings.value.gameMode = mode
-  // // 如果不是终极模式，重置终极模式选项
-  // if (mode !== 'ultimate') {
-  //   localSettings.value.ultimateModeOptions = { ...defaultSettings.ultimateModeOptions }
-  // }
 }
 
 const onReset = () => {
