@@ -422,12 +422,6 @@ watch(
   { deep: true }
 )
 
-// 根据网格大小计算最大地雷数
-const maxMines = computed(() => {
-  const width = localSettings.value.gridWidth
-  const height = localSettings.value.gridHeight
-  return width * height // 最大值为宽*高
-})
 
 // 启用的规则列表
 const enabledRules = computed(() => {
