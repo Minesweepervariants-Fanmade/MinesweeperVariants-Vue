@@ -37,6 +37,7 @@
         </template>
       </BaseButton>
     </div>
+    <UHint />
 
     <!-- 底部信息 -->
     <div class="bottom-info">
@@ -94,6 +95,7 @@ import { postHint, showNextHint } from '@/utils/hintUtils'
 import BaseButton from '@/components/BaseButton.vue'
 import LoadingSpinner from '@/components/LoadingSpinner.vue'
 import RulesPanel from '@/components/RulesPanel.vue'
+import UHint from './UHint.vue'
 
 // 获取游戏配置
 const { metadata, hints } = useGameConfig()
@@ -278,6 +280,14 @@ const onMenuClick = () => emit('menuClick')
       }
     }
   }
+}
+
+.u-hint {
+  position: absolute;
+  pointer-events: none;
+  top: variables.scaled(60);
+  right: variables.scaled(175);
+  transform: translateX(50%);
 }
 
 // 底部信息

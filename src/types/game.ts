@@ -30,6 +30,7 @@ export interface BoardMetadata {
   boards: Record<string, Board>
   cells: CellConfig[]
   count?: CountInfo
+  u_hint?: U_Hint
   seed?: string
   noFail?: boolean
   noHint?: boolean

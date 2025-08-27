@@ -327,6 +327,10 @@ function createGameConfig() {
           metadata.value.count = response.count
         }
 
+        if (response.u_hint !== undefined && metadata.value) {
+          metadata.value.u_hint = response.u_hint
+        }
+
         if (response.noFail !== undefined && metadata.value) {
           metadata.value.noFail = response.noFail
         }
