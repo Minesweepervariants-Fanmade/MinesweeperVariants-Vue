@@ -1,3 +1,7 @@
+import { useSettings } from "@/composables/useSettings";
+
+const { settings } = useSettings();
+
 export interface Version {
     major: number;
     minor: number;
@@ -20,7 +24,7 @@ export function parseTupleVersion(version: TupleVersion): Version {
 
 const currentVersionString = (import.meta.env.PACKAGE_VERSION ?? '0.0.0') as string;
 
-console.log(currentVersionString)
+console.log(`Version: ${currentVersionString}`)
 
 const currentVersion: Version = (() => {
     const parts = currentVersionString.split('.').map(p => parseInt(p, 10) || 0);
@@ -33,19 +37,23 @@ export function versionToString(version: Version): string {
 }
 
 export function validate(version: Version) {
-    if (version.major !== currentVersion.major) {
+    if (version.major !== currentVersion.major && !settings.value.ignoreVersionErrors) {
         alert(`Incompatible major version: ${versionToString(version)}. Expected: ${versionToString(currentVersion)}`);
         return false;
     }
 
-    if (version.minor !== currentVersion.minor) {
+    if (version.minor !== currentVersion.minor && !settings.value.ignoreVersionErrors) {
         alert(`Incompatible minor version: ${versionToString(version)}. Expected: ${versionToString(currentVersion)}`);
         return true;
     }
 
-    if (version.patch !== currentVersion.patch) {
+    if (version.patch !== currentVersion.patch && !settings.value.ignoreVersionErrors) {
         console.warn(`Incompatible patch version: ${versionToString(version)}. Expected: ${versionToString(currentVersion)}`);
         return true
+    }
+
+    if (settings.value.ignoreVersionErrors && version !== currentVersion) {
+        console.warn(`Ignoring incompatible version: ${versionToString(version)}. Expected: ${versionToString(currentVersion)}`);
     }
 
     return true

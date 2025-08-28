@@ -57,6 +57,7 @@ export interface GameSettings {
   rightClickFlag: boolean
   doubleClickReveal: boolean
   serverUrl: string
+  ignoreVersionErrors: boolean // 开发者选项：是否忽略版本相关的错误/警告
   drawTransparent: boolean // 画图透明度
   showRowColLabel: boolean // 显示行列标号
   touchMode: boolean // 触屏模式
@@ -101,6 +102,7 @@ export const defaultSettings: GameSettings = {
   rightClickFlag: true,
   doubleClickReveal: true,
   serverUrl: 'http://localhost:5050/api/',
+  ignoreVersionErrors: false,
   drawTransparent: false,
   showRowColLabel: false,
   touchMode: false,

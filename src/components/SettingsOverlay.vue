@@ -290,6 +290,19 @@
         </div>
       </div>
 
+      <!-- 开发者设置 -->
+      <div class="setting-section">
+        <h4 class="section-title">开发者设置</h4>
+        <div class="setting-item">
+          <label class="setting-checkbox">
+            <input v-model="localSettings.ignoreVersionErrors" type="checkbox">
+            <span class="checkmark" />
+            忽略版本错误
+          </label>
+          <span class="setting-note">启用后会在某些版本检测或兼容性校验中忽略错误提示（仅供开发调试使用）</span>
+        </div>
+      </div>
+
       <!-- 控制设置 -->
       <div class="setting-section">
         <h4 class="section-title">控制设置</h4>
