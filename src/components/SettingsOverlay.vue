@@ -462,6 +462,11 @@ const availableRules = computed(() => {
       name,
       description
     }))
+    .filter(({ code, type, name, description }) =>
+      `${code}, ${type}, ${name}, ${description}`
+        .toLowerCase()
+        .includes(newRuleInput.value.toLowerCase())
+    )
 })
 
 // 移动规则到启用列表
