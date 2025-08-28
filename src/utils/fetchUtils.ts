@@ -14,6 +14,11 @@ export interface FetchResult<T = unknown> {
   status?: number
 }
 
+export interface Task {
+  taskid: number
+  queueing: number
+}
+
 // 内部通用的fetch处理函数
 async function fetchCore(
   url: string,
@@ -150,18 +155,31 @@ export async function fetchWithoutValidation(
     }
 
     if (retries > 0) {
+      await new Promise(resolve => setTimeout(resolve, 500))
       return fetchWithoutValidation(url, options, retries - 1)
     }
 
     return { error: '请求失败', status: 400 }
   }
 
+  if (response.status === 202) {
+    await new Promise(resolve => setTimeout(resolve, 100))
+    const _result = await fetchWithoutValidation(url)
+    return _result
+  }
+
   // 仅当响应正常时才尝试解析JSON
   try {
-    const data = await response.json()
+    const data = await response.json() as object
+    if ('taskid' in data) {
+      const task = typia.assert<Task>(data)
+      const _result = await fetchWithoutValidation(`${getApiEndpoint('check')}?taskid=${task.taskid}`)
+      return _result
+    }
+
     return { data, status: response.status }
-  } catch {
-    return { error: '返回值不合法，无法解析为JSON', status: response.status }
+  } catch (error) {
+    return { error: `返回值不合法，${error}`, status: response.status }
   }
 }
 

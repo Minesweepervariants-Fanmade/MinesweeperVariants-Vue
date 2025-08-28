@@ -55,7 +55,7 @@ export async function newGame(params: CreateGameParams): Promise<BoardMetadata |
 
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : 'Unknown error creating new game'
-    window.alert(errorMessage)
+    window.alert(`Error when newgame: ${errorMessage}`)
   }
 }
 
