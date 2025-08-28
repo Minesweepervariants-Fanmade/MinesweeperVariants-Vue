@@ -291,6 +291,13 @@
           >
           <span class="setting-note">加载动画显示前的延迟时间，延迟大时可调为0</span>
         </div>
+        <div class="setting-item">
+          <label class="setting-checkbox">
+            <input v-model="localSettings.hideEffectsOnButtons" type="checkbox">
+            <span class="checkmark" />
+            隐藏按钮特效
+          </label>
+        </div>
       </div>
 
       <!-- 开发者设置 -->

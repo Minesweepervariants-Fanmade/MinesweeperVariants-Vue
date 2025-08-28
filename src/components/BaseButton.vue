@@ -27,6 +27,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useSettings } from '@/composables/useSettings'
+
+const { settings } = useSettings()
 
 type ButtonVariant = 'square' | 'simple' | 'bordered'
 type ButtonType = 'button' | 'submit' | 'reset'
@@ -71,6 +74,9 @@ const buttonClasses = computed(() => {
 })
 
 function showMark(e?: Event) {
+  if (settings.value.hideEffectsOnButtons) {
+    return
+  }
   const el = document.createElement('div')
   el.className = 'floating-mark'
 

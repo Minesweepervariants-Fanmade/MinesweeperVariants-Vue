@@ -79,7 +79,8 @@ export interface GameSettings {
     pointerColor: string
     pointerColorBase: string
     pointerAlpha: number
-  }
+  },
+  hideEffectsOnButtons: boolean
 }
 
 // 默认设置
@@ -149,7 +150,8 @@ export const defaultSettings: GameSettings = {
     pointerColor: 'rgba(255,255,255,0.15)',
     pointerColorBase: '#ffffff',
     pointerAlpha: 0.15
-  }
+  },
+  hideEffectsOnButtons: false
 }
 
 const STORAGE_KEY = 'minesweeper-game-settings'
