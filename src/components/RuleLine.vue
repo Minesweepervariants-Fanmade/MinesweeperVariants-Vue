@@ -40,7 +40,7 @@ const hovered = ref(false)
 
   u {
     text-decoration-thickness: 0;
-    text-decoration-color: rgb(from var(--primary-color) r g b / 50%);
+    text-decoration-color: rgb(from var(--foreground-color) r g b / 50%);
   }
 }
 
