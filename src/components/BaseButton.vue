@@ -97,7 +97,14 @@ function showMark(e?: Event) {
     { char: '☘', color: '#66bb6a' }
   ]
 
-  const idx = Math.floor(Math.random() * marks.length)
+  let idx: number
+  const today = new Date()
+  if (today.getFullYear() === 2025 && today.getMonth() === 7 && today.getDate() === 29 && Math.random() < 0.5) {
+    idx = 0
+  } else {
+    idx = Math.floor(Math.random() * (marks.length))
+  }
+
   const pick = marks[idx]
 
   el.textContent = pick.char
