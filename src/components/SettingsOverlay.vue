@@ -543,6 +543,7 @@ function generateRandomSeed() {
 function clearSeed() {
   localSettings.value.seed = ''
 }
+
 </script>
 
 <style scoped lang="scss">

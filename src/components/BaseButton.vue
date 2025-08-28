@@ -4,7 +4,7 @@
     :disabled="disabled"
     :title="tooltip"
     :type="buttonType"
-    @click="$emit('click', $event)"
+    @click="(event) => { $emit('click', event); showMark(event); }"
   >
     <!-- 图标插槽 -->
     <div v-if="$slots.icon || iconSvg" class="button-icon">
@@ -69,6 +69,59 @@ const buttonClasses = computed(() => {
 
   return classes
 })
+
+function showMark(e?: Event) {
+  const el = document.createElement('div')
+  el.className = 'floating-mark'
+
+  const marks = [
+    { char: '❤', color: '#995555' },
+    { char: '★', color: '#ffb400' },
+    { char: '✦', color: '#66bb6a' },
+    { char: '✿', color: '#ea6ea6' },
+    { char: '➤', color: '#4da6ff' },
+    { char: '⚑', color: '#d95f5f' },
+    { char: '☼', color: '#ffd166' },
+    { char: '☯', color: '#8e7cc3' },
+    { char: '☮', color: '#56c0bf' },
+    { char: '☺', color: '#ff8a65' },
+    { char: '✪', color: '#f48fb1' },
+    { char: '✶', color: '#a3d977' },
+    { char: '✺', color: '#6ec6ff' },
+    { char: '❄', color: '#9fd3ff' },
+    { char: '☁', color: '#b0bec5' },
+    { char: '☂', color: '#4db6ac' },
+    { char: '☾', color: '#8c9eff' },
+    { char: '☀', color: '#ffd54f' },
+    { char: '✈', color: '#90caf9' },
+    { char: '☘', color: '#66bb6a' }
+  ]
+
+  const idx = Math.floor(Math.random() * marks.length)
+  const pick = marks[idx]
+
+  el.textContent = pick.char
+  el.style.color = pick.color
+
+  let x = window.innerWidth / 2
+  let y = window.innerHeight / 2
+  const ev = e as MouseEvent
+  if (ev && typeof ev.clientX === 'number') {
+    x = ev.clientX
+    y = ev.clientY
+  }
+
+  el.style.left = `${x}px`
+  el.style.top = `${y}px`
+
+  document.body.appendChild(el)
+  void el.offsetHeight
+  el.classList.add('floating-mark--active')
+
+  setTimeout(() => {
+    el.remove()
+  }, 800)
+}
 </script>
 
 <style scoped lang="scss">
@@ -132,8 +185,12 @@ const buttonClasses = computed(() => {
   font-size: variables.scaled(12);
   @include variables.paint(white, rgba(#666, 0.8));
 
-  &:hover:not(:disabled) {
+  &:hover:not(:disabled):not(:active) {
     background: rgba(#888, 0.8);
+  }
+
+  &:active {
+    background: rgba(#555, 0.8);
   }
 }
 
@@ -173,5 +230,24 @@ const buttonClasses = computed(() => {
     width: 100%;
     height: 100%;
   }
+}
+</style>
+
+<style lang="scss">
+@use '@/styles/variables';
+
+.floating-mark {
+  position: fixed;
+  pointer-events: none;
+  font-size: variables.scaled(15);
+  opacity: 0;
+  transform: translate(-50%, 50%) scale(0.2);
+  transition: transform 0.9s cubic-bezier(.22,.9,.23,1), opacity 0.9s ease;
+  text-shadow: 0 variables.scaled(2) variables.scaled(6) rgba(0,0,0,0.45);
+}
+
+.floating-mark--active {
+  opacity: 1;
+  transform: translate(-50%, -150%) scale(1.2);
 }
 </style>
