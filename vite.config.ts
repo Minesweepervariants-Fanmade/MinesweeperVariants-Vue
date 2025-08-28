@@ -3,10 +3,11 @@ import vue from '@vitejs/plugin-vue'
 import { fileURLToPath, URL } from 'node:url'
 import svgLoader from 'vite-svg-loader'
 import UnpluginTypia from '@ryoppippi/unplugin-typia/vite'
+import version from 'vite-plugin-package-version';
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [vue(), svgLoader(), UnpluginTypia()],
+  plugins: [vue(), version(), svgLoader(), UnpluginTypia()],
   base: process.env.NODE_ENV === 'production' ? './' : '/',
   resolve: {
     alias: {
@@ -14,9 +15,6 @@ export default defineConfig({
     },
   },
   build: {
-    // 内联资源文件的大小限制
-    // 设置为较大值以内联小字体文件(如Copperplate 48KB)
-    assetsInlineLimit: 102400, // 100KB以下的文件将被内联为base64
-    // 对于更大的字体文件(如Source Han Sans 10MB)，仍然保持外部引用
+    assetsInlineLimit: 102400,
   },
 })

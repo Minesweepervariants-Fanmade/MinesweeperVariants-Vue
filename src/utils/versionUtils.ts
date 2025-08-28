@@ -18,7 +18,15 @@ export function parseTupleVersion(version: TupleVersion): Version {
     };
 }
 
-const currentVersion: Version = parseTupleVersion([0, 2, 0]);
+const currentVersionString = (import.meta.env.PACKAGE_VERSION ?? '0.0.0') as string;
+
+console.log(currentVersionString)
+
+const currentVersion: Version = (() => {
+    const parts = currentVersionString.split('.').map(p => parseInt(p, 10) || 0);
+    const tuple: TupleVersion = [parts[0] || 0, parts[1] || 0, parts[2] || 0];
+    return parseTupleVersion(tuple);
+})();
 
 export function versionToString(version: Version): string {
     return `${version.major}.${version.minor}.${version.patch}`;
