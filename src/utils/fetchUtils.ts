@@ -17,6 +17,7 @@ export interface FetchResult<T = unknown> {
 export interface Task {
   taskid: number
   queueing: number
+  interval?: number
 }
 
 // 内部通用的fetch处理函数
@@ -163,9 +164,10 @@ export async function fetchWithoutValidation(
   }
 
   if (response.status === 202) {
-    await new Promise(resolve => setTimeout(resolve, 100))
-    const _result = await fetchWithoutValidation(url)
-    return _result
+    const data = await response.json() as { interval?: string }
+    const interval = data?.interval ? parseInt(data.interval) : 100
+    await new Promise(resolve => setTimeout(resolve, interval))
+    return await fetchWithoutValidation(url)
   }
 
   // 仅当响应正常时才尝试解析JSON
@@ -173,6 +175,9 @@ export async function fetchWithoutValidation(
     const data = await response.json() as object
     if ('taskid' in data) {
       const task = typia.assert<Task>(data)
+      if (task?.interval) {
+        await new Promise(resolve => setTimeout(resolve, task.interval))
+      }
       const _result = await fetchWithoutValidation(`${getApiEndpoint('check')}?taskid=${task.taskid}`)
       return _result
     }
