@@ -32,12 +32,15 @@
         </div>
         <div class="setting-item">
           <label class="setting-label">地雷数量：</label>
-          <input
-            v-model.number="localSettings.mineCount"
-            type="number"
-            class="setting-input"
-            :min="-1"
-          >
+          <div class="setting-input-wrapper">
+            <input
+              v-model.number="localSettings.mineCount"
+              type="number"
+              class="setting-input"
+              :min="-1"
+            >
+            <BaseButton variant="simple" size="small" @click="()=>{localSettings.mineCount = -1}">自动</BaseButton>
+          </div>
         </div>
         <div class="setting-item">
           <label class="setting-label">种子：</label>
