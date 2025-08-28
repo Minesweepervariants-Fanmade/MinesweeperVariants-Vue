@@ -2,6 +2,8 @@
 
 一个使用 Vue 3、TypeScript 和 Vite 构建的现代扫雷游戏，具有多种变体和主题。
 
+目前暂无公用服务器，请参考 [WuZh-Rh/MinesweeperVariants](https://github.com/WuZh-Rh/MinesweeperVariants) 自行部署。
+
 ## 功能特性
 
 - 🎮 经典扫雷游戏玩法
@@ -82,7 +84,7 @@ src/
 - **来源**: [CowboyCollective/CopperplateCC](https://github.com/CowboyCollective/CopperplateCC)
 - **版权**: Copyright 2014-2024 Cowboy Collective
 - **用途**: 免费用于商业和非商业用途
-- **许可证链接**: <https://scripts.sil.org/OFL>
+- **许可证链接**: [https://scripts.sil.org/OFL](https://scripts.sil.org/OFL)
 
 #### 思源黑体 CN Heavy (`SourceHanSansCN-Heavy.ttf`)
 
@@ -90,7 +92,7 @@ src/
 - **来源**: [Adobe Fonts / Source Han Sans](https://github.com/adobe-fonts/source-han-sans)
 - **版权**: Copyright 2014-2021 Adobe Systems Incorporated
 - **用途**: 免费用于商业和非商业用途
-- **许可证链接**: <https://scripts.sil.org/OFL>
+- **许可证链接**: [https://scripts.sil.org/OFL](https://scripts.sil.org/OFL)
 
 #### Noto Sans ExtraBold (`NotoSans-ExtraBold.ttf`)
 
@@ -98,7 +100,7 @@ src/
 - **来源**: [Google Fonts / Noto Fonts](https://github.com/googlefonts/noto-fonts)
 - **版权**: Copyright Google Inc.
 - **用途**: 免费用于商业和非商业用途
-- **许可证链接**: <https://scripts.sil.org/OFL>
+- **许可证链接**: [https://scripts.sil.org/OFL](https://scripts.sil.org/OFL)
 
 ### 图标和图形
 

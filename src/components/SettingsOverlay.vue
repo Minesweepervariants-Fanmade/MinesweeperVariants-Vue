@@ -7,7 +7,7 @@
     @close="onClose"
     @update:visible="$emit('update:visible', $event)"
   >
-    <h3 class="settings-title">游戏设置</h3>
+    <h3 class="settings-title">游戏设置 - <a class="github-link" href="https://github.com/KoolShow/MinesweeperVariants-Vue" target="_blank" rel="noopener noreferrer">GitHub</a></h3>
     <div class="settings-content">
 
       <div class="setting-section">
@@ -1214,6 +1214,15 @@ input[type="color"] {
   border: 0;
   inline-size: variables.scaled(32);
   block-size: variables.scaled(32);
+}
+
+a.github-link {
+  color: var(--hint2-color);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
 }
 
 </style>
