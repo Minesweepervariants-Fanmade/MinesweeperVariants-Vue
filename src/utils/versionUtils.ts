@@ -1,0 +1,44 @@
+export interface Version {
+    major: number;
+    minor: number;
+    patch: number;
+}
+
+export interface TupleVersion extends Array<number> {
+    0: number; // major
+    1: number; // minor
+    2: number; // patch
+}
+
+export function parseTupleVersion(version: TupleVersion): Version {
+    return {
+        major: version[0],
+        minor: version[1],
+        patch: version[2]
+    };
+}
+
+const currentVersion: Version = parseTupleVersion([0, 2, 0]);
+
+export function versionToString(version: Version): string {
+    return `${version.major}.${version.minor}.${version.patch}`;
+}
+
+export function validate(version: Version) {
+    if (version.major !== currentVersion.major) {
+        alert(`Incompatible major version: ${versionToString(version)}. Expected: ${versionToString(currentVersion)}`);
+        return false;
+    }
+
+    if (version.minor !== currentVersion.minor) {
+        alert(`Incompatible minor version: ${versionToString(version)}. Expected: ${versionToString(currentVersion)}`);
+        return true;
+    }
+
+    if (version.patch !== currentVersion.patch) {
+        console.warn(`Incompatible patch version: ${versionToString(version)}. Expected: ${versionToString(currentVersion)}`);
+        return true
+    }
+
+    return true
+}

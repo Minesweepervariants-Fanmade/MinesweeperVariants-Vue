@@ -8,6 +8,7 @@ import { Cell } from '@/types/cell'
 import { clearHints, postHint, resetHints, type Hint } from '@/utils/hintUtils'
 import typia from 'typia'
 import { fetchReset } from '@/composables/reset'
+import { parseTupleVersion, validate, type Version } from '@/utils/versionUtils'
 // 单例实例
 let gameConfigInstance: ReturnType<typeof createGameConfig> | null = null
 
@@ -69,7 +70,14 @@ function createGameConfig() {
         return await newGame(getGameParams())
       }
       console.log('Loaded metadata:', result.data)
+
       const data = typia.assert<BoardMetadata>(result.data)
+
+      const version: Version = parseTupleVersion(data.version ?? [0, 0, 0])
+      if (!validate(version)) {
+        throw new Error(`版本不匹配, 请更新版本!`)
+      }
+
       processMetadataRules(data?.rules)
       metadata.value = data
       return data

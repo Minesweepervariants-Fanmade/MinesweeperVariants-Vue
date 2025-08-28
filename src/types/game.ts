@@ -1,4 +1,5 @@
 import type { Cell } from "@/types/cell"
+import type { TupleVersion } from "@/utils/versionUtils"
 
 // 单元格状态类型
 export type CellType = 'empty' | 'revealed'
@@ -36,6 +37,7 @@ export interface BoardMetadata {
   noHint?: boolean
   mode: 'NORMAL' | 'EXPERT' | 'ULTIMATE' | 'PUZZLE'
   u_mode?: ('+A' | '+F' | '+R' | '+S' | '+!')[]
+  version?: TupleVersion
 }
 
 // 计数信息类型
