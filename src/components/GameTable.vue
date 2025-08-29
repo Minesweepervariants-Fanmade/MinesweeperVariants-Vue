@@ -203,7 +203,7 @@ const updateHighlight = (
   @include variables.rect-size(0.5, 1);
 }
 
-tbody:has(.hole) > tr > .cell:not(.hole)::before {
+.game-container:has(.hole) > .game-table > tbody > tr > .cell:not(.hole)::before {
   background: rgb(from var(--foreground-color) r g b / 10%);
   content: "";
   position: absolute;
