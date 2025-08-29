@@ -173,15 +173,6 @@ watch(
   }
 }
 
-:has(.hole) > .cell:not(.hole)::before {
-  background: rgb(from var(--foreground-color) r g b / 10%);
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-}
-
-
 // 单元格内容
 .cell-content {
   @include variables.absolute-position(0, null, null, 0);
