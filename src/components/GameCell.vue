@@ -156,8 +156,15 @@ watch(
   overflow: hidden;
   box-sizing: border-box;
 
-  &.highlighted, &:hover {
-    background: var(--pointer-color);
+  &.highlighted,
+  &:hover:not(.hole) {
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--pointer-color);
+      pointer-events: none;
+    }
   }
 
   &.hole {
@@ -165,6 +172,15 @@ watch(
     cursor: inherit;
   }
 }
+
+:has(.hole) > .cell:not(.hole)::before {
+  background: rgb(from var(--foreground-color) r g b / 10%);
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
 
 // 单元格内容
 .cell-content {
