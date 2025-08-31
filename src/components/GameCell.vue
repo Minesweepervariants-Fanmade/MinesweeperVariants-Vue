@@ -91,7 +91,8 @@ const cellClasses = computed(() => {
 
 // 单元格事件
 
-const handleClick = () => {
+const handleClick = (e: MouseEvent) => {
+  console.log('Cell clicked:', e)
   emit('click', props.row, props.col, props.boardName)
 }
 
@@ -170,6 +171,7 @@ watch(
   &.hole {
     border-width: 0;
     cursor: inherit;
+    pointer-events: none
   }
 }
 

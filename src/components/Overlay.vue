@@ -223,10 +223,6 @@ const onMenuClick = () => emit('menuClick')
   width: 100%;
   height: 100%;
   pointer-events: none;
-
-  > * {
-    pointer-events: auto;
-  }
 }
 
 // 顶部规则说明
@@ -235,6 +231,9 @@ const onMenuClick = () => emit('menuClick')
   color: var(--foreground-color);
   font-size: variables.scaled(20);
 
+  > * {
+    pointer-events: auto;
+  }
 
   .mine-count,
   .remaining {
@@ -249,6 +248,10 @@ const onMenuClick = () => emit('menuClick')
   display: flex;
   gap: variables.scaled(10);
   align-items: center;
+
+  > * {
+    pointer-events: auto;
+  }
 
   .icon-container {
     @include variables.svg-icon(variables.scaled(30));
