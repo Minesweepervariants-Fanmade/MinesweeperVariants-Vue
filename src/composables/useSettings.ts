@@ -102,7 +102,9 @@ export const defaultSettings: GameSettings = {
   showHints: true,
   rightClickFlag: true,
   doubleClickReveal: true,
-  serverUrl: 'http://localhost:5050/api/',
+  serverUrl: (typeof window !== 'undefined' && window.location.hostname.includes('github'))
+    ? 'http://localhost:5050/api/'
+    : '/api/',
   ignoreVersionErrors: false,
   drawTransparent: false,
   showRowColLabel: false,
