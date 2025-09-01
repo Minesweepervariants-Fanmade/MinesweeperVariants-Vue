@@ -72,10 +72,13 @@ jobs:
       - name: Zip dist folder
         run: zip -r dist.zip dist
 
+      - name: Generate SHA256 checksum
+        run: sha256sum dist.zip > checksum_sha256.txt
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: dist.zip
+          files: dist.zip, checksum_sha256.txt
           tag_name: latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
