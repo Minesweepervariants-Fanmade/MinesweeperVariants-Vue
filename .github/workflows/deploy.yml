@@ -70,7 +70,9 @@ jobs:
           path: dist
 
       - name: Extract artifact.tar
-        run: tar -xf dist/artifact.tar -C dist
+        run: |
+          tar -xf dist/artifact.tar -C dist
+          rm dist/artifact.tar
 
       - name: Zip dist folder
         run: zip -r dist.zip dist
