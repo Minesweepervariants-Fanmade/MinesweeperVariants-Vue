@@ -43,7 +43,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './dist'
+          path: 'dist'
 
   deploy:
     runs-on: ubuntu-latest
@@ -68,6 +68,9 @@ jobs:
         with:
           name: github-pages
           path: dist
+
+      - name: Extract artifact.tar
+        run: tar -xf dist/artifact.tar -C dist
 
       - name: Zip dist folder
         run: zip -r dist.zip dist
