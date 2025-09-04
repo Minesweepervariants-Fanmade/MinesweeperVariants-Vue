@@ -230,7 +230,7 @@ const handleCheckClick = async (setLoading: (_loading: boolean, _progress?: numb
       setLoading(true, progress)
     })
   } finally {
-    setLoading(false)
+    setLoading(false, undefined)
   }
 }
 

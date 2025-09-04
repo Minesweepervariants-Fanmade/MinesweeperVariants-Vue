@@ -211,6 +211,8 @@ const onCheckClick = () => {
     isCheckLoading.value = loading
     if (progress !== undefined) {
       checkProgress.value = progress
+    } if (!loading && progress === undefined) {
+      checkProgress.value = undefined
     }
   }
   emit('checkClick', setLoading)
