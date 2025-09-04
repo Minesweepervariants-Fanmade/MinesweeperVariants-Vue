@@ -2,7 +2,10 @@
   <div
     v-if="visible"
     class="loading-spinner"
-    :style="{ '--delay': `${delay ?? settings.loadingSpinnerDelay / 1000}s` }"
+    :style="{
+      '--delay': `${delay ?? settings.loadingSpinnerDelay / 1000}s`,
+      '--progress': progress !== undefined ? progress : 0.33
+    }"
   />
 </template>
 
@@ -14,6 +17,7 @@ const { settings } = useSettings()
 interface Props {
   visible?: boolean
   delay?: number
+  progress?: number
 }
 
 withDefaults(defineProps<Props>(), {
@@ -32,10 +36,9 @@ withDefaults(defineProps<Props>(), {
   border-radius: 50%;
   background: conic-gradient(
     transparent 0deg,
-    transparent 60deg,
-    var(--foreground-color) 120deg,
-    var(--foreground-color) 180deg,
-    transparent 240deg,
+    var(--foreground-color) 30deg,
+    var(--foreground-color) calc(300deg * (var(--progress, 0.33)) + 30deg),
+    transparent calc(300deg * (var(--progress, 0.33)) + 60deg),
     transparent 360deg
   );
   mask-image: radial-gradient(circle at center, transparent 45%, black 46%);
