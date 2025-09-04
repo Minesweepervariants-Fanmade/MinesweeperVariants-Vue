@@ -20,7 +20,7 @@ export function generateRandomSeedString(): string {
   return Math.floor(Math.random() * 100000).toString()
 }
 
-export async function newGame(params: CreateGameParams): Promise<BoardMetadata | undefined> {
+export async function newGame(params: CreateGameParams, onProgress?: (_progress: number) => void): Promise<BoardMetadata | undefined> {
   try {
     const urlParams = new URLSearchParams({
       size: params.size,
@@ -33,7 +33,8 @@ export async function newGame(params: CreateGameParams): Promise<BoardMetadata |
       seed: params.seed || ''
     })
     const result = await fetchWithoutValidation(
-      `${getApiEndpoint('new')}?${urlParams.toString()}`
+      `${getApiEndpoint('new')}?${urlParams.toString()}`,
+      undefined, undefined, onProgress
     )
 
     if (result.error) {

@@ -223,10 +223,12 @@ const handleBrushClick = () => {
   showDrawingToolbar.value = !showDrawingToolbar.value
 }
 
-const handleCheckClick = async (setLoading: (_loading: boolean) => void) => {
+const handleCheckClick = async (setLoading: (_loading: boolean, _progress?: number) => void) => {
   setLoading(true)
   try {
-    await newGame(getGameParams())
+    await newGame(getGameParams(), (progress) => {
+      setLoading(true, progress)
+    })
   } finally {
     setLoading(false)
   }

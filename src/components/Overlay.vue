@@ -22,7 +22,7 @@
         <template #icon>
           <div class="check-icon-wrapper">
             <div ref="checkIcon" class="icon-container" :class="{ 'check-loading': isCheckLoading }" />
-            <LoadingSpinner :visible="isCheckLoading" />
+            <LoadingSpinner :visible="isCheckLoading" :progress="checkProgress" />
           </div>
         </template>
       </BaseButton>
@@ -90,7 +90,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, type Ref } from 'vue'
 import { cloneAsset } from '@/composables/useAssets'
 import { useGameConfig } from '@/composables/useGameConfig'
 import { postHint, showNextHint } from '@/utils/hintUtils'
@@ -131,6 +131,7 @@ const starIcon = ref<HTMLElement>()
 // 加载状态
 const isHintLoading = ref(false)
 const isCheckLoading = ref(false)
+const checkProgress: Ref<number | undefined> = ref(undefined)
 
 // 渲染图标
 const renderIcon = async (container: HTMLElement | undefined, assetName: 'brush' | 'hint' | 'check' | 'reset' | 'menu' | 'star') => {
@@ -206,8 +207,11 @@ const onHintClick = async () => {
   }
 }
 const onCheckClick = () => {
-  const setLoading = (loading: boolean) => {
+  const setLoading = (loading: boolean, progress?: number) => {
     isCheckLoading.value = loading
+    if (progress !== undefined) {
+      checkProgress.value = progress
+    }
   }
   emit('checkClick', setLoading)
 }

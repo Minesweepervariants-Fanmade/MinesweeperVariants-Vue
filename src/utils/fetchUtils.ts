@@ -28,7 +28,7 @@ async function fetchCore(
   const { timeout = 10000, ...rest } = options
   let timeoutId: number | undefined
   let response: { ok: boolean; status: number; json: () => Promise<unknown>; text: () => Promise<string> } | null = null
-  let error: unknown = null
+  let error: unknown | null = null
 
   // 创建超时Promise
   const timeoutPromise = new Promise<never>((_, reject) => {
@@ -144,7 +144,8 @@ async function handleFetchError(error: unknown, response: { ok: boolean; status:
 export async function fetchWithoutValidation(
   url: string,
   options: FetchOptions = {},
-  retries: number = 3
+  retries: number = 3,
+  onProgress?: (_progress: number) => void
 ): Promise<FetchResult> {
   const { response, error } = await fetchCore(url, options)
 
@@ -157,17 +158,20 @@ export async function fetchWithoutValidation(
 
     if (retries > 0) {
       await new Promise(resolve => setTimeout(resolve, 500))
-      return fetchWithoutValidation(url, options, retries - 1)
+      return fetchWithoutValidation(url, options, retries - 1, onProgress)
     }
 
-    return { error: '请求失败', status: 400 }
+    return { error: `请求失败, ${error}`, status: response?.status }
   }
 
   if (response.status === 202) {
-    const data = await response.json() as { interval?: string }
+    const data = await response.json() as { interval?: string, progress?: number }
     const interval = data?.interval ? parseInt(data.interval) : 100
+    if (data.progress !== undefined) {
+      onProgress?.(data.progress)
+    }
     await new Promise(resolve => setTimeout(resolve, interval))
-    return await fetchWithoutValidation(url)
+    return await fetchWithoutValidation(url, options, retries, onProgress)
   }
 
   // 仅当响应正常时才尝试解析JSON
@@ -178,7 +182,7 @@ export async function fetchWithoutValidation(
       if (task?.interval) {
         await new Promise(resolve => setTimeout(resolve, task.interval))
       }
-      const _result = await fetchWithoutValidation(`${getApiEndpoint('check')}?taskid=${task.taskid}`)
+      const _result = await fetchWithoutValidation(`${getApiEndpoint('check')}?taskid=${task.taskid}`, undefined, retries, onProgress)
       return _result
     }
 
