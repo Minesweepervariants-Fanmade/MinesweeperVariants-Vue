@@ -298,6 +298,9 @@ onMounted(async () => {
   // 初始化游戏
   await initializeGame()
 
+  // 监听空格键按下，调用handleCellClick
+  document.addEventListener('keydown', onSpaceKeyDown)
+
   // 注册主题切换快捷键
   registerKeyboardShortcut('themeToggle', onThemeToggle)
   registerMouseShortcut('themeToggle', onThemeToggleMouse)
@@ -330,7 +333,14 @@ onUnmounted(() => {
   document.removeEventListener('mousedown', handleGlobalMouse)
   document.removeEventListener('mouseup', handleGlobalMouse)
   document.removeEventListener('wheel', handleGlobalWheel)
+  document.removeEventListener('keydown', onSpaceKeyDown)
 })
+// 监听空格键按下，调用handleCellClick
+function onSpaceKeyDown(e: KeyboardEvent) {
+  if (e.code === 'Space' || e.key === ' ' || e.key === 'Spacebar') {
+    handleCellClick('', -1, '', 'space')
+  }
+}
 </script>
 
 <style scoped lang="scss">

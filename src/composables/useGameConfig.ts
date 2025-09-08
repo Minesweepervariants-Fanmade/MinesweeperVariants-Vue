@@ -281,92 +281,109 @@ function createGameConfig() {
       return
     }
 
-    const board = getCellStates(boardName)
-    const key = Cell.CellCoordToKey(row, col)
-    const cellState = board[key]
+    let _x: number, _y: number
+    let cell: CellState | undefined
 
-    const { x, y } = Cell.displayCoordToIndex(row, col)
+    if (button === 'space') {
+      boardName = ''
+      _x = 0
+      _y = 0
+    } else {
 
-    if (getBoardConfig(boardName)?.board.mask?.[x][y] === true) {
+      const board = getCellStates(boardName)
+      const key = Cell.CellCoordToKey(row, col)
+      cell = board[key]
+      if (!cell) {
+        console.warn(`Cell state not found for ${key} in board ${boardName}`)
+        return
+      }
+
+      const { x, y } = Cell.displayCoordToIndex(row, col)
+      _x = x
+      _y = y
+
+    }
+
+    if (getBoardConfig(boardName)?.board.mask?.[_x][_y] === true) {
       return
     }
 
-    if (cellState) {
-      try {
-        // 设置加载状态
-        cellState.isLoading = true
 
-        // 调用postClick API发送点击事件到服务器
-        const response: ClickResponse = await postClick(boardName, x, y, button)
+    try {
+    // 设置加载状态
+      if (cell) cell.isLoading = true
 
-        // 清除加载状态
-        cellState.isLoading = false
+      // 调用postClick API发送点击事件到服务器
+      const response: ClickResponse = await postClick(boardName, _x, _y, button)
 
-        // 检查响应状态
-        if (!response.success) {
-          console.error('Click failed:', response.reason)
-          return
-        }
+      // 清除加载状态
+      if (cell) cell.isLoading = false
 
-        // 处理服务器返回的单元格更新
-        if (response.cells) {
-          // 应用服务器返回的单元格配置更新
-          for (const cellUpdate of response.cells) {
-            const updateBoard = gameBoards.value[cellUpdate.position.boardname]
-            if (updateBoard) {
-              const updateKey = `${cellUpdate.position.x}-${cellUpdate.position.y}`
-              const updateCell = updateBoard[updateKey]
-              if (updateCell) {
-                updateCell.type = 'revealed'
-                updateCell.isRevealed = true
-              }
+      // 检查响应状态
+      if (!response.success) {
+        console.error('Click failed:', response.reason)
+        return
+      }
+
+      // 处理服务器返回的单元格更新
+      if (response.cells) {
+        // 应用服务器返回的单元格配置更新
+        for (const cellUpdate of response.cells) {
+          const updateBoard = gameBoards.value[cellUpdate.position.boardname]
+          if (updateBoard) {
+            const updateKey = `${cellUpdate.position.x}-${cellUpdate.position.y}`
+            const updateCell = updateBoard[updateKey]
+            if (updateCell) {
+              updateCell.type = 'revealed'
+              updateCell.isRevealed = true
             }
           }
-
-          // 更新allCells Record
-          for (const cellUpdate of response.cells) {
-            const key = getCellKey(cellUpdate.position.boardname, cellUpdate.position.x, cellUpdate.position.y)
-            allCells.value[key] = cellUpdate
-          }
         }
 
-        // 更新count信息
-        if (response.count && metadata.value) {
-          metadata.value.count = response.count
+        // 更新allCells Record
+        for (const cellUpdate of response.cells) {
+          const key = getCellKey(cellUpdate.position.boardname, cellUpdate.position.x, cellUpdate.position.y)
+          allCells.value[key] = cellUpdate
         }
-
-        if (response.u_hint !== undefined && metadata.value) {
-          metadata.value.u_hint = response.u_hint
-        }
-
-        if (response.noFail !== undefined && metadata.value) {
-          metadata.value.noFail = response.noFail
-        }
-
-        if (response.noHint !== undefined && metadata.value) {
-          metadata.value.noHint = response.noHint
-        }
-
-        // 检查游戏是否结束
-        if (response.gameover) {
-          isGameOver.value = true
-          gameOverReason.value = response.reason
-
-          // 根据胜负弹出不同弹窗
-          if (response.win) {
-            showGameWinDialog.value = true
-          } else {
-            mines.value = response.mines ?? []
-            cellState.error = true
-            showGameOverDialog.value = true
-          }
-        }
-      } catch (error) {
-        // 清除加载状态
-        cellState.isLoading = false
-        console.error('Failed to post click:', error)
       }
+
+      // 更新count信息
+      if (response.count && metadata.value) {
+        metadata.value.count = response.count
+      }
+
+      if (response.u_hint !== undefined && metadata.value) {
+        metadata.value.u_hint = response.u_hint
+      }
+
+      if (response.noFail !== undefined && metadata.value) {
+        metadata.value.noFail = response.noFail
+      }
+
+      if (response.noHint !== undefined && metadata.value) {
+        metadata.value.noHint = response.noHint
+      }
+
+      // 检查游戏是否结束
+      if (response.gameover) {
+        isGameOver.value = true
+        gameOverReason.value = response.reason
+
+        // 根据胜负弹出不同弹窗
+        if (response.win) {
+          showGameWinDialog.value = true
+        } else {
+          mines.value = response.mines ?? []
+          if (cell) cell.error = true
+          showGameOverDialog.value = true
+        }
+      }
+    } catch (error) {
+    // 清除加载状态
+      if (cell) cell.isLoading = false
+      console.error('Failed to post click:', error)
     }
+
   }
 
   // 获取单元格配置
@@ -422,6 +439,7 @@ function createGameConfig() {
 
   // 获取指定游戏板的配置
   const getBoardConfig = (boardName: string) => {
+    if (!boardName) return null
     if (!metadata.value) return null
     return {
       name: boardName,
