@@ -430,6 +430,25 @@ function createGameConfig() {
     }
   }
 
+  // 重置单元格状态，供纸笔模式清空格子使用
+  const resetCellState = (boardName: string, x: number, y: number) => {
+    const board = gameBoards.value[boardName]
+    if (!board) return
+
+    const key = `${x}-${y}`
+    const cellState = board[key]
+    if (!cellState) return
+
+    // 重置为未翻开状态
+    cellState.type = 'empty'
+    cellState.isRevealed = false
+    cellState.isLoading = false
+    cellState.hint1 = false
+    cellState.hint2 = false
+    cellState.error = false
+    cellState.errormine = false
+  }
+
   // 重置游戏
   const resetGame = async () => {
     await fetchReset()
@@ -528,6 +547,7 @@ function createGameConfig() {
     getCellConfig,
     createBlankCellConfig,
     setCellConfig,
+    resetCellState,
     resetGame,
     handleGameOverExample,
     handleGameOverHint,

@@ -263,21 +263,42 @@ export const shortcutDescriptions = {
 
 // 从 localStorage 加载设置
 const loadSettings = (): GameSettings => {
+  const mergeSettings = (parsed: Partial<GameSettings>): GameSettings => ({
+    ...defaultSettings,
+    ...parsed,
+    ultimateModeOptions: {
+      ...defaultSettings.ultimateModeOptions,
+      ...parsed.ultimateModeOptions,
+    },
+    keyboardShortcuts: {
+      ...defaultSettings.keyboardShortcuts,
+      ...parsed.keyboardShortcuts,
+    },
+    mouseShortcuts: {
+      ...defaultSettings.mouseShortcuts,
+      ...parsed.mouseShortcuts,
+    },
+    customTheme: {
+      ...defaultSettings.customTheme,
+      ...parsed.customTheme,
+    },
+  })
+
   if (typeof window === 'undefined' || !window.localStorage) {
-    return { ...defaultSettings }
+    return mergeSettings({})
   }
 
   try {
     const stored = window.localStorage.getItem(STORAGE_KEY)
     if (stored) {
-      const parsed = JSON.parse(stored)
-      // 合并默认设置，确保新增的字段有默认值
-      return { ...defaultSettings, ...parsed }
+      const parsed = JSON.parse(stored) as Partial<GameSettings>
+      // 深度合并默认设置，确保新增的嵌套字段也能自动补齐
+      return mergeSettings(parsed)
     }
   } catch (error) {
     console.warn('Failed to load settings from localStorage:', error)
   }
-  return { ...defaultSettings }
+  return mergeSettings({})
 }
 
 // 保存设置到 localStorage
