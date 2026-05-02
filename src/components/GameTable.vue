@@ -27,8 +27,10 @@
           :board-name="boardName"
           :dye="getCellDye(row, col)"
           :mask="getCellMask(row, col)"
+          :puzzle-mode="puzzleMode"
           @click="(row, col, boardName) => $emit('cell-click', row, col, boardName)"
           @right-click="(row, col, boardName) => $emit('cell-right-click', row, col, boardName)"
+          @middle-click="(row, col, boardName, cellConfig) => $emit('cell-middle-click', row, col, boardName, cellConfig)"
           @mouse-enter="handleCellMouseEnter"
           @mouse-leave="handleCellMouseLeave"
         />
@@ -52,15 +54,37 @@ interface Props {
   mask?: boolean[][]
   showRowColLabel?: boolean
   showBoardNameLabel?: boolean
+  puzzleMode?: boolean
 }
 
 interface Emits {
   (_e: 'cell-click', _row: number, _col: string, _boardName?: string): void
   (_e: 'cell-right-click', _row: number, _col: string, _boardName?: string): void
+  (
+    _e: 'cell-middle-click',
+    _row: number,
+    _col: string,
+    _boardName?: string,
+    _cellConfig?: CellConfig | null
+  ): void
+  (
+    _e: 'mouse-enter',
+    _row: number,
+    _col: string,
+    _boardName?: string,
+    _cellConfig?: CellConfig | null
+  ): void
+  (
+    _e: 'mouse-leave',
+    _row: number,
+    _col: string,
+    _boardName?: string,
+    _cellConfig?: CellConfig | null
+  ): void
 }
 
 const props = defineProps<Props>()
-defineEmits<Emits>()
+const emit = defineEmits<Emits>()
 
 // 不再使用动态样式元素，直接通过类名切换高亮
 
@@ -97,26 +121,28 @@ const getCellMask = (row: number, col: string): boolean | false => {
 
 // 处理单元格鼠标进入事件
 const handleCellMouseEnter = (
-  _row: number,
-  _col: string,
-  _boardName?: string,
+  row: number,
+  col: string,
+  boardName?: string,
   cellConfig?: CellConfig | null
 ) => {
   if (cellConfig && cellConfig.highlight) {
     updateHighlight(cellConfig.highlight, true)
   }
+  emit('mouse-enter', row, col, boardName, cellConfig)
 }
 
 // 处理单元格鼠标离开事件
 const handleCellMouseLeave = (
-  _row: number,
-  _col: string,
-  _boardName?: string,
+  row: number,
+  col: string,
+  boardName?: string,
   cellConfig?: CellConfig | null
 ) => {
   if (cellConfig && cellConfig.highlight) {
     updateHighlight(cellConfig.highlight, false)
   }
+  emit('mouse-leave', row, col, boardName, cellConfig)
 }
 
 const updateHighlight = (

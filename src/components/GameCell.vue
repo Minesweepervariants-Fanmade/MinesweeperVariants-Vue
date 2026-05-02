@@ -8,6 +8,7 @@
     :data-cell-id="cellId"
     @click="handleClick"
     @contextmenu="handleRightClick"
+    @mousedown="handleMouseDown"
     @mouseenter="handleMouseEnter"
     @mouseleave="handleMouseLeave"
   >
@@ -43,11 +44,19 @@ interface Props {
   boardName: string
   dye?: boolean
   mask?: boolean
+  puzzleMode?: boolean
 }
 
 interface Emits {
   (_e: 'click', _row: number, _col: string, _boardName: string): void
   (_e: 'right-click', _row: number, _col: string, _boardName: string): void
+  (
+    _e: 'middle-click',
+    _row: number,
+    _col: string,
+    _boardName: string,
+    _cellConfig?: CellConfig | null
+  ): void
   (
     _e: 'mouse-enter',
     _row: number,
@@ -91,13 +100,22 @@ const cellClasses = computed(() => {
 
 // 单元格事件
 
-const handleClick = (e: MouseEvent) => {
-  console.log('Cell clicked:', e)
+const handleClick = (_event: MouseEvent) => {
   emit('click', props.row, props.col, props.boardName)
 }
 
 const handleRightClick = () => {
   emit('right-click', props.row, props.col, props.boardName)
+}
+
+const handleMouseDown = (event: MouseEvent) => {
+  if (event.button !== 1 || !props.puzzleMode) {
+    return
+  }
+
+  event.preventDefault()
+  event.stopPropagation()
+  emit('middle-click', props.row, props.col, props.boardName, props.cellConfig)
 }
 
 const handleMouseEnter = () => {
@@ -109,14 +127,15 @@ const handleMouseLeave = () => {
 }
 
 const renderCell = async () => {
-  if (props.cellState?.type === 'revealed' && container.value) {
+  const containerElement = container.value
+  if (props.cellState?.type === 'revealed' && containerElement) {
     if (props.cellConfig && props.cellConfig.component) {
-      await renderComponent(container.value, props.cellConfig.component, true)
+      await renderComponent(containerElement, props.cellConfig.component, true)
       if (props.cellConfig.overlayText) {
         const overlayDiv = document.createElement('div')
         overlayDiv.className = 'cell-overlay'
         overlayDiv.textContent = props.cellConfig.overlayText
-        container.value!.appendChild(overlayDiv)
+        containerElement.appendChild(overlayDiv)
       }
     }
   }

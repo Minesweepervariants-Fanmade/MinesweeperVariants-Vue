@@ -394,6 +394,42 @@ function createGameConfig() {
     return allCells.value[key] || null
   }
 
+  // 创建一个空的单元格配置，供纸笔模式清空或初始化使用
+  const createBlankCellConfig = (boardName: string, x: number, y: number): CellConfig => {
+    return {
+      overlayText: '',
+      position: new Cell(boardName, x, y),
+      component: {
+        type: 'text',
+        value: '',
+        style: '',
+        class: ''
+      }
+    }
+  }
+
+  // 写回单元格配置
+  const setCellConfig = (cellConfig: CellConfig) => {
+    const { boardname, x, y } = cellConfig.position
+    const key = getCellKey(boardname, x, y)
+
+    allCells.value[key] = cellConfig
+
+    if (!metadata.value) return
+
+    const index = metadata.value.cells.findIndex(item =>
+      item.position.boardname === boardname &&
+      item.position.x === x &&
+      item.position.y === y
+    )
+
+    if (index >= 0) {
+      metadata.value.cells[index] = cellConfig
+    } else {
+      metadata.value.cells.push(cellConfig)
+    }
+  }
+
   // 重置游戏
   const resetGame = async () => {
     await fetchReset()
@@ -490,6 +526,8 @@ function createGameConfig() {
     getBoardLabels,
     handleCellClick,
     getCellConfig,
+    createBlankCellConfig,
+    setCellConfig,
     resetGame,
     handleGameOverExample,
     handleGameOverHint,

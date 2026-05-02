@@ -8,6 +8,7 @@ export interface KeyboardShortcuts {
   [key: string]: string
   toggleDrawingToolbar: string // 切换绘图覆盖层
   useCurrentTool: string     // 使用当前绘画工具
+  editCell: string           // 编辑纸笔单元格
   brushTool: string          // 画笔工具
   eraserTool: string         // 魔术橡皮
   markerTool: string         // 标记工具
@@ -114,6 +115,7 @@ export const defaultSettings: GameSettings = {
   keyboardShortcuts: {
     toggleDrawingToolbar: 'd',
     useCurrentTool: '',
+    editCell: 'e',
     brushTool: 'b',
     eraserTool: 'e',
     markerTool: '',
@@ -212,6 +214,10 @@ export const shortcutDescriptions = {
   useCurrentTool: {
     name: '使用当前绘画工具',
     category: '绘图工具'
+  },
+  editCell: {
+    name: '编辑纸笔单元格',
+    category: '纸笔模式'
   },
   brushTool: {
     name: '选择画笔工具',

@@ -118,9 +118,22 @@ function getMatchedShortcuts<T extends { action: string; shortcut: string; compl
   return matched
 }
 
+function getActionPriority(action: string): number {
+  const entries = keyboardCallbacks.value[action]
+  if (!entries || entries.length === 0) return 0
+  return entries[0].priority
+}
+
 export function handleGlobalKeyUp(event: KeyboardEvent) {
-  if (event.target && (event.target as HTMLElement).tagName === 'INPUT') return
+  const target = event.target as HTMLElement | null
+  if (target) {
+    const tagName = target.tagName
+    if (tagName === 'INPUT' || tagName === 'TEXTAREA' || tagName === 'SELECT' || target.isContentEditable) return
+  }
+
   const matchedShortcuts = getMatchedShortcuts<{ action: string; shortcut: string; complexity: number }>(keyboardShortcuts, s => isKeyboardShortcutMatch(event, s))
+    .sort((a, b) => getActionPriority(b.action) - getActionPriority(a.action) || b.complexity - a.complexity)
+
   for (const { action } of matchedShortcuts) {
     const callbackEntries = keyboardCallbacks.value[action]
     if (callbackEntries && callbackEntries.length > 0) {

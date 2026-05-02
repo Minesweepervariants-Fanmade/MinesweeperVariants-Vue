@@ -26,8 +26,12 @@
         :mask="boardConfig!.board.mask"
         :show-row-col-label="settings.showRowColLabel && boardConfig!.board.showLabel"
         :show-board-name-label="boardConfig!.board.showName"
+        :puzzle-mode="settings.gameMode === 'puzzle'"
         @cell-click="(row, col, boardName) => handleCellClick(boardName!, row, col, 'left')"
         @cell-right-click="(row, col, boardName) => handleCellClick(boardName!, row, col, 'right')"
+        @cell-middle-click="handleCellMiddleClick"
+        @mouse-enter="handleCellMouseEnter"
+        @mouse-leave="handleCellMouseLeave"
       />
     </div>
 
@@ -92,6 +96,17 @@
       :settings="settings"
       @close="handleSettingsClose"
     />
+
+    <!-- 纸笔模式单元格编辑器 -->
+    <CellEditorOverlay
+      v-model:visible="showCellEditorDialog"
+      :title="cellEditorTitle"
+      :cell-label="cellEditorLabel"
+      :cell-config="editingCellConfig"
+      :cell-state="editingCellState"
+      @save="handleCellEditorSave"
+      @close="handleCellEditorClose"
+    />
   </div>
 </template>
 
@@ -117,10 +132,13 @@ import GameTable from '@/components/GameTable.vue'
 import Overlay from '@/components/Overlay.vue'
 import InfoOverlay from '@/components/InfoOverlay.vue'
 import SettingsOverlay from '@/components/SettingsOverlay.vue'
+import CellEditorOverlay from '@/components/CellEditorOverlay.vue'
 import DrawingCanvas from '@/components/DrawingCanvas.vue'
 import DrawingToolbar from '@/components/DrawingToolbar.vue'
 import { getGameParams, newGame } from '@/utils/gameUtils'
 import { startAutoFit } from './utils/fitter'
+import { Cell } from '@/types/cell'
+import type { CellConfig, CellState } from '@/types/game'
 
 // 组件引用
 const settingsOverlayRef = ref<InstanceType<typeof SettingsOverlay>>()
@@ -154,6 +172,7 @@ const {
   gameOverReason,
   showGameOverDialog,
   showGameWinDialog,
+  gameBoards,
   initializeGame,
   handleCellClick,
   resetGame,
@@ -162,6 +181,9 @@ const {
   handleGameOverReset,
   handleGameOverUndo,
   getAllBoardConfigs,
+  getCellConfig,
+  setCellConfig,
+  createBlankCellConfig,
 } = useGameConfig()
 
 // 使用设置
@@ -195,6 +217,18 @@ const backgroundImageStyle = computed(() => {
 // 设置相关状态
 const showSettingsDialog = ref(false)
 const showDrawingToolbar = ref(false)
+const showCellEditorDialog = ref(false)
+const activeCellTarget = ref<{ boardName: string; row: number; col: string } | null>(null)
+const editingCellTarget = ref<{ boardName: string; row: number; col: string } | null>(null)
+const editingCellConfig = ref<CellConfig | null>(null)
+const editingCellState = ref<CellState | null>(null)
+
+const cellEditorTitle = computed(() => '编辑纸笔单元格')
+const cellEditorLabel = computed(() => {
+  const target = editingCellTarget.value || activeCellTarget.value
+  if (!target) return ''
+  return `${target.boardName} / ${target.row} / ${target.col}`
+})
 
 // 游戏状态数据
 const levelCount = computed(() => {
@@ -248,6 +282,95 @@ const handleSettingsClose = () => {
   showSettingsDialog.value = false
 }
 
+const syncActiveCell = (row: number, col: string, boardName: string, cellConfig?: CellConfig | null) => {
+  activeCellTarget.value = { row, col, boardName }
+  if (cellConfig) {
+    editingCellConfig.value = JSON.parse(JSON.stringify(cellConfig)) as CellConfig
+  } else {
+    const { x, y } = Cell.displayCoordToIndex(row, col)
+    editingCellConfig.value = createBlankCellConfig(boardName, x, y)
+  }
+
+  // 获取对应的 CellState
+  const board = gameBoards.value[boardName]
+  if (board) {
+    const key = `${Cell.displayCoordToIndex(row, col).x}-${Cell.displayCoordToIndex(row, col).y}`
+    editingCellState.value = board[key] || null
+  } else {
+    editingCellState.value = null
+  }
+}
+
+const handleCellMouseEnter = (
+  row: number,
+  col: string,
+  boardName?: string,
+  cellConfig?: CellConfig | null
+) => {
+  if (!boardName) return
+  syncActiveCell(row, col, boardName, cellConfig)
+}
+
+const handleCellMouseLeave = (
+  row: number,
+  col: string,
+  boardName?: string,
+  _cellConfig?: CellConfig | null
+) => {
+  const target = activeCellTarget.value
+  if (!target || target.row !== row || target.col !== col || target.boardName !== boardName) {
+    return
+  }
+  activeCellTarget.value = null
+}
+
+const handleCellMiddleClick = (
+  row: number,
+  col: string,
+  boardName?: string,
+  cellConfig?: CellConfig | null
+) => {
+  if (!boardName || settings.value.gameMode !== 'puzzle') return
+
+  const { x, y } = Cell.displayCoordToIndex(row, col)
+  const nextConfig = cellConfig
+    ? JSON.parse(JSON.stringify(cellConfig)) as CellConfig
+    : createBlankCellConfig(boardName, x, y)
+
+  nextConfig.overlayText = ''
+  nextConfig.component = {
+    type: 'text',
+    value: '',
+    style: '',
+    class: ''
+  }
+
+  setCellConfig(nextConfig)
+}
+
+const handleCellEditorSave = (cellConfig: CellConfig, cellState: CellState) => {
+  const { boardname, x, y } = cellConfig.position
+
+  setCellConfig(cellConfig)
+
+  // 在纸笔模式下更新 CellState
+  if (settings.value.gameMode === 'puzzle') {
+    const board = gameBoards.value[boardname]
+    if (board) {
+      const key = `${x}-${y}`
+      board[key] = JSON.parse(JSON.stringify(cellState)) as CellState
+    }
+  }
+
+  showCellEditorDialog.value = false
+  editingCellTarget.value = null
+}
+
+const handleCellEditorClose = () => {
+  showCellEditorDialog.value = false
+  editingCellTarget.value = null
+}
+
 // 处理容器点击事件
 const handleContainerClick = (event: MouseEvent) => {
   // 只有当点击的是容器本身时才隐藏提示（不是子元素）
@@ -288,6 +411,26 @@ const ontogglemouseDrawingToolbar = (event: MouseEvent | WheelEvent): boolean =>
   return false
 }
 
+const onEditCell = (_event: KeyboardEvent): boolean => {
+  if (settings.value.gameMode !== 'puzzle') {
+    return false
+  }
+
+  const target = activeCellTarget.value
+  if (!target) {
+    return true
+  }
+
+  const { x, y } = Cell.displayCoordToIndex(target.row, target.col)
+  const currentCellConfig = getCellConfig(target.boardName, x, y)
+  editingCellTarget.value = { ...target }
+  editingCellConfig.value = currentCellConfig
+    ? JSON.parse(JSON.stringify(currentCellConfig)) as CellConfig
+    : createBlankCellConfig(target.boardName, x, y)
+  showCellEditorDialog.value = true
+  return true
+}
+
 onMounted(async () => {
   // 预加载素材
   await waitForAssets()
@@ -307,6 +450,7 @@ onMounted(async () => {
   // 注册绘图覆盖层切换快捷键
   registerKeyboardShortcut('toggleDrawingToolbar', ontoggleDrawingToolbar)
   registerMouseShortcut('toggleDrawingToolbar', ontogglemouseDrawingToolbar)
+  registerKeyboardShortcut('editCell', onEditCell, 10)
 
   // 禁用右键菜单
   const contextMenuHandler = (e: MouseEvent) => e.preventDefault()
@@ -328,6 +472,7 @@ onUnmounted(() => {
   // 清理事件监听器
   unregisterKeyboardShortcut('themeToggle', onThemeToggle)
   unregisterKeyboardShortcut('toggleDrawingToolbar', ontoggleDrawingToolbar)
+  unregisterKeyboardShortcut('editCell', onEditCell)
   if (cleanupContextMenu) cleanupContextMenu()
   document.removeEventListener('keyup', handleGlobalKeyUp)
   document.removeEventListener('mousedown', handleGlobalMouse)
